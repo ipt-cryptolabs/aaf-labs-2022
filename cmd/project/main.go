@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/nochzato/set-invin/pkg/parser"
+)
 
 func main() {
-	fmt.Println("In progress..")
+	s := "create s1;"
+	o := parser.Parse(s)
+	fmt.Println(o)
 }
