@@ -17,7 +17,7 @@ void DB_terminal::nextCommand(){
         cin.get(c);
         if(c == ','){
             for(std::string s: COMMAND_TYPES){
-                if(t.getValue())
+                if(t.getValue() == "f")
             }
         }
         
@@ -51,8 +51,8 @@ Token Token::setType(std::string type){
     return *this;
 }
 
-Token Token::pushValue(std::string symbol){
-    this->value += value;
+Token Token::pushValue(char symbol){
+    this->value += std::string(symbol);
 
     return *this;
 }

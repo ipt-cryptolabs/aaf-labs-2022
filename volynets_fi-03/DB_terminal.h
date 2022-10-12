@@ -53,7 +53,7 @@ public:
     std::string getValue();
     Token setValue(std::string value);
     Token setType(std::string type);
-    Token pushValue(std::string value);
+    Token pushValue(char value);
 
 private:
     std::string type = "";
