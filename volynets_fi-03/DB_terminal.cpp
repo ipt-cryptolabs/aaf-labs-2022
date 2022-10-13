@@ -2,6 +2,8 @@
 
 DB_terminal::DB_terminal(){
     std::cout << "Init DB terminall..." << std::endl;
+    database = Database();
+    interpreter = Interpreter(database);
 }
 
 void DB_terminal::start(){
@@ -58,7 +60,13 @@ std::string toUpperCase(std::string s){
 }
 
 
-Interpreter::Interpreter(){}
+Interpreter::Interpreter(){
+    database = Database();
+}
+
+Interpreter::Interpreter(Database d):database(d){}
+
+
 
 Token Interpreter::interpretToken(std::string token){
     if(token == ","){
@@ -81,10 +89,10 @@ Token Interpreter::interpretToken(std::string token){
         return Token(_COMPARISON_TOKEN_, token);
     }
 
-    if(isCorrectLiteral(token)){
+    if(isCorrectLiteral(token) && !std::isdigit(token.at(0))){
         for(auto i: COMMAND_TYPES){
             if(toUpperCase(token) == i){
-                return Token(_COMMAND_TOKEN_, i);
+                return Token(_COMMAND_TOKEN_, toUpperCase(i));
             }
         }
 
@@ -133,67 +141,207 @@ std::vector<Token> Interpreter::convertStringVectorCommandToTokenVector(std::vec
     return rez_vector;
 }
 
+std::string Interpreter::interpretCommand(std::string command){
+    std::vector<Token> token_command = convertStringVectorCommandToTokenVector(
+                convertStringCommandToStringVector(command));
 
+    // printCommand(token_command);
 
-// std::vector<Token> Interpreter::interpretCommand(std::string command){
-//     std::vector<Token> command_t;
+    if(token_command.at(0).getValue() == "CREATE"){
+        return callCreateCommand(token_command);
+    }else if(token_command.at(0).getValue() == "INSERT"){
+        return callInsertCommand(token_command);
+    }else if(token_command.at(0).getValue() == "SELECT"){
+        return callSelectCommand(token_command);
+    }else{
+        std::cerr << BOLDRED << "Error unknown command: " << token_command.at(0).getValue() << RESET << std::endl;
+    }
+
+    return "ERROR HAS OCCURED.";
+}
+
+std::string Interpreter::callCreateCommand(std::vector<Token> command){
+    int i = 0;
+    std::string table_name = "";
+    std::vector<std::string> table_column_names;
+    std::vector<std::string> table_indexed_column_names;
+
+    if(command.at(i).getValue() != "CREATE"){
+        std::cerr << BOLDRED<< "Error: unknown command: " << command.at(i).getValue() << RESET << std::endl;
+        return "ERROR";
+    }
+    ++i;
+
+    if(command.at(i).getType() != _NAME_TOKEN_){
+        std::cerr << BOLDRED<< "Error: bad name." << command.at(i).getValue() << RESET << std::endl;
+        return "ERROR";
+    }
+    table_name = command.at(i).getValue();
+    ++i;
+
+    if(command.at(i).getType() != _OPEN_BRACKET_TOKEN_){
+        std::cerr << BOLDRED<< "Error: no open bracket." << RESET << std::endl;
+        return "ERROR";
+    }
+    i++;
+
+    while(command.at(i).getType() != _CLOSE_BRACKET_TOKEN_ && command.at(i).getType() != _EOC_TOKEN_){
+        if(command.at(i).getType() == _NAME_TOKEN_){
+            table_column_names.push_back(command.at(i).getValue());
+        }else{
+            std::cerr << BOLDRED<< "Error: mast be a name while get: " << command.at(i).getType() << " that is: " << command.at(i).getValue() << RESET << std::endl;
+            return "ERROR";
+        }
+        ++i;
+
+        if(command.at(i).getValue() == "INDEXED"){
+            table_indexed_column_names.push_back(command.at(i-1).getValue());
+            ++i;
+        }
+        
+
+        if(command.at(i).getType() != _COMMA_TOKEN_ && command.at(i).getType() != _CLOSE_BRACKET_TOKEN_){
+            std::cerr << BOLDRED<< "Error: unnown type of:" << command.at(i).getType() << " wit walue: " << command.at(i).getValue() << RESET << std::endl;
+            return "ERROR";
+        }
+        ++i;
+    }
+
+    if(command.at(i).getType() != _EOC_TOKEN_){
+        std::cerr << BOLDRED<< "Error: end of command error." << RESET << std::endl;
+        return "ERROR";
+    }
+
+    return database.createTable(table_name, table_column_names, table_indexed_column_names);
+}
+
+std::string Interpreter::callInsertCommand(std::vector<Token> command){
+    int i = 0;
+    std::string table_name = "";
+    std::vector<std::string> table_column_names;
+
+    if(command.at(i).getValue() != "INSERT"){
+        std::cerr << BOLDRED<< "Error: unknown command: " << command.at(i).getValue() << RESET << std::endl;
+        return "ERROR";
+    }
+    ++i;
+
+    if(command.at(i).getValue() == "INTO"){
+        ++i;
+    }
+
+    if(command.at(i).getType() == _NAME_TOKEN_){
+        table_name = command.at(i).getValue();
+        ++i;
+    }else{
+        std::cerr << BOLDRED<< "Error: unknown variable type: " << command.at(i).getType() << " with value: " << command.at(i).getValue() << RESET << std::endl;
+        return "ERROR";
+    }
+
+    if(command.at(i).getType() != _OPEN_BRACKET_TOKEN_){
+        std::cerr << BOLDRED<< "Error: unknown comand syntaxis on open bracket." << RESET << std::endl;
+        return "ERROR";
+    }
     
-//     Token cur_token = Token(_EMPTY_TOKEN_);
-//     int l = command.size() - 1; // because we don't need to rcognise the last symbol, that is ';'
-    
-//     try{
-//         for(int i = 0; i < l; ++i){
-//             if(std::isalpha(command.at(i)) || command.at(i) == '"' || command.at(i) == '_'){ // Do if text
-//                 if(cur_token.getValue() == " "){
-//                     cur_token.setValue(std::string(1, command.at(i)));
-//                 }else{
-//                     cur_token.pushValue(command.at(i));
-//                 }
-//             }
+    ++i;
+    while(command.at(i).getType() != _CLOSE_BRACKET_TOKEN_ && command.at(i).getType() != _EOC_TOKEN_){
+        if(command.at(i).getType() == _VALUE_TOKEN_){
+            table_column_names.push_back(command.at(i).getValue());
+        }else{
+            std::cerr << BOLDRED<< "Error: must be value but get: " << command.at(i).getType() << " with value: " << command.at(i).getValue() << RESET << std::endl;
+            return "ERROR";
+        }
+        ++i;
+
+        if(command.at(i).getType() != _COMMA_TOKEN_ && command.at(i).getType() != _CLOSE_BRACKET_TOKEN_){
+            std::cerr << BOLDRED<< "Error: must be comma but get: " << command.at(i).getType() << " with value: " << command.at(i).getValue() << RESET << std::endl;
+            return "ERROR";
+        }
+        ++i;
+
+    }
+
+    if(command.at(i).getType() != _EOC_TOKEN_){
+        std::cerr << BOLDRED<< "Error: end of command error" << RESET << std::endl;
+        return "ERROR";
+    }
+
+    return database.insert(table_name, table_column_names);
+}
+
+std::string Interpreter::callSelectCommand(std::vector<Token> command){
+    int i = 0;
+    std::string table_name, l_value, condition, r_value;
+    std::map<std::string, std::string> order_column_and_type;
+
+    if(command.at(i).getValue() != "SELECT"){
+        std::cerr << BOLDRED<< "Error: unknown command." << RESET << std::endl;
+        return "ERROR";
+    }
+    ++i;
+
+    if(command.at(i).getValue() != "FROM"){
+        std::cerr << BOLDRED<< "Error: unknown command." << RESET << std::endl;
+        return "ERROR";
+    }
+    ++i;
+
+    if(command.at(i).getType() == _NAME_TOKEN_){
+        table_name = command.at(i).getValue();
+        ++i;
+    }else{
+        std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
+        return "ERROR";
+    }
+
+    if(command.at(i).getValue() == "WHERE"){
+        i++;
+        if(command.at(i).getType() != _NAME_TOKEN_){
+            std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
+            return "ERROR";
+        }
+
+        l_value = command.at(i).getValue();
+        ++i;
+
+        if(command.at(i).getType() != _COMPARISON_TOKEN_){
+            std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
+            return "ERROR";
+        }
+
+        condition = command.at(i).getValue();
+        ++i;
+
+        if(command.at(i).getType() != _NAME_TOKEN_ && command.at(i).getType() != _VALUE_TOKEN_){
+            std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
+            return "ERROR";
+        }
+
+        r_value = command.at(i).getValue();
+        ++i;
+    }
+
+    if(command.at(i).getValue() == "ORDER_BY"){
+        ++i;
+        while(command.at(i).getType() != _EOC_TOKEN_){
+            if(command.at(i).getType() == _NAME_TOKEN_){
+                order_column_and_type[command.at(i).getValue()] = "ASC";
+            }
+            ++i;
             
-//             if(command.at(i) == ' '){ // Do if space
-//                 if(cur_token.getValue() != " " && cur_token.getValue() != ""){
-//                     interpretToken(cur_token);
-//                     command_t.push_back(cur_token);
-//                     cur_token = Token(_EMPTY_TOKEN_);
-//                 }
-//                 cur_token.setValue(" ");
-//             }
+            if(command.at(i).getValue() == "ASC"){
+                ++i;
+            }else if(command.at(i).getValue() == "DESC"){
+                order_column_and_type[command.at(i-1).getValue()] = "DESC";
+                ++i;
+            }
+        }
+    }
 
-//             if(command.at(i) == ','){  // Do if comma
-//                 interpretToken(cur_token);
-//                 command_t.push_back(cur_token);
-//                 command_t.push_back(Token(_COMMA_TOKEN_, ","));
-//                 cur_token = Token(_EMPTY_TOKEN_);
-//                 cur_token.setValue(" ");
-//             }
+    return database.select(table_name, l_value, condition, r_value, order_column_and_type);
+    return "ERROR";
+}
 
-//             if(command.at(i) == '('){ // Do if open bracket
-//                 if(cur_token.getValue() != " " && cur_token.getValue() != ""){
-//                     interpretToken(cur_token);
-//                     cur_token = Token(_EMPTY_TOKEN_);
-//                     cur_token.setValue(" ");
-//                 }
-//                 command_t.push_back(Token(_OPEN_BRACKET_TOKEN_, "("));
-//             }
-            
-//             if(command.at(i) == ')'){ // Do if close bracket
-//                 if(cur_token.getValue() != " " && cur_token.getValue() != ""){
-//                     interpretToken(cur_token);
-//                     cur_token = Token(_EMPTY_TOKEN_);
-//                     cur_token.setValue(" ");
-//                 }
-//                 command_t.push_back(Token(_CLOSE_BRACKET_TOKEN_, ")"));
-//             }
-//         }
-//     }catch(const char *e){
-//         std::cerr << e << '\n';
-//         throw e;
-//     }
-
-//     command_t.push_back(Token(_EOC_TOKEN_, ";"));
-//     return command_t;
-// }
 
 void printCommand(std::vector<Token> command){
     std::cout << "Command:" << std::endl;
@@ -212,10 +360,6 @@ bool isCorrectLiteral(const char c){
 }
 
 bool isCorrectLiteral(std::string s){
-    if(std::isdigit(s.at(0))){
-        return false;
-    }
-
     bool is_correct_iteral = true;
     for(int i = 0; i < s.size(); ++i){
         if(!isCorrectLiteral(s.at(i))){

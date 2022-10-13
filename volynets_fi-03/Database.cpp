@@ -5,7 +5,7 @@ Database::Database(){}
 std::string Database::createTable(std::string table_name,
                                   std::vector<std::string> columns,
                                   std::vector<std::string> indexed_columns){
-    std::string answ = "createTable ";
+    std::string answ = "Create table ";
 
     answ += table_name + "\n";
 
@@ -35,7 +35,7 @@ std::string Database::insert(std::string table_name, std::vector<std::string> va
     return answ;
 }
 
-std::string select(std::string table_name,
+std::string Database::select(std::string table_name,
                    std::string l_value,
                    std::string condition,
                    std::string r_value,

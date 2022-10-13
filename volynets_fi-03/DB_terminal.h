@@ -6,10 +6,8 @@
 #include <cctype>
 #include <map>
 
+#include "Database.h"
 
-class DB_terminal;
-class Token;
-class Interpreter;
 
 const std::string _TOKEN_ = "TOKEN";
 const std::string _VALUE_TOKEN_ = "VALUE";
@@ -37,17 +35,6 @@ std::vector<std::string> COMMAND_TYPES{
 };
 
 
-class DB_terminal{
-public:
-    DB_terminal();
-    void start();
-    std::string nextCommand();
-
-private:
-    // Token current_token = Token(_EMPTY_TOKEN_);  // there is no ined in it yet
-    std::vector<Token> current_command;
-};
-
 class Token{
 public:
     Token(){}
@@ -67,10 +54,32 @@ private:
 class Interpreter{
 public:
     Interpreter();
+    Interpreter(Database d);
     Token interpretToken(std::string token);
     std::vector<std::string> convertStringCommandToStringVector(std::string command);
     std::vector<Token> convertStringVectorCommandToTokenVector(std::vector<std::string> command);
-    std::vector<std::string> interpretCommand(std::string command);
+    std::string interpretCommand(std::string command);
+    std::string callCreateCommand(std::vector<Token> command);
+    std::string callInsertCommand(std::vector<Token> command);
+    std::string callSelectCommand(std::vector<Token> command);
+
+private:
+    Database database;
+
+};
+
+class DB_terminal{
+public:
+    DB_terminal();
+    void start();
+    std::string nextCommand();
+
+private:
+    Database database;
+    Interpreter interpreter;
+    // Token current_token = Token(_EMPTY_TOKEN_);  // there is no ined in it yet
+    // std::vector<Token> current_command;
+
 };
 
 std::string toUpperCase(std::string s);
