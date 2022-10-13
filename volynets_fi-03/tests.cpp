@@ -376,22 +376,46 @@ bool test_convertStringVectorCommandToTokenVector(){
     command = "SELECT FROM table_name "
                 "WHERE value_x > \"45\" "
                 "ORDER_BY column_name DESC, id ASC;";
+    rez = i.convertStringVectorCommandToTokenVector(i.convertStringCommandToStringVector(command));
+    answ = {Token(_COMMAND_TOKEN_, "SELECT"),
+            Token(_COMMAND_TOKEN_, "FROM"),
+            Token(_NAME_TOKEN_, "table_name"),
+            Token(_COMMAND_TOKEN_, "WHERE"), 
+            Token(_NAME_TOKEN_, "value_x"),
+            Token(_COMPARISON_TOKEN_, ">"),
+            Token(_VALUE_TOKEN_, "\"45\""),
+            Token(_COMMAND_TOKEN_, "ORDER_BY"),
+            Token(_NAME_TOKEN_, "column_name"),
+            Token(_COMMAND_TOKEN_, "DESC"),
+            Token(_COMMA_TOKEN_, ","),
+            Token(_NAME_TOKEN_, "id"),
+            Token(_COMMAND_TOKEN_, "ASC"),
+            Token(_EOC_TOKEN_, ";"),
+            };
+    testsArePased &= test(TokenVectorsAreEquiv(rez, answ), "error on: " + command);
+    if(!testsArePased){
+        printCommand(rez);
+    }
 
-    // answ = {Token(_COMMAND_TOKEN_, "SELECT"),
-    //         Token(_COMMAND_TOKEN_, "FROM"),
-    //         Token(_NAME_TOKEN_, "table_name"),
-    //         Token(_COMMAND_TOKEN_, "WHERE"), 
-    //         Token(_NAME_TOKEN_, "value_x"),
-    //         Token(_COMPARISON_TOKEN_, ">"),
-    //         Token(_VALUE_TOKEN_, "\"45\""),
-    //         Token(_COMMAND_TOKEN_, "ORDER_BY"),
-    //         Token(_NAME_TOKEN_, "column_name"),
-    //         Token(_COMMAND_TOKEN_, "DESC"),
-    //         Token(_COMMA_TOKEN_, ","),
-    //         Token(_NAME_TOKEN_, "id"),
-    //         Token(_COMMAND_TOKEN_, "ASC"),
-    //         Token(_EOC_TOKEN_, ";"),
-    //         };
+    command = "INSERT INTO cats (“1”, “Murzik”, “Sausages”);";
+    rez = i.convertStringVectorCommandToTokenVector(i.convertStringCommandToStringVector(command));
+    answ = {Token(_COMMAND_TOKEN_, "INSERT"),
+            Token(_COMMAND_TOKEN_, "INTO"),
+            Token(_NAME_TOKEN_, "cats"),
+            Token(_OPEN_BRACKET_TOKEN_, "("),
+            Token(_VALUE_TOKEN_, "\"1\""),
+            Token(_COMMA_TOKEN_, ","),
+            Token(_VALUE_TOKEN_, "\"“Murzik”\""),
+            Token(_COMMA_TOKEN_, ","),
+            Token(_VALUE_TOKEN_, "\"“Sausages”\""),
+            Token(_OPEN_BRACKET_TOKEN_, ")"),
+            Token(_EOC_TOKEN_, ";"),
+            };
+    testsArePased &= test(TokenVectorsAreEquiv(rez, answ), "error on: " + command);
+    if(!testsArePased){
+        printCommand(rez);
+    }
+
 
     if(!testsArePased){
         std::cerr << "interpretCommand is wrong" << std::endl;
