@@ -21,7 +21,7 @@ public:
                        std::string l_value,
                        std::string condition,
                        std::string r_value,
-                       std::map<std::string, std::string> order_column_and_type,
+                       std::map<std::string, std::string> order_column_and_type);
 };
 
 class Table{
