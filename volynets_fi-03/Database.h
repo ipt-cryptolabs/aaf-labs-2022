@@ -2,6 +2,7 @@
 #define _DATABASE_
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Database;
 class Table;
@@ -10,9 +11,15 @@ class Table;
 class Database{
 public:
     Database();
-    Database createTable();
-    Database insert();
-    Database select();
+    Database createTable(std::string table_name,
+        std::vector<std::string> columns,
+        std::vector<std::string> indexed_columns);
+    Database insert(std::string table_name,
+        std::vector<std::string> values);
+    Database select(std::string table_name,
+        std::string condition,
+        std::string order_column,
+        std::string order_type);
 };
 
 class Table{
