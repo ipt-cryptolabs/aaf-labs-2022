@@ -36,3 +36,8 @@ main
 
 # VS Code
 *.vscode
+
+# Tests
+# only_linux_colors.cpp
+# tests.cpp
+# main.cpp
