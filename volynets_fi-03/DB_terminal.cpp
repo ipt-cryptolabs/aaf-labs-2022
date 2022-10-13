@@ -103,15 +103,15 @@ Token Interpreter::interpretToken(std::string token){
 std::vector<std::string> Interpreter::interpretCommand(std::string str_comm){
     std::vector<std::string> vec_comm;
     std::string temp = "";
-    char prew_c = " ";
+    char prew_c = ' ';
 
     for(int i = 0; i < str_comm.size(); ++i){
         if(str_comm.at(i) == ' '){
-            
+
         }
     }
     
-    return
+    return vec_comm;
 }
 
 
