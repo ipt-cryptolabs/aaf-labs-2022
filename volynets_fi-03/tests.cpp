@@ -120,79 +120,143 @@ bool test_toUpperCase(){
     return testsArePased;
 }
 
-bool test_interpretToken(){
+bool test_interpretToken_string(){
     bool testsArePased = true;
     std::string rez = "";
-    Token t;
+    std::string t;
     Interpreter i;
 
-    t.setValue("CREATE");
-    i.interpretToken(t);
-    rez = t.getType();
-    testsArePased &= testStringsEquiw(rez, _COMMAND_TOKEN_);
-    
-    t.setValue("create");
-    i.interpretToken(t);
-    rez = t.getType();
-    testsArePased &= testStringsEquiw(rez, _COMMAND_TOKEN_);
+    t = "CREATE";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _COMMAND_TOKEN_ , "error on: " + t);
 
-    t.setValue("ORDER_BY");
-    i.interpretToken(t);
-    rez = t.getType();
-    testsArePased &= testStringsEquiw(rez, _COMMAND_TOKEN_);
+    t = "create";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _COMMAND_TOKEN_ , "error on: " + t);
 
-    t.setValue("\"dsfGsdaf\"");
-    i.interpretToken(t);
-    rez = t.getType();
-    testsArePased &= testStringsEquiw(rez, _VALUE_TOKEN_);
+    t = "ORDER_BY";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _COMMAND_TOKEN_ , "error on: " + t);
 
-    t.setValue("dsfGsdaf");
-    i.interpretToken(t);
-    rez = t.getType();
-    testsArePased &= testStringsEquiw(rez, _NAME_TOKEN_);
+    t = "\"dsfGsdaf\"";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _VALUE_TOKEN_ , "error on: " + t);
 
-    try{
-        t.setValue("\"\"");
-        i.interpretToken(t);
-    }catch(char const* e){
-        rez = t.getType();
-        testsArePased &= testStringsEquiw(rez, _UNDEFINED_TOKEN_);
-    }
+    t = "dsfGsdaf";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _NAME_TOKEN_ , "error on: " + t);
 
-    try{
-        t.setValue("\"hkjafhsd78sdf\"");
-        i.interpretToken(t);
-    }catch(char const* e){
-        rez = t.getType();
-        testsArePased &= testStringsEquiw(rez, _UNDEFINED_TOKEN_);
-    }
+    t = "\"\"";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _UNDEFINED_TOKEN_ , "error on: " + t);
 
-    try{
-        t.setValue("\"hsdfkhkjhafs");
-        i.interpretToken(t);
-    }catch(char const* e){
-        rez = t.getType();
-        testsArePased &= testStringsEquiw(rez, _UNDEFINED_TOKEN_);
-    }
+    t = "\"hkjafhsd78sdf\"";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _VALUE_TOKEN_ , "error on: " + t);
+
+    t = "\"hsdfkhkjhafs";
+    rez = i.interpretToken(t).getType();
+    testsArePased &= test(rez == _UNDEFINED_TOKEN_ , "error on: " + t);
     
     return testsArePased;
 }
 
+// bool test_interpretCommand(){
+//     bool testsArePased = true;
+//     std::vector<Token> rez, answ;
+//     Interpreter i;
+
+    // rez = i.interpretCommand("CREATE students (name INDEXED, group);");
+    // answ = {Token(_COMMAND_TOKEN_, "CREATE"),
+    //         Token(_NAME_TOKEN_, "students"), 
+    //         Token(_OPEN_BRACKET_TOKEN_, "("),
+    //         Token(_NAME_TOKEN_, "name"),
+    //         Token(_COMMAND_TOKEN_, "INDEXED"),
+    //         Token(_COMMA_TOKEN_, ","),
+    //         Token(_NAME_TOKEN_, "group"),
+    //         Token(_CLOSE_BRACKET_TOKEN_, ")"),
+    //         Token(_EOC_TOKEN_, ";"),
+    //         };
+    // testsArePased &= TokenVectorsAreEquiv(rez, answ);
+    // if(!testsArePased){
+    //     printCommand(rez);
+    // }
+
+    // rez = i.interpretCommand("SELECT FROM table_name "
+    //                             "WHERE value_x > \"45\" "
+    //                             "ORDER_BY column_name DESC, id ASC;");
+    // answ = {Token(_COMMAND_TOKEN_, "SELECT"),
+    //         Token(_COMMAND_TOKEN_, "FROM"),
+    //         Token(_NAME_TOKEN_, "table_name"),
+    //         Token(_COMMAND_TOKEN_, "WHERE"), 
+    //         Token(_NAME_TOKEN_, "value_x"),
+    //         Token(_COMPARISON_TOKEN_, ">"),
+    //         Token(_VALUE_TOKEN_, "\"45\""),
+    //         Token(_COMMAND_TOKEN_, "ORDER_BY"),
+    //         Token(_NAME_TOKEN_, "column_name"),
+    //         Token(_COMMAND_TOKEN_, "DESC"),
+    //         Token(_COMMA_TOKEN_, ","),
+    //         Token(_NAME_TOKEN_, "id"),
+    //         Token(_COMMAND_TOKEN_, "ASC"),
+    //         Token(_EOC_TOKEN_, ";"),
+    //         };
+    // testsArePased &= TokenVectorsAreEquiv(rez, answ);
+    // if(!testsArePased){
+    //     printCommand(rez);
+    // }
+
+
+
+//     if(!testsArePased){
+//         std::cerr << "interpretCommand is wrong" << std::endl;
+//     }
+    
+//     return testsArePased;
+// }
+
 bool test_interpretCommand(){
     bool testsArePased = true;
-    std::vector<Token> rez, answ;
+    std::string rez, answ;
     Interpreter i;
 
-    rez = i.interpretCommand("CREATE students (name, group);");
-    answ = {Token(_COMMAND_TOKEN_, "CREATE"),
-            Token(_NAME_TOKEN_, "students"), 
-            Token(_OPEN_BRACKET_TOKEN_, "("),
-            Token(_NAME_TOKEN_, "name"),
-            Token(_NAME_TOKEN_, "group"),
-            Token(_CLOSE_BRACKET_TOKEN_, ")"),
-            Token(_EOC_TOKEN_, ";"),
-            };
-    testsArePased &= TokenVectorsAreEquiv(rez, answ);
+    // rez = i.interpretCommand("CREATE students (name INDEXED, group);");
+    // answ = {Token(_COMMAND_TOKEN_, "CREATE"),
+    //         Token(_NAME_TOKEN_, "students"), 
+    //         Token(_OPEN_BRACKET_TOKEN_, "("),
+    //         Token(_NAME_TOKEN_, "name"),
+    //         Token(_COMMAND_TOKEN_, "INDEXED"),
+    //         Token(_COMMA_TOKEN_, ","),
+    //         Token(_NAME_TOKEN_, "group"),
+    //         Token(_CLOSE_BRACKET_TOKEN_, ")"),
+    //         Token(_EOC_TOKEN_, ";"),
+    //         };
+    // testsArePased &= TokenVectorsAreEquiv(rez, answ);
+    // if(!testsArePased){
+    //     printCommand(rez);
+    // }
+
+    // rez = i.interpretCommand("SELECT FROM table_name "
+    //                             "WHERE value_x > \"45\" "
+    //                             "ORDER_BY column_name DESC, id ASC;");
+    // answ = {Token(_COMMAND_TOKEN_, "SELECT"),
+    //         Token(_COMMAND_TOKEN_, "FROM"),
+    //         Token(_NAME_TOKEN_, "table_name"),
+    //         Token(_COMMAND_TOKEN_, "WHERE"), 
+    //         Token(_NAME_TOKEN_, "value_x"),
+    //         Token(_COMPARISON_TOKEN_, ">"),
+    //         Token(_VALUE_TOKEN_, "\"45\""),
+    //         Token(_COMMAND_TOKEN_, "ORDER_BY"),
+    //         Token(_NAME_TOKEN_, "column_name"),
+    //         Token(_COMMAND_TOKEN_, "DESC"),
+    //         Token(_COMMA_TOKEN_, ","),
+    //         Token(_NAME_TOKEN_, "id"),
+    //         Token(_COMMAND_TOKEN_, "ASC"),
+    //         Token(_EOC_TOKEN_, ";"),
+    //         };
+    // testsArePased &= TokenVectorsAreEquiv(rez, answ);
+    // if(!testsArePased){
+    //     printCommand(rez);
+    // }
 
 
 
@@ -203,8 +267,71 @@ bool test_interpretCommand(){
     return testsArePased;
 }
 
-bool test_2(){
+bool test_isCorrectLiteral_char(){
     bool testsArePased = true;
+    char c = ' ';
+
+    c = 'a';
+    testsArePased &= test(isCorrectLiteral(c), "error on " + std::string(1, c));
+
+    c = 'S';
+    testsArePased &= test(isCorrectLiteral(c), "error on " + std::string(1, c));
+
+    c = '5';
+    testsArePased &= test(isCorrectLiteral(c), "error on " + std::string(1, c));
+
+    c = '_';
+    testsArePased &= isCorrectLiteral(c);
+
+    std::string s = "hjhksf_hj34";
+    testsArePased &= test(isCorrectLiteral(s.at(1)), "error on " + std::string(1, s.at(1)));
+
+    c = ',';
+    testsArePased &= test(!isCorrectLiteral(c), "error on " + std::string(1, c));
+    c = '"';
+    testsArePased &= test(!isCorrectLiteral(c), "error on " + std::string(1, c));
+
+    if(!testsArePased){
+        std::cerr << "isCorrectLiteral_char test is failed" << std::endl;
+    }
+    
+    return testsArePased;
+}
+
+bool test_isCorrectLiteral_string(){
+    bool testsArePased = true;
+    std::string s = "";
+
+    s = "a";
+    testsArePased &= test(isCorrectLiteral(s), "error on " + s);
+
+    s = "S";
+    testsArePased &= test(isCorrectLiteral(s), "error on " + s);
+
+    s = "\"sdf\"";
+    testsArePased &= test(!isCorrectLiteral(s), "error on " + s);
+
+    s = "5";
+    testsArePased &= test(!isCorrectLiteral(s), "error on " + s);
+
+    s = "_";
+    testsArePased &= test(isCorrectLiteral(s), "error on " + s);
+
+    s = "sdf_sdf45_";
+    testsArePased &= test(isCorrectLiteral(s), "error on " + s);
+
+    s = ",";
+    testsArePased &= test(!isCorrectLiteral(s), "error on " + s);
+
+    s = "sdfdsf sdfa";
+    testsArePased &= test(!isCorrectLiteral(s), "error on " + s);
+
+    s = "3sdfdsf_sdfa";
+    testsArePased &= test(!isCorrectLiteral(s), "error on " + s);
+
+    if(!testsArePased){
+        std::cerr << "isCorrectLiteral_string test is failed" << std::endl;
+    }
     
     return testsArePased;
 }
@@ -235,13 +362,19 @@ bool testAll(){
     testsArePased &= test_toUpperCase();
 
     std::cout << "test interpretToken()..." << std::endl;
-    testsArePased &= test_interpretToken();
+    testsArePased &= test_interpretToken_string();
 
     std::cout << "test TokenVectorsAreEquiv()..." << std::endl;
     testsArePased &= Test_TokenVectorsAreEquiv();
 
     std::cout << "test interpretCommand()..." << std::endl;
     testsArePased &= test_interpretCommand();
+
+    std::cout << "test isCorrectLiteral_char()..." << std::endl;
+    testsArePased &= test_isCorrectLiteral_char();
+
+    std::cout << "test isCorrectLiteral_string()..." << std::endl;
+    testsArePased &= test_isCorrectLiteral_string();
 
 
     
