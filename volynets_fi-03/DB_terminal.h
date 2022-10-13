@@ -68,6 +68,8 @@ class Interpreter{
 public:
     Interpreter();
     Token interpretToken(std::string token);
+    std::vector<std::string> convertStringCommandToStringVector(std::string command);
+    std::vector<Token> convertStringVectorCommandToTokenVector(std::vector<std::string> command);
     std::vector<std::string> interpretCommand(std::string command);
 };
 

@@ -100,18 +100,37 @@ Token Interpreter::interpretToken(std::string token){
     return Token(_UNDEFINED_TOKEN_, token);
 }
 
-std::vector<std::string> Interpreter::interpretCommand(std::string str_comm){
+std::vector<std::string> Interpreter::convertStringCommandToStringVector(std::string str_comm){
     std::vector<std::string> vec_comm;
     std::string temp = "";
-    char prew_c = ' ';
 
     for(int i = 0; i < str_comm.size(); ++i){
         if(str_comm.at(i) == ' '){
-
+            if(temp != ""){
+                vec_comm.push_back(temp);
+                temp = "";
+            }
+        }else if(str_comm.at(i) == ',' || str_comm.at(i) == '(' || str_comm.at(i) == ')' || str_comm.at(i) == ';'){
+            if(temp != ""){
+                vec_comm.push_back(temp);
+                temp = "";
+            }
+            vec_comm.push_back(std::string(1, str_comm.at(i)));
+        }else{
+            temp += std::string(1, str_comm.at(i));
         }
     }
     
     return vec_comm;
+}
+
+std::vector<Token> Interpreter::convertStringVectorCommandToTokenVector(std::vector<std::string> command){
+    std::vector<Token> rez_vector;
+    for(int i = 0; i < command.size(); ++i){
+        rez_vector.push_back(interpretToken(command.at(i)));
+    }
+
+    return rez_vector;
 }
 
 
