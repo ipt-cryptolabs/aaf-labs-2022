@@ -1,0 +1,1 @@
+INSERT INTO cats ("1", "Murzik", "Sausages");

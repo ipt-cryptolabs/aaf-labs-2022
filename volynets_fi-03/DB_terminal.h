@@ -77,9 +77,6 @@ public:
 private:
     Database database;
     Interpreter interpreter;
-    // Token current_token = Token(_EMPTY_TOKEN_);  // there is no ined in it yet
-    // std::vector<Token> current_command;
-
 };
 
 std::string toUpperCase(std::string s);

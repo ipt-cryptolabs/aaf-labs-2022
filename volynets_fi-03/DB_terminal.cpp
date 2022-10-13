@@ -1,19 +1,29 @@
 #include "DB_terminal.h"
 
 DB_terminal::DB_terminal(){
-    std::cout << "Init DB terminall..." << std::endl;
+    std::cout << "DB terminall is working, please type your comands softly" << std::endl;
     database = Database();
     interpreter = Interpreter(database);
 }
 
 void DB_terminal::start(){
-    nextCommand();
+    std::string curent_command = "";
+    while(true){
+        curent_command = nextCommand();
+        if(curent_command.substr(0, 4) == "exit"){
+            return;
+        }
+        // std::cout << curent_command.substr(0, 4) << std::endl;
+        std::cout << interpreter.interpretCommand(curent_command);
+    }
 }
 
 std::string DB_terminal::nextCommand(){
-    std::cout << ">>";
+    std::cout << ">>> ";
 
     std::string command = "";
+    std::cin >> std::ws;
+
     getline(std::cin, command,';');
 
     return command.append(";");
@@ -157,7 +167,7 @@ std::string Interpreter::interpretCommand(std::string command){
         std::cerr << BOLDRED << "Error unknown command: " << token_command.at(0).getValue() << RESET << std::endl;
     }
 
-    return "ERROR HAS OCCURED.";
+    return "ERROR HAS OCCURED ON: " + token_command.at(0).getValue();
 }
 
 std::string Interpreter::callCreateCommand(std::vector<Token> command){
