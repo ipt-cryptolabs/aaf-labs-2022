@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nochzato/set-invin/pkg/parser"
+	"github.com/nochzato/set-invin/internal/parser"
 )
 
 func main() {
