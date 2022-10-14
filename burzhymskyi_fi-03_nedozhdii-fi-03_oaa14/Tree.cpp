@@ -129,52 +129,77 @@ std::string Tree::search(Node* cur = nullptr, int k = 0,std::string* stringBuild
 
     return *stringBuilder;
 }
-bool k = true;
-void Tree::printTree(std::string prefix = "", std::string childrenPrefix = "",Node* cur = nullptr, int deep = 0,bool type = false)
+
+void Tree::Node::print(std::string prefix, std::string childrenPrefix)
 {
-    static int rootCountChilds;
-    if(k)
-    {
-        cur = root;
-        if(cur)
-        std::cout<<"root\n";
-        rootCountChilds = root->countChildrens;
-    }
-    k = false;
-    int countChild = cur->countChildrens;
-
-
-    for(int i=0;i<deep-1;++i)
-    {
-        if(!type)
-            std::cout<<"  ";
-        else
-            std::cout<<"    ";
-    }
-
+    int tmpCountChildren = countChildrens;
     std::cout<<prefix;
-
-    bool f = true;
-
-    for (int i = 0; i < 94; ++i)
+    if(letter!= nullptr)
+        std::cout<<letter<<'\n';
+    for(int i = 0; i < 94; ++i)
     {
-        if (cur->exist[i])
+        if(exist[i] && tmpCountChildren > 1 )
         {
-            if(cur->childrens[i]->endBranch || countChild <=1)
-            {
-
-                --countChild;
-                printTree("└── " +childrenPrefix+cur->childrens[i]->letter + '\n',childrenPrefix,cur->childrens[i],deep+1,true);
-            }
-            else
-            {
-                --countChild;
-                printTree("├── " + childrenPrefix +cur->childrens[i]->letter + '\n',childrenPrefix  ,cur->childrens[i],deep+1,false);
-            }
-
-
+            tmpCountChildren--;
+            this->childrens[i]->print(childrenPrefix + "├── ", childrenPrefix + "│   ");
+        }
+        else if(this->childrens[i] != nullptr)
+        {
+            this->childrens[i]->print(childrenPrefix + "└── ", childrenPrefix + "    ");
         }
     }
-
-    //std::cout<<buffer.str()<<"n";
 }
+
+void Tree::printTree()
+{
+    root->letter = new char(' ');
+    std::cout<<"[root]";
+    root->print("","");
+}
+
+bool k = true;
+//void Tree::printTree(std::string prefix = "", std::string childrenPrefix = "",Node* cur = nullptr, int deep = 0,bool type = false)
+//{
+//    static int rootCountChilds;
+//    if(k)
+//    {
+//        cur = root;
+//        if(cur)
+//        std::cout<<"root\n";
+//        rootCountChilds = root->countChildrens;
+//    }
+//    k = false;
+//    int countChild = cur->countChildrens;
+//
+//
+//    for(int i=0;i<deep-1;++i)
+//    {
+//        if(!type)
+//            std::cout<<"  ";
+//        else
+//            std::cout<<"    ";
+//    }
+//
+//    std::cout<<prefix;
+//
+//    bool f = true;
+//
+//    for (int i = 0; i < 94; ++i)
+//    {
+//        if (cur->exist[i])
+//        {
+//            if(cur->childrens[i]->endBranch || countChild <=1)
+//            {
+//                --countChild;
+//                printTree("└── " +childrenPrefix+cur->childrens[i]->letter + '\n',childrenPrefix,cur->childrens[i],deep+1,true);
+//            }
+//            else
+//            {
+//                --countChild;
+//                printTree("├── " + childrenPrefix +cur->childrens[i]->letter + '\n',childrenPrefix  ,cur->childrens[i],deep+1,false);
+//            }
+//        }
+//    }
+//
+//    //std::cout<<buffer.str()<<"n";
+//}
