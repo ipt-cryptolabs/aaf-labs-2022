@@ -24,7 +24,7 @@ int main() {
     a.insert("gmj");
 //    std::cout<<a.search(nullptr,0, nullptr,"");
     a.printTree();
-    
+
 
     return 0;
 }
