@@ -2,7 +2,7 @@
 #include "..\\Parser\\Parser.hpp"
 #include "..\\DataBase\\DataBase.hpp"
 
-int SystemControl::start()
+int SystemControl::init()
 {
     
 }

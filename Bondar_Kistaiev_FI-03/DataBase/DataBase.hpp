@@ -1,6 +1,8 @@
 #pragma once
-#include <map>
+#include <tuple>
 #include <string>
+
+typedef std::pair<std::string, bool> query_result;
 
 /**
  * Data Base structure that contains data tables.
@@ -8,18 +10,17 @@
  */
 class DataBase
 {
-public:
     class Table
     {
-        
+        // TODO
     };
 
+public:
+    query_result select_from(std::string tbl, std::string cond);
 
-    static Table* select_from(Table* tbl, std::string cond);
+    query_result create_join(std::string t1,  std::string* t2, std::string cond);
 
-    static Table* create_join(Table* t1, Table* t2, std::string cond);
+    query_result insert(std::string t1, std::string table_row /*find a better name*/);
 
-    static Table* insert(Table* t1, std::string table_row /*find a better name*/ );
-
-    static Table* create(std::string columns /*find a better name*/ );
+    query_result create(std::string columns /*find a better name*/);
 };

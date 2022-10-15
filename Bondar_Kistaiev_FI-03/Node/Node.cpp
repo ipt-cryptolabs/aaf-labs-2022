@@ -1,21 +1,22 @@
 #include "Node.hpp"
+#include "..\\DataBase\\DataBase.hpp"
 
- DataBase::Table* NodeJOIN::exec()
- {
-    return DataBase::create_join(nullptr, nullptr,  "");
- }
-
-DataBase::Table* NodeSELECT::exec()
- {
-    return DataBase::select_from(nullptr, "");
- }
-    
-DataBase::Table* NodeINSERT::exec()
+query_result NodeJOIN::exec()
 {
-    return DataBase::insert(nullptr, "");
+    // return DataBase::create_join(nullptr, nullptr,  "");
 }
 
-std::string NodeLITERAL::exec()
+query_result NodeSELECT::exec()
 {
-    return "";
+    // return DataBase::select_from(nullptr, "");
+}
+    
+query_result NodeINSERT::exec()
+{
+    // return DataBase::insert(nullptr, "");
+}
+
+query_result NodeLITERAL::exec()
+{
+    // return "";
 }

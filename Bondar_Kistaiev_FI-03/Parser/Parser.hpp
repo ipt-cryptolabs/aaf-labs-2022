@@ -8,7 +8,6 @@
  * Operates over input string and returns a Node pointer  
  * which represents a syntax tree for a patricular command.
  */
-
 class Parser
 {
 

@@ -1,6 +1,8 @@
 #pragma once
+#include <tuple>
+#include <string>
 
-#include "..\\DataBase\\DataBase.hpp"
+typedef std::pair<std::string, bool> query_result;
 
 /**
  * Node structures that syntax tree is made of.
@@ -8,30 +10,30 @@
  */
 class Node
 {
-    virtual DataBase::Table* exec() = 0;
+    virtual query_result exec() = 0;
 };
 
-class NodeJOIN : Node
+class NodeJOIN : public Node
 {
-    DataBase::Table* exec() override;
+    query_result exec() override;
 };
 
-class NodeSELECT : Node
+class NodeSELECT : public  Node
 {
-    DataBase::Table* exec() override;   
+    query_result exec() override;   
 };
 
-class NodeINSERT : Node
+class NodeINSERT : public  Node
 {
-    DataBase::Table* exec() override;
+    query_result exec() override;
 };
 
-class NodeLITERAL : Node
+class NodeLITERAL : public  Node
 {
-    std::string exec() override;
+    query_result exec() override;
 };
 
-class NodeCREATE : Node
+class NodeCREATE : public  Node
 {
-    DataBase::Table* exec() override;
+    query_result exec() override;
 };
