@@ -9,10 +9,9 @@ class SystemControl
 {
 public:
     // Public interface to set-up and start DB
-    int start();
+    int init();
 
 private:
-    // Private interface to user-Parser-BD interaction
     std::string wait_for_input();
-    int execute_input(std::string command);
+    int execute_input(std::string);
 };
