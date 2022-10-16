@@ -12,7 +12,6 @@ class Parser
 {
 
 public:
-    Node* parse_command(std::string);  // Parses command into syntax tree.
-
+    static DBCommand::Node* parse_command(std::string);  // Parses command into syntax tree.
 
 };

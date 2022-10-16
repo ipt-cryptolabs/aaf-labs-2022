@@ -2,38 +2,43 @@
 #include <tuple>
 #include <string>
 
+// Predeclarations
 typedef std::pair<std::string, bool> query_result;
+class DataBase;
 
 /**
  * Node structures that syntax tree is made of.
  * Defines connection between DataBase and Parser classes.
  */
-class Node
+namespace DBCommand
 {
-    virtual query_result exec() = 0;
-};
+    struct Node
+    {
+        virtual query_result exec(DataBase*) = 0;
+    };
 
-class NodeJOIN : public Node
-{
-    query_result exec() override;
-};
+    struct NodeJOIN : public Node
+    {
+        query_result exec(DataBase*) override;
+    };
 
-class NodeSELECT : public  Node
-{
-    query_result exec() override;   
-};
+    struct NodeSELECT : public  Node
+    {
+        query_result exec(DataBase*) override;   
+    };
 
-class NodeINSERT : public  Node
-{
-    query_result exec() override;
-};
+    struct NodeINSERT : public  Node
+    {
+        query_result exec(DataBase*) override;
+    };
 
-class NodeLITERAL : public  Node
-{
-    query_result exec() override;
-};
+    struct NodeLITERAL : public  Node
+    {
+        query_result exec(DataBase*) override;
+    };
 
-class NodeCREATE : public  Node
-{
-    query_result exec() override;
-};
+    struct NodeCREATE : public  Node
+    {
+        query_result exec(DataBase*) override;
+    };
+}
