@@ -2,7 +2,7 @@
 #define AAF_LABS_2022_PARSER_H
 
 
-#include "Lexer.h"
+#include "../Lexer/Lexer.h"
 
 class Parser {
 public:

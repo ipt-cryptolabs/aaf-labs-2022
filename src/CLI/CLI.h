@@ -2,9 +2,9 @@
 #define AAF_LABS_2022_CLI_H
 
 #include "iostream"
-#include "Parser.h"
-#include "Lexer.h"
-#include "Exception.h"
+#include "../Parser/Parser.h"
+#include "../Lexer/Lexer.h"
+#include "../Exception.h"
 
 class CLI {
 public:

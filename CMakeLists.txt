@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD 14)
 add_executable(SetOf2DPoints
         src/main.cpp
         src/Exception.h
-        src/Lexer.cpp
-        src/Lexer.h
-        src/Token.h
-        src/Parser.cpp
-        src/Parser.h
-        src/CLI.cpp
-        src/CLI.h)
+        src/Lexer/Lexer.cpp
+        src/Lexer/Lexer.h
+        src/Lexer/Token.h
+        src/Parser/Parser.cpp
+        src/Parser/Parser.h
+        src/CLI/CLI.cpp
+        src/CLI/CLI.h)
