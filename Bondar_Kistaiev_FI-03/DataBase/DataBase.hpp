@@ -1,8 +1,12 @@
 #pragma once
 #include <tuple>
+#include <map>
 #include <string>
 
-typedef std::pair<std::string, bool> query_result;
+// Predeclarations
+enum class Result_Code : uint8_t;
+
+typedef std::pair<std::string, Result_Code> query_result;
 
 /**
  * Data Base structure that contains data tables.
@@ -15,12 +19,17 @@ class DataBase
         // TODO
     };
 
+    std::string buffer_name = "buff";
+    std::map<std::string, Table*> tables;
+    std::pair<std::string, Table*> buffer_table;
 public:
-    query_result select_from(std::string tbl, std::string cond);
+    query_result select_from(const std::string& tbl, const std::string& cond);
 
-    query_result create_join(std::string t1,  std::string* t2, std::string cond);
+    query_result create_join(const std::string& t1,  const std::string& t2, const std::string& cond);
 
-    query_result insert(std::string t1, std::string table_row /*find a better name*/);
+    query_result insert(const std::string& t1, const std::string& table_row /*find a better name*/);
 
-    query_result create(std::string columns /*find a better name*/);
+    query_result create(const std::string& columns /*find a better name*/);
+                
+    query_result get_table_string(const std::string& name) const; 
 };

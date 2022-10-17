@@ -17,8 +17,11 @@ class SystemControl
     // Pointer to a specific DB controlled by class object
     DataBase* controlled_db;
 public:
+    SystemControl();
+    ~SystemControl();
+
     // Public interface to set-up and start DB
-    int init();
+    int start();
 
 private:
     // Waiting and pre-formating user input

@@ -5,10 +5,15 @@
 
 DBCommand::Node* Parser::parse_command(std::string cmd)
 {
-    auto [r, k] = process_input(cmd); // MATLAB moment
+    auto [tokens, valid] = process_input(cmd); // MATLAB moment
     //TODO : Build a tree, grow a house, plant a son.  
-
-    return nullptr;
+    if(valid)
+    {
+        DBCommand::Node* tree;
+        return tree;    
+    }
+    else
+        return nullptr; // Error-node
 } 
 
 breakdown_result Parser::process_input(std::string cmd)
@@ -48,8 +53,6 @@ breakdown_result Parser::process_input(std::string cmd)
             std::transform(word.begin(), word.end(), 
                 word.begin(), [](char c) { return std::tolower(c); });
 
-            
-
             if (word == "where")
             {
                 std::getline(to_parse, word, '\0');
@@ -60,3 +63,4 @@ breakdown_result Parser::process_input(std::string cmd)
 
     return {tokens, true};
 }
+

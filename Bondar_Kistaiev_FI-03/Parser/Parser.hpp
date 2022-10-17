@@ -8,6 +8,7 @@
 
 
 typedef std::pair<std::vector<std::string>, bool> breakdown_result;
+typedef std::pair<DBCommand::Node*, bool> parse_result;
 
 /**
  * Parser Class which provides Syntax and Lexical analysis.
@@ -21,7 +22,8 @@ class Parser
 public:
     static DBCommand::Node* parse_command(std::string);  // Parses command into syntax tree.
 
-public:
+private:
 
     static breakdown_result process_input(std::string);
+    static DBCommand::Node* build_tree();
 };

@@ -3,7 +3,9 @@
 #include <string>
 
 // Predeclarations
-typedef std::pair<std::string, bool> query_result;
+enum class Result_Code : uint8_t { Error = 0, Table = 1, TextMssg = 2 };
+
+typedef std::pair<std::string, Result_Code> query_result;
 class DataBase;
 
 /**
@@ -14,6 +16,7 @@ namespace DBCommand
 {
     struct Node
     {
+        std::string value;
         virtual query_result exec(DataBase*) = 0;
     };
 

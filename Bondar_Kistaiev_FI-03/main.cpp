@@ -12,9 +12,9 @@ int main()
     // std::string cmd;
     // std::getline(std::cin, cmd, ';');
 
-    auto mobil = Parser::process_input("abs'sad");
+    //auto mobil = Parser::process_input("abs'sad");
 
-    std::cout << mobil.first[0] << std::endl;
+    // std::cout << mobil.first[0] << std::endl;
 
     int x;
     std::cin >> x;
