@@ -26,7 +26,4 @@ public:
 private:
     // Waiting and pre-formating user input
     std::string get_input();
-
-    // Command execution
-    int execute_input(DBCommand::Node*);
 };

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <algorithm>
+
 
 SystemControl::SystemControl()
 {
@@ -21,28 +23,52 @@ SystemControl::~SystemControl()
 int SystemControl::start()
 {
     std::string input_handler;
+    std::string word;
+
     while (true)
     {
         input_handler = get_input();
 
-        // TODO: exit command
-        DBCommand::Node* executable = Parser::parse_command(input_handler);
-        auto [res, ret_code] = executable->exec(controlled_db);
+        word = input_handler;
+        std::transform(word.begin(), word.end(), word.begin(), [](char c) { return std::tolower(c); });
 
-        if(ret_code == Result_Code::Table)
-        {
-            auto [tbl, exists] = controlled_db->get_table_string(res);
-            if (exists)
-                std::cout << tbl << std::endl;
-            else
-                std::cout << "Table " + res + " does not exist.";
+        if (word == "exit")
+        {   
+            return 1;
         }
-        else
-            std::cout << "Error: " + res << std::endl;
+
+        DBCommand::Node* executable = Parser::parse_command(input_handler);
+        auto [res, ret_code] = executable->exec(this->controlled_db);
+
+        switch (ret_code)
+        {
+            case Result_Code::Table :
+            {
+                auto [tbl, exists] = this->controlled_db->get_table_string(res);
+
+                if (exists == Result_Code::Table)
+                    std::cout << tbl << std::endl;
+                else if (exists == Result_Code::Error)
+                    std::cout << "Table " + res + " does not exist.";
+                else
+                    std::cout << "HOW TF DID YOU GET HERE???";
+
+                break;
+            }
+            case Result_Code::Error :
+            {
+                std::cout << std::endl << "Error:   " + res << std::endl;
+                break;
+            }
+            default:
+            {
+                std::cout << std::endl << res << std::endl;
+                break;
+            }
+        }
     }
-    
-    return 0;   // No error while execution
 }
+
 
 std::string SystemControl::get_input()
 {
@@ -55,9 +81,3 @@ std::string SystemControl::get_input()
     return input;
 }
 
-int SystemControl::execute_input(DBCommand::Node* cmd)
-{
-    // TODO : ADD EXCEPTION HANDLING
-    cmd->exec(this->controlled_db);
-    return 0;
-}
