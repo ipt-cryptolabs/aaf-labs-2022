@@ -1,7 +1,7 @@
 #include "DB_terminal.h"
 
 DB_terminal::DB_terminal(){
-    std::cout << "DB terminall is working, please type your comands softly" << std::endl;
+    std::cout << "Please, type your comands gently" << std::endl;
     database = Database();
     interpreter = Interpreter(database);
 }
