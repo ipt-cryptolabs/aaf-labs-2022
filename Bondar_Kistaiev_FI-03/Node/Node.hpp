@@ -24,38 +24,39 @@ namespace DBCommand
 
     struct NodeJOIN : public Node
     {
-        std::string table1, table2;
-        std::string on_columns_condition;
+        Node *table1, *table2;
+        std::string on_column1, on_column2;
 
         query_result exec(DataBase*) override;
     };
 
-    struct NodeSELECT : public  Node
+    struct NodeSELECT : public Node
     {
-        std::string from_table;
+        Node* from_table;
         std::string condition;
 
         query_result exec(DataBase*) override;   
     };
 
-    struct NodeINSERT : public  Node
+    struct NodeINSERT : public Node
     {
         std::string table;
-        std::vector<std::string> row;
+        std::vector<std::string> row; 
 
         query_result exec(DataBase*) override;
     };
 
-    struct NodeLITERAL : public  Node
+    struct NodeLITERAL : public Node
     {
         std::string value;
 
         query_result exec(DataBase*) override;
     };
 
-    struct NodeCREATE : public  Node
+    struct NodeCREATE : public Node
     {
-        std::vector<std::pair<std::string, bool>> columns;
+        std::string table_name;
+        std::vector<std::pair<std::string, bool>> columns; // std::std::std::standart moment
 
         query_result exec(DataBase*) override;
     };
