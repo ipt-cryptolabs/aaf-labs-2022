@@ -26,3 +26,8 @@ class table:
         addition_data = pd.DataFrame(addition_data1)
         new_data = pd.concat([old_data, addition_data], ignore_index=True)
         self.data = new_data
+    
+    def delete_row(self, id: int) -> None:
+        old_data = copy.deepcopy(self.data)
+        new_data = old_data.drop(labels=id, axis=0)
+        self.data = new_data
