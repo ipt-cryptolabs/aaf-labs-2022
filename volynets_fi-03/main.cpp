@@ -24,11 +24,13 @@ int main(){
     t.insert({"ricardo", "20", "yes", "13"});
     t.insert({"tanya", "25", "F", "30"});
     t.insert({"tanya", "25", "F", "31"});
-    t.print();
-    // t.select("name", ">", "age", {{"age","DESC"}});
-    // t.select("name", ">", "age", {{"name","ASC"}, {"age","DESC"}});
-    std::cout << t.select("age", ">", "\"25\"", {{"age","DESC"}});
-    std::cout << t.select("age", "<>", "country", {{"age","DESC"}});
+    
+    std::cout << t.select() << std::endl;
+    std::cout << t.select("age", ">=", "\"25\"", {{"age","DESC"}}) << std::endl;
+    std::cout << t.select("age", "<>", "country", {{"age","DESC"}}) << std::endl;
+    std::cout << t.select("age", "<>", "country") << std::endl;
+    std::cout << t.select({{"age","DESC"}}) << std::endl;
+    
 
 
     return 0;

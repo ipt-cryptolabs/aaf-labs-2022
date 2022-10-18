@@ -99,6 +99,12 @@ Table::Table(std::vector<std::string> columns,
     if(columns.size() == 0){
         throw "ERROR, no columns had been written";
     }
+
+    for(auto i: indexed_columns){
+        if(getIndex(columns, i) == -1){
+            throw "undefinded index column name";
+        }
+    }
 }
 
 std::string Table::insert(std::vector<std::string> values){
@@ -120,6 +126,31 @@ std::string Table::select(std::string l_value,
                           std::string condition,
                           std::string r_value,
                           std::vector<std::pair<std::string, std::string>> order_column_and_type){
+    // select command start:
+    if(getIndex(columns, l_value) == -1){
+        return "undefinded left value of condition:" + l_value;
+    }
+
+    if(!is_condition(condition)){
+        return "undefinded condition:" + condition;
+    }
+
+    if(r_value.at(0) != '"' && r_value.at(r_value.size()-1) != '"'){
+        if(getIndex(columns, l_value) == -1){
+            return "undefinded right value of condition:" + r_value;
+        }
+    }
+
+    for(auto par: order_column_and_type){
+        if(getIndex(columns, par.first) == -1){
+            return "undefinded order element:" + par.first;
+        }
+
+        if(par.second!= "ASC" && par.second!= "DESC"){
+            return "undefinded order type:" + par.second;
+        }
+    }
+
     std::vector<std::vector<std::string>> temp_table;
 
     if(r_value.at(0) == '"' && r_value.at(r_value.size()-1) == '"'){
@@ -150,6 +181,27 @@ std::string Table::select(std::string l_value,
     return str(temp_table);
 }
 
+std::string Table::select(std::string l_value,
+                       std::string condition,
+                       std::string r_value){
+    return select(l_value, condition, r_value, {});
+}
+
+std::string Table::select(std::vector<std::pair<std::string, std::string>> order_column_and_type){
+    std::vector<std::vector<std::string>> temp_table(table);
+    less_than_key ltk(columns, order_column_and_type);
+    std::sort(temp_table.begin(), temp_table.end(), ltk);
+    
+    // print_tc(temp_table, columns);
+
+    return str(temp_table);
+}
+
+std::string Table::select(){
+    return str();
+}
+
+
 void Table::print(){
     Textable textable;
     textable.setRow(0, columns);
@@ -167,8 +219,8 @@ std::string Table::str(){
 std::string Table::str(std::vector<std::vector<std::string>> t){
     Textable textable;
     textable.setRow(0, columns);
-    for(int i = 0; i < table.size(); ++i){
-        textable.setRow(i+1, table.at(i));
+    for(int i = 0; i < t.size(); ++i){
+        textable.setRow(i+1, t.at(i));
     }
 
     std::stringstream ss;
@@ -231,6 +283,19 @@ bool compare(std::string s1, std::string s2, std::string comp_s){
 
     throw ("Compare string error when get" + comp_s);
     return 0;
+}
+
+bool is_condition(std::string cond){
+    bool is_a_condition = false;
+    
+    if(cond == ">")is_a_condition = true;
+    if(cond == ">=")is_a_condition = true;
+    if(cond == "==")is_a_condition = true;
+    if(cond == "<=")is_a_condition = true;
+    if(cond == "<")is_a_condition = true;
+    if(cond == "<>")is_a_condition = true;
+
+    return is_a_condition;
 }
 
 

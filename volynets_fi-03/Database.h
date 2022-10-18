@@ -51,6 +51,11 @@ public:
                        std::string condition,
                        std::string r_value,
                        std::vector<std::pair<std::string, std::string>> order_column_and_type);
+    std::string select(std::string l_value,
+                       std::string condition,
+                       std::string r_value);
+    std::string select(std::vector<std::pair<std::string, std::string>> order_column_and_type);
+    std::string select();
     void print();
     int getSize();
     std::string str();
@@ -65,6 +70,7 @@ private:
 int getIndex(std::vector<std::string> v, std::string K);
 void print_tc(std::vector<std::vector<std::string>> table, std::vector<std::string> columns);
 bool compare(std::string s1, std::string s2, std::string comp_s);
+bool is_condition(std::string cond);
 
 #include "Database.cpp"
 #endif
