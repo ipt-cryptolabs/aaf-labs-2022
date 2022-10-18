@@ -48,7 +48,7 @@ int SystemControl::start()
                     std::cout << tbl << std::endl;
                 else if (exists == Result_Code::Error)
                     std::cout << "Table " + res + " does not exist.";
-                else
+                else 
                     std::cout << "HOW TF DID YOU GET HERE???";
 
                 break;
@@ -64,6 +64,8 @@ int SystemControl::start()
                 break;
             }
         }
+
+        delete executable;
     }
 }
 

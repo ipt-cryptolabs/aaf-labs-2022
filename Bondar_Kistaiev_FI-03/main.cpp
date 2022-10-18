@@ -4,12 +4,10 @@
 #include <limits>
 #include <regex>
 #include <algorithm>
-// #include "SystemControl\\SystemControl.hpp"
+#include "SystemControl\\SystemControl.hpp"
 
 int main()
 {
-    SystemCon
-
-    int x;
-    std::cin >> x;
+    SystemControl sc;
+    sc.start();
 }

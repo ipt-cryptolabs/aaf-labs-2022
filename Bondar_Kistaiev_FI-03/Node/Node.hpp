@@ -20,6 +20,7 @@ namespace DBCommand
     struct Node
     {
         virtual query_result exec(DataBase*) = 0;
+        virtual ~Node() = default;
     };
 
     struct NodeJOIN : public Node
@@ -27,6 +28,7 @@ namespace DBCommand
         Node *table1, *table2;
         std::string on_column1, on_column2;
 
+        ~NodeJOIN();
         query_result exec(DataBase*) override;
     };
 
@@ -35,6 +37,7 @@ namespace DBCommand
         Node* from_table;
         std::string condition;
 
+        ~NodeSELECT();
         query_result exec(DataBase*) override;   
     };
 
@@ -43,13 +46,16 @@ namespace DBCommand
         std::string table;
         std::vector<std::string> row; 
 
+        ~NodeINSERT() = default;
         query_result exec(DataBase*) override;
     };
 
-    struct NodeLITERAL : public Node
+    struct NodeVALUE : public Node
     {
         std::string value;
+        Result_Code type;
 
+        ~NodeVALUE() = default;
         query_result exec(DataBase*) override;
     };
 
@@ -58,6 +64,7 @@ namespace DBCommand
         std::string table_name;
         std::vector<std::pair<std::string, bool>> columns; // std::std::std::standart moment
 
+        ~NodeCREATE() = default;
         query_result exec(DataBase*) override;
     };
 }

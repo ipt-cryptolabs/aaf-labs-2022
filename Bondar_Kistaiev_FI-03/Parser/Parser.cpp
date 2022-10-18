@@ -12,14 +12,11 @@ void Parser::make_lower(std::string& str)
 DBCommand::Node* Parser::parse_command(const std::string& cmd)
 {
     auto [tokens, valid] = process_input(cmd); // MATLAB moment
-    //TODO : Build a tree, grow a house, plant a son.  
+     
     if(valid)
-    {
-        DBCommand::Node* tree;
-        return tree;    
-    }
+        return build_tree(tokens);
     else
-        return nullptr; // Error-node
+        return build_ERROR_tree("Error:  " + tokens.front());; // Error-node
 } 
 
 breakdown_result Parser::process_input(const std::string& cmd)
@@ -32,9 +29,17 @@ breakdown_result Parser::process_input(const std::string& cmd)
     {       
         char curr = to_parse.peek();
         if (curr == ' ')
+        {
+            to_parse.get();
             continue;
-        else if(curr == '(' || curr == ')' || curr == ',' || curr == ';')
-            tokens.push_back(std::to_string(to_parse.get()));
+        }
+        else if(curr == ';')
+        {
+            tokens.push_back(";");
+            break;
+        }
+        else if(curr == '(' || curr == ')' || curr == ',')
+            tokens.push_back(std::string(1, to_parse.get()));
         else if(curr == '\"')
         {
             to_parse.get();
@@ -50,8 +55,7 @@ breakdown_result Parser::process_input(const std::string& cmd)
         }
         else
         {
-            to_parse >> word;
-
+            to_parse >> word;          
             tokens.push_back(word);
 
             make_lower(word);
@@ -61,12 +65,14 @@ breakdown_result Parser::process_input(const std::string& cmd)
                 std::getline(to_parse, word, ';');
                 tokens.push_back(word);
                 tokens.push_back(";");
+                break;
             }
             else if(word == "on")
             {
-                tokens.push_back(word);
+
                 to_parse >> word;
-                
+                tokens.push_back(word);
+
                 const std::regex on_token_regex("[a-zA-Z][a-zA-Z0-9_]*=[a-zA-Z]*[a-zA-Z0-9_]*");
                 std::smatch base_match;
                 if(std::regex_match(word, base_match, on_token_regex))
@@ -110,8 +116,9 @@ DBCommand::Node* Parser::build_tree(const std::vector<std::string> & tokens)
 
 DBCommand::Node* Parser::build_ERROR_tree(const std::string & error)
 {
-    DBCommand::NodeLITERAL* t = new DBCommand::NodeLITERAL;
+    DBCommand::NodeVALUE* t = new DBCommand::NodeVALUE;
     t->value = error;
+    t->type = Result_Code(0);
     return t;
 }
 
@@ -201,7 +208,7 @@ DBCommand::Node* Parser::build_INSERT_tree(const std::vector<std::string> & toke
 
     std::vector<std::string> row;
 
-    const std::regex str_regex("\"(?)*\"");
+    const std::regex str_regex("\"(.*?)\"");
     while (true)
     {
         ++current;
@@ -240,11 +247,10 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
 
     std::string from = *current;
     make_lower(from);
+    ++current;
 
     if(from != "from")
         return build_ERROR_tree("Expected FROM after " + tokens.front() + " _ <-");
-
-    ++current;
 
     if(tokens.size() < 4)
         return build_ERROR_tree("Incomplete SELECT FROM-command structure.");
@@ -252,6 +258,7 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
     std::string name = *current;
     if(!std::regex_match(name, base_match, token_regex))
         return build_ERROR_tree("Not a valid table name:  " + name);
+    ++current;
 
     std::string join = *current;
     make_lower(join);
@@ -287,10 +294,12 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
         }
 
         DBCommand::NodeJOIN* temp  = new DBCommand::NodeJOIN;
-        temp->table1 = new DBCommand::NodeLITERAL;
-        dynamic_cast<DBCommand::NodeLITERAL*>(temp->table1)->value = name;
-        temp->table2 = new DBCommand::NodeLITERAL;
-        dynamic_cast<DBCommand::NodeLITERAL*>(temp->table2)->value = join_table;
+        temp->table1 = new DBCommand::NodeVALUE;
+        dynamic_cast<DBCommand::NodeVALUE*>(temp->table1)->value = name;
+        dynamic_cast<DBCommand::NodeVALUE*>(temp->table1)->type = Result_Code(1);
+        temp->table2 = new DBCommand::NodeVALUE;
+        dynamic_cast<DBCommand::NodeVALUE*>(temp->table2)->value = join_table;
+        dynamic_cast<DBCommand::NodeVALUE*>(temp->table2)->type = Result_Code(1);
         temp->on_column1 = on_tbl1;
         temp->on_column2 = on_tbl2;
         
@@ -298,11 +307,11 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
     }
     else
     {
-        from_table = new DBCommand::NodeLITERAL;
-        dynamic_cast<DBCommand::NodeLITERAL*>(from_table)->value = name;
+        from_table = new DBCommand::NodeVALUE;
+        dynamic_cast<DBCommand::NodeVALUE*>(from_table)->value = name;
     }
 
-    std::string where = *current;
+    std::string where = *(++current);
     std::string cond = "";
     make_lower(where);
     

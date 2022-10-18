@@ -30,12 +30,27 @@ query_result DBCommand::NodeINSERT::exec(DataBase* db)
     return db->insert(table, row);
 }
 
-query_result DBCommand::NodeLITERAL::exec(DataBase* db)
+query_result DBCommand::NodeVALUE::exec(DataBase* db)
 {
-    return {value, Result_Code::Table};
+    return {value, type};
 }
 
 query_result DBCommand::NodeCREATE::exec(DataBase* db)
 {
     return db->create(table_name, columns);
+}
+
+DBCommand::NodeJOIN::~NodeJOIN()
+{
+    if(table1)
+        delete table1;
+    
+    if(table2)
+        delete table2;
+}
+
+DBCommand::NodeSELECT::~NodeSELECT()
+{
+    if(from_table)
+        delete from_table;
 }
