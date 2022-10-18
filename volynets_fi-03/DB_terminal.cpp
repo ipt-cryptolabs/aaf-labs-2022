@@ -282,7 +282,7 @@ std::string Interpreter::callInsertCommand(std::vector<Token> command){
 std::string Interpreter::callSelectCommand(std::vector<Token> command){
     int i = 0;
     std::string table_name = "", l_value = "", condition = "", r_value = "";
-    std::map<std::string, std::string> order_column_and_type;
+    std::vector<std::pair<std::string, std::string>> order_column_and_type;
 
     if(command.at(i).getValue() != "SELECT"){
         std::cerr << BOLDRED<< "Error: unknown command." << RESET << std::endl;
@@ -334,15 +334,21 @@ std::string Interpreter::callSelectCommand(std::vector<Token> command){
     if(command.at(i).getValue() == "ORDER_BY"){
         ++i;
         while(command.at(i).getType() != _EOC_TOKEN_){
-            if(command.at(i).getType() == _NAME_TOKEN_){
-                order_column_and_type[command.at(i).getValue()] = "ASC";
+            if(command.at(i).getType() != _NAME_TOKEN_){
+                return "Error: bad orrder column name";
             }
+
             ++i;
             
             if(command.at(i).getValue() == "ASC"){
+                order_column_and_type.push_back(std::pair(command.at(i-1).getValue(), "ASC"));
                 ++i;
             }else if(command.at(i).getValue() == "DESC"){
-                order_column_and_type[command.at(i-1).getValue()] = "DESC";
+                order_column_and_type.push_back(std::pair(command.at(i-1).getValue(), "DESC"));
+                ++i;
+            }
+
+            if(command.at(i).getType() == _COMMA_TOKEN_){
                 ++i;
             }
         }

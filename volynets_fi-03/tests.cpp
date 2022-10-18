@@ -389,19 +389,90 @@ bool test_interpretCommand(){
     return testsArePased;
 }
 
-bool test_4(){
+bool test_less_than_key_operator(){
     bool testsArePased = true;
+    less_than_key ltk = less_than_key({"name", "second_name", "age", "town"},{{"name","ASC"}, {"age","DESC"}});
+    std::vector<std::string> v1, v2;
     
+    v1 = {"serhi", "goh", "23", "misisippi"};
+    v2 = {"aerhi", "goh", "23", "misisippi"};
+    testsArePased &= test(!ltk(v1, v2), "error on 1.");
+
+    v1 = {"aserhi", "goh", "23", "misisippi"};
+    v2 = {"serhi", "goh", "23", "misisippi"};
+    testsArePased &= test(ltk(v1, v2), "error on 2.");
+
+    v1 = {"serhi", "goh", "23", "misisippi"};
+    v2 = {"serhi", "goh", "23", "misisippi"};
+    testsArePased &= test(!ltk(v1, v2), "error on 3.");
+
+    v1 = {"serhi", "goh", "24", "misisippi"};
+    v2 = {"serhi", "goh", "23", "misisippi"};
+    testsArePased &= test(ltk(v1, v2), "error on 4.");
+
+    v1 = {"serhi", "goh", "24", "misisippi"};
+    v2 = {"serhi", "goh", "53", "misisippi"};
+    testsArePased &= test(!ltk(v1, v2), "error on 5.");
+
+    v1 = {"serhi", "agoh", "53", "misisippi"};
+    v2 = {"serhi", "goh", "53", "misisippi"};
+    testsArePased &= test(ltk(v1, v2), "error on 6.");
+
+    v1 = {"serhi", "goh", "53", "misisippi"};
+    v2 = {"serhi", "agoh", "53", "misisippi"};
+    testsArePased &= test(!ltk(v1, v2), "error on 7.");
+
     return testsArePased;
 }
 
+bool test_compare(){
+    bool testsArePased = true;
+    std::string s1 = "", s2 = "", comp = "";
 
+    s1 = "astring";
+    s2 = "string";
+    comp = "<";
+    testsArePased &= test(compare(s1, s2, comp), "error on b1.");
+    
+    s2 = "astring";
+    testsArePased &= test(!compare(s1, s2, comp), "error on b2.");
+    
+    comp = "<=";
+    testsArePased &= test(compare(s1, s2, comp), "error on b3.");
+    
+    comp = "==";
+    testsArePased &= test(compare(s1, s2, comp), "error on b4.");
 
+    comp = ">=";
+    testsArePased &= test(compare(s1, s2, comp), "error on b5.");
 
+    s1 = "astring";
+    comp = ">=";
+    testsArePased &= test(compare(s1, s2, comp), "error on b6.");
+
+    s1 = "sdf";
+    s2 = "aaa";
+    comp = ">=";
+    testsArePased &= test(compare(s1, s2, comp), "error on b7.");
+
+    comp = "<>";
+    testsArePased &= test(compare(s1, s2, comp), "error on b8.");
+
+    s1 = "asd";
+    s2 = "asd";
+    comp = "<>";
+    testsArePased &= test(!compare(s1, s2, comp), "error on b9.");
+
+    return testsArePased;
+}
 
 bool testAll(){
     bool testsArePased = true; 
 
+    ////////////////////////////////////////////////////////////
+    //////////////////// DB_terminal tests /////////////////////
+    ////////////////////////////////////////////////////////////
+    
     std::cout << "test Token.pushValue()..." << std::endl;
     testsArePased &= test_Token_pushValue();
     
@@ -414,9 +485,6 @@ bool testAll(){
     std::cout << "test TokenVectorsAreEquiv()..." << std::endl;
     testsArePased &= Test_TokenVectorsAreEquiv();
 
-    // std::cout << "test interpretCommand()..." << std::endl;
-    // testsArePased &= test_interpretCommand();
-
     std::cout << "test isCorrectLiteral_char()..." << std::endl;
     testsArePased &= test_isCorrectLiteral_char();
 
@@ -425,12 +493,38 @@ bool testAll(){
 
     std::cout << "test convertStringCommandToStringVector()..." << std::endl;
     testsArePased &= test_convertStringCommandToStringVector();
+    
+    //////////////////////////////////////////////////////////
+    ////////////////// less_than_key tests ///////////////////
+    //////////////////////////////////////////////////////////
+    
+    std::cout << "test less_than_key operator()..." << std::endl;
+    testsArePased &= test_less_than_key_operator();
 
-    // std::cout << "test interpretCommand()..." << std::endl; 
-    // testsArePased &= test_interpretCommand();// that test must be changed
+    std::cout << "test compare()..." << std::endl;
+    testsArePased &= test_compare();
+
+    // std::cout << "test compare..." << std::endl;
+    // testsArePased &= test_compare();
+
+    // std::cout << "test compare..." << std::endl;
+    // testsArePased &= test_compare();
+
+    // std::cout << "test compare..." << std::endl;
+    // testsArePased &= test_compare();
+
+    // std::cout << "test compare..." << std::endl;
+    // testsArePased &= test_compare();
+
+    // std::cout << "test compare..." << std::endl;
+    // testsArePased &= test_compare();
 
 
 
+
+    //////////////////////////////////////////////////////////
+    //////////////////// Database tests //////////////////////
+    //////////////////////////////////////////////////////////
     
     
     // std::cout << "test toUpperCase..." << std::endl;
