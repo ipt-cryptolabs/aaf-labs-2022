@@ -21,6 +21,8 @@ if __name__ == "__main__":
                 insert(command)
             elif command[0] == 'SELECT':
                 select(command)
+            else:
+                print(command)
             print('Enter:')
             line = ' '
 
