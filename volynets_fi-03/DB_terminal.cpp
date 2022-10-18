@@ -167,7 +167,7 @@ std::string Interpreter::interpretCommand(std::string command){
         std::cerr << BOLDRED << "Error unknown command: " << token_command.at(0).getValue() << RESET << std::endl;
     }
 
-    return "ERROR HAS OCCURED ON: " + token_command.at(0).getValue();
+    return "ERROR HAS OCCURED ON: " + token_command.at(0).getValue() + "\n";
 }
 
 std::string Interpreter::callCreateCommand(std::vector<Token> command){
