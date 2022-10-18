@@ -281,18 +281,18 @@ std::string Interpreter::callInsertCommand(std::vector<Token> command){
 
 std::string Interpreter::callSelectCommand(std::vector<Token> command){
     int i = 0;
-    std::string table_name, l_value, condition, r_value;
+    std::string table_name = "", l_value = "", condition = "", r_value = "";
     std::map<std::string, std::string> order_column_and_type;
 
     if(command.at(i).getValue() != "SELECT"){
         std::cerr << BOLDRED<< "Error: unknown command." << RESET << std::endl;
-        return "ERROR";
+        return "ERROR\n";
     }
     ++i;
 
     if(command.at(i).getValue() != "FROM"){
         std::cerr << BOLDRED<< "Error: unknown command." << RESET << std::endl;
-        return "ERROR";
+        return "ERROR\n";
     }
     ++i;
 
@@ -301,14 +301,14 @@ std::string Interpreter::callSelectCommand(std::vector<Token> command){
         ++i;
     }else{
         std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
-        return "ERROR";
+        return "ERROR\n";
     }
 
     if(command.at(i).getValue() == "WHERE"){
         i++;
         if(command.at(i).getType() != _NAME_TOKEN_){
             std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
-            return "ERROR";
+            return "ERROR\n";
         }
 
         l_value = command.at(i).getValue();
@@ -316,7 +316,7 @@ std::string Interpreter::callSelectCommand(std::vector<Token> command){
 
         if(command.at(i).getType() != _COMPARISON_TOKEN_){
             std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
-            return "ERROR";
+            return "ERROR\n";
         }
 
         condition = command.at(i).getValue();
@@ -324,7 +324,7 @@ std::string Interpreter::callSelectCommand(std::vector<Token> command){
 
         if(command.at(i).getType() != _NAME_TOKEN_ && command.at(i).getType() != _VALUE_TOKEN_){
             std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
-            return "ERROR";
+            return "ERROR\n";
         }
 
         r_value = command.at(i).getValue();
@@ -349,7 +349,7 @@ std::string Interpreter::callSelectCommand(std::vector<Token> command){
     }
 
     return database.select(table_name, l_value, condition, r_value, order_column_and_type);
-    return "ERROR";
+    return "ERROR\n";
 }
 
 
