@@ -1,10 +1,10 @@
 #include "SystemControl.hpp"
 #include "..\\Parser\\Parser.hpp"
 #include "..\\DataBase\\DataBase.hpp"
+#include "..\\Node\\Node.hpp"
 
 // Temporary libs
 #include <iostream>
-#include <string>
 #include <limits>
 #include <algorithm>
 
@@ -64,11 +64,11 @@ int SystemControl::start()
                 break;
             }
         }
-
+        
+        std::cout << std::endl;
         delete executable;
     }
 }
-
 
 std::string SystemControl::get_input()
 {
@@ -80,4 +80,3 @@ std::string SystemControl::get_input()
 
     return input + " ;";
 }
-

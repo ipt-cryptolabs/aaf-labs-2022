@@ -1,12 +1,14 @@
 #pragma once
 
-#include "..\\Node\\Node.hpp"
-
-// Comentar 
+// Headers to use
 #include <string>
 #include <vector>
 
-
+// Utility types and predeclarations
+namespace DBCommand
+{
+    struct Node;
+}
 typedef std::pair<std::vector<std::string>, bool> breakdown_result;
 typedef std::pair<DBCommand::Node*, bool> parse_result;
 

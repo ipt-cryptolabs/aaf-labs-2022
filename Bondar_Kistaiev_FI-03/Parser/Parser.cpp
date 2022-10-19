@@ -1,4 +1,6 @@
 #include "Parser.hpp"
+#include "..\\Node\\Node.hpp"
+
 #include <sstream>
 #include <vector>
 #include <regex>
@@ -12,7 +14,7 @@ void Parser::make_lower(std::string& str)
 DBCommand::Node* Parser::parse_command(const std::string& cmd)
 {
     auto [tokens, valid] = process_input(cmd); // MATLAB moment
-     
+    
     if(valid)
         return build_tree(tokens);
     else
@@ -25,18 +27,15 @@ breakdown_result Parser::process_input(const std::string& cmd)
     std::string word;
     std::vector<std::string> tokens;
 
-    while(to_parse)
+    while(true)
     {       
         char curr = to_parse.peek();
-        if (curr == ' ')
-        {
+        if (std::isspace(curr))     // Skipping all whitespace characters
             to_parse.get();
-            continue;
-        }
         else if(curr == ';')
         {
-            tokens.push_back(";");
-            break;
+            tokens.push_back(";");  // End point for parse
+            break;                  
         }
         else if(curr == '(' || curr == ')' || curr == ',')
             tokens.push_back(std::string(1, to_parse.get()));
@@ -69,7 +68,6 @@ breakdown_result Parser::process_input(const std::string& cmd)
             }
             else if(word == "on")
             {
-
                 to_parse >> word;
                 tokens.push_back(word);
 
@@ -133,11 +131,11 @@ DBCommand::Node* Parser::build_CREATE_tree(const std::vector<std::string> & toke
         return build_ERROR_tree("Incomplete CREATE-command structure.");
 
     std::string name = *current;
-
     if(!std::regex_match(name, base_match, token_regex))
         return build_ERROR_tree("Not a valid table name:  " + name);
+    ++current;
     
-    if(*(++current) != "(")
+    if(*current != "(")
         return build_ERROR_tree("Opening '(' is expected after:  " + *(current - 2) + ' ' + *(current - 1) + " _ <-");
 
     std::vector<std::pair<std::string, bool>> columns;
@@ -146,15 +144,13 @@ DBCommand::Node* Parser::build_CREATE_tree(const std::vector<std::string> & toke
     {
         ++current;
         std::string temp = *current;
-        bool indexed_flag = false;
-        
         if (!std::regex_match(temp, base_match, token_regex))
             return build_ERROR_tree("Not a valid column name:  «" + temp + "».");
-        
-        columns.push_back({temp, false});
         ++current;
-        temp = *current;
 
+        columns.push_back({temp, false});
+        
+        temp = *current;
         make_lower(temp);
 
         if(temp == "indexed")
@@ -174,6 +170,14 @@ DBCommand::Node* Parser::build_CREATE_tree(const std::vector<std::string> & toke
 
         return build_ERROR_tree("Unexpected token:  " + *current);
     }
+    ++current;
+
+    if(*current != ";")
+        return build_ERROR_tree("Unexpected token:  " + *current);
+    ++current;
+
+    if(current != tokens.end())
+        return build_ERROR_tree("Found unexpected token  " + *current + "  after expression end (parse error).");
 
     DBCommand::NodeCREATE* node = new DBCommand::NodeCREATE; 
     node->table_name = name;
@@ -199,11 +203,11 @@ DBCommand::Node* Parser::build_INSERT_tree(const std::vector<std::string> & toke
         return build_ERROR_tree("Incomplete INSERT-command structure.");
 
     std::string name = *current;
-
     if(!std::regex_match(name, base_match, token_regex))
         return build_ERROR_tree("Not a valid table name:  " + name);
-    
-    if(*(++current) != "(")
+    ++current;
+
+    if(*current != "(")
         return build_ERROR_tree("Opening '(' is expected after:  " + *(current - 2) + ' ' + *(current - 1) + " _ <-");
 
     std::vector<std::string> row;
@@ -212,12 +216,13 @@ DBCommand::Node* Parser::build_INSERT_tree(const std::vector<std::string> & toke
     while (true)
     {
         ++current;
+
         std::string temp = *current;
         if (!std::regex_match(temp, base_match, str_regex))
             return build_ERROR_tree("Not a valid value:  " + temp + " <-");
-            
-        row.push_back(temp.substr(1, temp.size() - 2));
         ++current;
+
+        row.push_back(temp.substr(1, temp.size() - 2));
 
         if(*current == ",")
             continue;
@@ -230,6 +235,14 @@ DBCommand::Node* Parser::build_INSERT_tree(const std::vector<std::string> & toke
 
         return build_ERROR_tree("Unexpected token:  " + *current);
     }
+    ++current;
+
+    if(*current != ";")
+        return build_ERROR_tree("Unexpected token:  " + *current);
+    ++current;
+
+    if(current != tokens.end())
+        return build_ERROR_tree("Found unexpected token  " + *current + "  after expression end (parse error).");
 
     DBCommand::NodeINSERT* node = new DBCommand::NodeINSERT; 
     node->table = name;
@@ -313,6 +326,7 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
     {
         from_table = new DBCommand::NodeVALUE;
         dynamic_cast<DBCommand::NodeVALUE*>(from_table)->value = name;
+        dynamic_cast<DBCommand::NodeVALUE*>(from_table)->type = Result_Code(1);
     }
 
     std::string where = *current;

@@ -1,14 +1,12 @@
 #pragma once
-#include <tuple>
+
+// Headers to use
 #include <string>
 #include <vector>
 
-// Predeclarations
+// Utility types and predeclarations
 enum class Result_Code : uint8_t;
-
 typedef std::pair<std::string, Result_Code> query_result;
-
-
 class DataBase;
 
 /**

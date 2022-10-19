@@ -1,7 +1,9 @@
 #pragma once
+
+// Headers to use
 #include <string>
 
-// Predeclarations
+// Utility types and predeclarations
 class DataBase;
 namespace DBCommand
 {
@@ -9,8 +11,9 @@ namespace DBCommand
 }
 
 /**
- * System Control Class that operates over
- * one separate Data Base
+ * System Control Class that provides
+ * control over separate Data Base
+ * and user interface.
  */
 class SystemControl
 {
