@@ -265,32 +265,36 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
     
     DBCommand::Node* from_table;
 
-   
     if(join == "join")
     {
-        std::string join_table = *(++current);
-        std::string on_tbl1 = "", on_tbl2 = "";
+        ++current;
 
+        std::string join_table = *current;
         if(!std::regex_match(join_table, base_match, token_regex))
             return build_ERROR_tree("Not a valid table name:  " + join_table);
+        ++current;
 
-        std::string on = *(++current);
+        std::string on = *current;
         make_lower(on);
         
+        std::string on_tbl1 = "", on_tbl2 = "";
         if (on == "on")
         {
-            on_tbl1 = *(++current);
-            
+            ++current;
+
+            on_tbl1 = *current;
             if(!std::regex_match(on_tbl1, base_match, token_regex))
                 return build_ERROR_tree("Not a valid table name:  " + on_tbl1);
+            ++current;
 
-            if (*(++current) != "=")
+            if(*current != "=")
                 return build_ERROR_tree("Expected '=' after:  " + on_tbl1 + " _ <-");
+            ++current;
 
-            on_tbl2 = *(++current);
-
+            on_tbl2 = *current;
             if(!std::regex_match(on_tbl1, base_match, token_regex))
                 return build_ERROR_tree("Not a valid table name:  " + on_tbl2);
+            ++current;
         }
 
         DBCommand::NodeJOIN* temp  = new DBCommand::NodeJOIN;
@@ -311,16 +315,23 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
         dynamic_cast<DBCommand::NodeVALUE*>(from_table)->value = name;
     }
 
-    std::string where = *(++current);
-    std::string cond = "";
+    std::string where = *current;
     make_lower(where);
     
+    std::string cond = "";
     if(where == "where")
-        cond = *((++current)++);
-
+    {
+        ++current;
+        cond = *current;
+        ++current;
+    }
 
     if(*current != ";")
         return build_ERROR_tree("Unexpected token:  " + *current);
+    ++current;
+
+    if(current != tokens.end())
+        return build_ERROR_tree("Found unexpected token  " + *current + "  after expression end (parse error).");
 
     DBCommand::NodeSELECT* node = new DBCommand::NodeSELECT; 
     node->from_table = from_table;
