@@ -1,0 +1,5 @@
+.vscode/
+build/
+lab
+src/parser.cpp
+test.cpp
