@@ -7,7 +7,7 @@ query_result DataBase::select_from(const std::string& tbl, const std::string& co
 
 query_result DataBase::create_join(const std::string& t1,  const std::string& t2, const std::string& on_col1, const std::string& on_col2)
 {
-    return {"JOIN RESULT: " + t1 + " x " + t2 + " ON " + on_col1 + " = " + on_col1, Result_Code::Table};
+    return {"JOIN RESULT: " + t1 + " x " + t2 + " ON " + on_col1 + " = " + on_col2, Result_Code::Table};
 }
 
 query_result DataBase::insert(const std::string& tbl, const std::vector<std::string>& row)

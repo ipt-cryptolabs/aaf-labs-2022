@@ -8,7 +8,6 @@
 #include <limits>
 #include <algorithm>
 
-
 SystemControl::SystemControl()
 {
     controlled_db = new DataBase;
@@ -32,7 +31,7 @@ int SystemControl::start()
         word = input_handler;
         std::transform(word.begin(), word.end(), word.begin(), [](char c) { return std::tolower(c); });
 
-        if (word == "exit")
+        if (word == "exit ;")
             return 1;
 
         DBCommand::Node* executable = Parser::parse_command(input_handler);
@@ -78,5 +77,5 @@ std::string SystemControl::get_input()
     std::getline(std::cin, input, ';');
     std::cin.ignore(std::numeric_limits<int>::max(), '\n');
 
-    return input + " ;";
+    return input + ";";
 }

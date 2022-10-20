@@ -37,4 +37,8 @@ private:
 
     // Utility 
     static void make_lower(std::string&);
+    static bool get_token(std::istream& s, std::string& str);
+    static bool is_delim(char c);
+
+    static char delims[];
 };

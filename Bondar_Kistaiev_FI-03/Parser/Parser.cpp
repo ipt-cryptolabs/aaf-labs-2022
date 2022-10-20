@@ -5,10 +5,61 @@
 #include <vector>
 #include <regex>
 
+char Parser::delims[] = {'\"', ',', '(', ')', '=', ';'};
+
 void Parser::make_lower(std::string& str)
 {
     std::transform(str.begin(), str.end(), 
                 str.begin(), [](char c) { return std::tolower(c); });
+}
+
+bool Parser::is_delim(char c)
+{
+    bool is_delim = false;
+    for (char d : delims)
+            is_delim = is_delim || (c == d);
+        
+    return is_delim;
+}
+
+bool Parser::get_token(std::istream& s, std::string& str)
+{
+    str.clear();
+    char curr = s.get();
+
+    while (std::isspace(curr) && s)
+        curr = s.get();
+
+    if(curr == delims[0])
+    {
+        std::getline(s, str, delims[0]);
+
+        if(str.back() == ';')  // reached eof
+        {
+            str = "Expected closing \" in \"" + str + "_ <-";
+            return false;
+        }
+        str = "\"" + str + "\"";
+        return true;
+    }
+
+    if(is_delim(curr))
+    {
+        str = std::string(1, curr);
+        return true;
+    }
+
+    while(true)
+    {
+        str.push_back(curr);
+        curr = s.peek();
+        if(std::isspace(curr) || is_delim(curr))
+            break;
+
+        s.get();
+    }
+    
+    return true;
 }
 
 DBCommand::Node* Parser::parse_command(const std::string& cmd)
@@ -27,65 +78,29 @@ breakdown_result Parser::process_input(const std::string& cmd)
     std::string word;
     std::vector<std::string> tokens;
 
-    while(true)
+    do
     {       
-        char curr = to_parse.peek();
-        if (std::isspace(curr))     // Skipping all whitespace characters
-            to_parse.get();
-        else if(curr == ';')
+        bool is_valid = get_token(to_parse, word);
+        
+        if(!is_valid)
         {
-            tokens.push_back(";");  // End point for parse
-            break;                  
-        }
-        else if(curr == '(' || curr == ')' || curr == ',')
-            tokens.push_back(std::string(1, to_parse.get()));
-        else if(curr == '\"')
-        {
-            to_parse.get();
-            std::getline(to_parse, word, '\"');
-
-            if(word.back() == ';')  // reached eof
-            {
-                tokens.clear();
-                tokens.push_back("Expected closing \" in \"" + word + "_ <-");
-                return {tokens, false};
-            }
-            tokens.push_back("\"" + word + "\"");
-        }
-        else
-        {
-            to_parse >> word;          
+            tokens.clear();
             tokens.push_back(word);
-
-            make_lower(word);
-
-            if (word == "where")
-            {
-                std::getline(to_parse, word, ';');
-                tokens.push_back(word);
-                tokens.push_back(";");
-                break;
-            }
-            else if(word == "on")
-            {
-                to_parse >> word;
-                tokens.push_back(word);
-
-                const std::regex on_token_regex("[a-zA-Z][a-zA-Z0-9_]*=[a-zA-Z]*[a-zA-Z0-9_]*");
-                std::smatch base_match;
-                if(std::regex_match(word, base_match, on_token_regex))
-                {
-                    size_t i = word.find("=");
-                    std::string temp = word.substr(0, i + 1);
-                    tokens.push_back(temp);
-                    tokens.push_back("=");
-
-                    if(i != word.size() - 1)
-                        tokens.push_back(word.substr(i + 1, word.size() - i - 1));
-                }
-            }
+            return {tokens, false};
         }
-    }
+
+        tokens.push_back(word);
+
+        make_lower(word);
+        if (word == "where")
+        {
+            std::getline(to_parse, word, ';');
+            tokens.push_back(word);
+            tokens.push_back(";");
+            break;
+        }
+    } while(word != ";");
+    
     return {tokens, true};
 }
 
