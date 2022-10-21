@@ -8,9 +8,8 @@ while True:
     if line != "":
         result = myparser1.make_normal(line)
 
-        print(result)
         func = myparser1.parse(result)
-        print(func)
+        
         if func[0].lower() == "create":
             functions.create(func)
         elif func[0][0:6].lower() == "insert":
