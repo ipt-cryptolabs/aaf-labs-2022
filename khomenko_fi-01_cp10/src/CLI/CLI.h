@@ -12,6 +12,7 @@ public:
 
 private:
     std::string ProcessInput(std::string input);
+    void Info();
 };
 
 

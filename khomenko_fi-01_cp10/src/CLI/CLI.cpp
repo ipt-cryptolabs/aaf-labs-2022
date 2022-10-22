@@ -2,6 +2,8 @@
 
 
 void CLI::Run() {
+    Info();
+
     while(true){
         std::string input;
         std::string res_input;
@@ -47,4 +49,8 @@ std::string CLI::ProcessInput(std::string input) {
         }
     }
     return res_string;
+}
+
+void CLI::Info() {
+    std::cout << "---\tDB based on R-Tree\t---\n\n";
 }

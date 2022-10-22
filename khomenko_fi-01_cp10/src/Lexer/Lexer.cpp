@@ -100,7 +100,7 @@ Token *Lexer::GetNextToken() {
         }
 
         if(isdigit(current_char_)){
-            //probably Integer
+            // Probably integer
             return new Token(kInteger, std::to_string(Integer()));
         }
 
@@ -125,7 +125,7 @@ Token *Lexer::GetNextToken() {
 }
 
 int Lexer::Integer() {
-    // Return a (multidigit) integer(str) consumed from the input
+    // Return a (multidigit) integer consumed from the input
     std::string res_string;
 
     while(current_char_ != '\0' && isdigit(current_char_)){
