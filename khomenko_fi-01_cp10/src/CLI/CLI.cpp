@@ -28,9 +28,9 @@ void CLI::Run() {
 
 
         Lexer lexer(res_input);
-        Parser parser(&lexer);
 
         try{
+            Parser parser(&lexer);
             parser.Parse();
         }
         catch (Exception& exception){
