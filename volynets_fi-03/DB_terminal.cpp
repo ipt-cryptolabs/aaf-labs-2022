@@ -30,27 +30,8 @@ std::string DB_terminal::nextCommand(){
 }
 
 std::string DB_terminal::callCommand(std::string command){
-    interpreter.interpretCommand(command);
+    return interpreter.interpretCommand(command);
 }
-
-std::string DB_terminal::callCreateCommand(std::string table_name,
-                          std::vector<std::string> columns,
-                          std::vector<std::string> indexed_columns){
-    database.createTable(table_name, columns, indexed_columns);
-}
-
-std::string DB_terminal::callInsertCommand(std::string table_name, std::vector<std::string> values){
-    database.insert(table_name, values);
-}
-
-std::string DB_terminal::callSelectCommand(std::string table_name,
-                                           std::string l_value,
-                                           std::string condition,
-                                           std::string r_value,
-                                           std::vector<std::pair<std::string, std::string>> order_column_and_type){
-    database.select(table_name, l_value, condition, r_value, order_column_and_type);
-}
-
 
 Token::Token(std::string type): type(type){
 }
@@ -314,6 +295,10 @@ std::string Interpreter::callInsertCommand(std::vector<Token> command){
     if(command.at(i).getType() != _EOC_TOKEN_){
         std::cerr << BOLDRED<< "Error: end of command error" << RESET << std::endl;
         return "ERROR";
+    }
+
+    for(int i = 0; i < table_column_names.size(); ++i){
+        table_column_names.at(i) = table_column_names.at(i).substr(1, table_column_names.at(i).size()-2);
     }
 
     return database.insert(table_name, table_column_names);
