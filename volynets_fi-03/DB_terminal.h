@@ -73,6 +73,16 @@ public:
     DB_terminal();
     void start();
     std::string nextCommand();
+    std::string callCommand(std::string command);
+    std::string callCreateCommand(std::string table_name,
+                                               std::vector<std::string> columns,
+                                               std::vector<std::string> indexed_columns);
+    std::string callInsertCommand(std::string table_name, std::vector<std::string> values);
+    std::string callSelectCommand(std::string table_name,
+                                  std::string l_value,
+                                  std::string condition,
+                                  std::string r_value,
+                                  std::vector<std::pair<std::string, std::string>> order_column_and_type);
 
 private:
     Database database;

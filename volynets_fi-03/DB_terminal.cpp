@@ -29,6 +29,28 @@ std::string DB_terminal::nextCommand(){
     return command.append(";");
 }
 
+std::string DB_terminal::callCommand(std::string command){
+    interpreter.interpretCommand(command);
+}
+
+std::string DB_terminal::callCreateCommand(std::string table_name,
+                          std::vector<std::string> columns,
+                          std::vector<std::string> indexed_columns){
+    database.createTable(table_name, columns, indexed_columns);
+}
+
+std::string DB_terminal::callInsertCommand(std::string table_name, std::vector<std::string> values){
+    database.insert(table_name, values);
+}
+
+std::string DB_terminal::callSelectCommand(std::string table_name,
+                                           std::string l_value,
+                                           std::string condition,
+                                           std::string r_value,
+                                           std::vector<std::pair<std::string, std::string>> order_column_and_type){
+    database.select(table_name, l_value, condition, r_value, order_column_and_type);
+}
+
 
 Token::Token(std::string type): type(type){
 }
@@ -110,9 +132,9 @@ Token Interpreter::interpretToken(std::string token){
     }
 
     if(token.at(0) == '"' && token.at(token.size()-1) == '"' && token.size() > 2){
-        if(isCorrectLiteral(token.substr(1, token.size()-2))){
+        // if(isCorrectLiteral(token.substr(1, token.size()-2))){
             return Token(_VALUE_TOKEN_, token);
-        }
+        // }
     }
 
     return Token(_UNDEFINED_TOKEN_, token);
@@ -121,9 +143,16 @@ Token Interpreter::interpretToken(std::string token){
 std::vector<std::string> Interpreter::convertStringCommandToStringVector(std::string str_comm){
     std::vector<std::string> vec_comm;
     std::string temp = "";
+    bool is_a_string_literal = false;
 
     for(int i = 0; i < str_comm.size(); ++i){
-        if(str_comm.at(i) == ' ' || str_comm.at(i) == '\n'){
+        if(is_a_string_literal){
+            if(str_comm.at(i) == '"'){
+                is_a_string_literal = false;
+            }
+            
+            temp += str_comm.at(i);
+        }else if(str_comm.at(i) == ' ' || str_comm.at(i) == '\n'){
             if(temp != ""){
                 vec_comm.push_back(temp);
                 temp = "";
@@ -134,15 +163,21 @@ std::vector<std::string> Interpreter::convertStringCommandToStringVector(std::st
                 temp = "";
             }
             vec_comm.push_back(std::string(1, str_comm.at(i)));
+        }else if(str_comm.at(i) == '"'){
+            if(temp != ""){
+                vec_comm.push_back(temp);
+            }
+            is_a_string_literal = true;
+            temp = "\"";
         }else{
             temp += std::string(1, str_comm.at(i));
         }
     }
 
-    for(auto i: vec_comm){
-        std::cout << i << " : ";
-    }
-    std::cout << std::endl;
+    // for(auto i: vec_comm){
+    //     std::cout << i << " : ";
+    // }
+    // std::cout << std::endl;
     
     return vec_comm;
 }
