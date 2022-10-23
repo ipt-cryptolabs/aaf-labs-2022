@@ -1,20 +1,20 @@
 #include "DB_terminal.h"
 
 DB_terminal::DB_terminal(){
-    std::cout << "Please, type your comands gently" << std::endl;
     database = Database();
     interpreter = Interpreter(database);
 }
 
 void DB_terminal::start(){
+    std::cout << "Please, type your comands gently" << std::endl;
     std::string curent_command = "";
     while(true){
         curent_command = nextCommand();
         if(curent_command.substr(0, 4) == "exit"){
             return;
         }
-        // std::cout << curent_command.substr(0, 4) << std::endl;
-        std::cout << interpreter.interpretCommand(curent_command);
+        
+        std::cout << interpreter.interpretCommand(curent_command) << std::endl;
     }
 }
 
@@ -123,7 +123,7 @@ std::vector<std::string> Interpreter::convertStringCommandToStringVector(std::st
     std::string temp = "";
 
     for(int i = 0; i < str_comm.size(); ++i){
-        if(str_comm.at(i) == ' '){
+        if(str_comm.at(i) == ' ' || str_comm.at(i) == '\n'){
             if(temp != ""){
                 vec_comm.push_back(temp);
                 temp = "";
@@ -138,6 +138,11 @@ std::vector<std::string> Interpreter::convertStringCommandToStringVector(std::st
             temp += std::string(1, str_comm.at(i));
         }
     }
+
+    for(auto i: vec_comm){
+        std::cout << i << " : ";
+    }
+    std::cout << std::endl;
     
     return vec_comm;
 }
@@ -167,7 +172,7 @@ std::string Interpreter::interpretCommand(std::string command){
         std::cerr << BOLDRED << "Error unknown command: " << token_command.at(0).getValue() << RESET << std::endl;
     }
 
-    return "ERROR HAS OCCURED ON: " + token_command.at(0).getValue() + "\n";
+    return "ERROR: on command: " + token_command.at(0).getValue();
 }
 
 std::string Interpreter::callCreateCommand(std::vector<Token> command){
@@ -285,14 +290,12 @@ std::string Interpreter::callSelectCommand(std::vector<Token> command){
     std::vector<std::pair<std::string, std::string>> order_column_and_type;
 
     if(command.at(i).getValue() != "SELECT"){
-        std::cerr << BOLDRED<< "Error: unknown command." << RESET << std::endl;
-        return "ERROR\n";
+        return "ERROR: command " + command.at(i).getValue() + " is unknown";
     }
     ++i;
 
     if(command.at(i).getValue() != "FROM"){
-        std::cerr << BOLDRED<< "Error: unknown command." << RESET << std::endl;
-        return "ERROR\n";
+        return "ERROR: command " + command.at(i).getValue() + " is unknown";;
     }
     ++i;
 
@@ -301,7 +304,7 @@ std::string Interpreter::callSelectCommand(std::vector<Token> command){
         ++i;
     }else{
         std::cerr << BOLDRED<< "Error: unknown variable type." << RESET << std::endl;
-        return "ERROR\n";
+        return "ERROR: variable type " + command.at(i).getType() + " is unknown.";
     }
 
     if(command.at(i).getValue() == "WHERE"){

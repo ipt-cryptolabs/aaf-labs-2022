@@ -4,39 +4,28 @@
 ///////////////////////////////// Database ////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-Database::Database(){}
+Database::Database(){
+    tables = new std::map<std::string, Table>;
+}
 
 std::string Database::createTable(std::string table_name,
                                   std::vector<std::string> columns,
                                   std::vector<std::string> indexed_columns){
-    std::string answ = "Created table ";
-
-    answ += table_name + "\nWith columns: ";
-
-    for(int i = 0; i < columns.size(); ++i){
-        answ += columns.at(i) + " ";
+    if (tables->find(table_name) != tables->end()) {
+        return "ERROR: table with name: " + table_name + " is exist.";
     }
-    answ += "\nAnd with indexed columns: ";
 
-    for(int i = 0; i < indexed_columns.size(); ++i){
-        answ += indexed_columns.at(i) + " ";
-    }
-    answ += "\n";
+    tables->insert({table_name, Table(columns, indexed_columns)});
 
-    return answ;
+    return "Table " + table_name + " created successfully.";
 }
 
 std::string Database::insert(std::string table_name, std::vector<std::string> values){
-    std::string answ = "Inserted in ";
-
-    answ += table_name + "\nValues: ";
-
-    for(int i = 0; i < values.size(); ++i){
-        answ += values.at(i) + " ";
+    if (tables->find(table_name) == tables->end()) {
+        return "ERROR: table with name: " + table_name + " is not found.";
     }
-    answ += "\n";
-
-    return answ;
+    
+    return tables->at(table_name).insert(values);
 }
 
 std::string Database::select(std::string table_name,
@@ -44,23 +33,29 @@ std::string Database::select(std::string table_name,
                    std::string condition,
                    std::string r_value,
                    std::vector<std::pair<std::string, std::string>> order_column_and_type){
-    std::string answ = "Selected in ";
-
-    answ += table_name + "\nWhere: ";
-
-    answ += l_value + " " + condition + " " + r_value + "\nOrdering by: ";
-
-    for(auto elem: order_column_and_type){
-        answ += elem.first + ":" + elem.second + " ";
+    if (tables->find(table_name) == tables->end()) {
+        return "ERROR: table with name: " + table_name + " is not found.";
     }
-    answ += "\n";
 
-    return answ;
+    if(l_value == "" && condition == "" && r_value == "" && order_column_and_type.size() == 0){
+        return tables->at(table_name).select();
+    }
+
+    if(l_value == "" && condition == "" && r_value == "" && order_column_and_type.size() != 0){
+        return tables->at(table_name).select(order_column_and_type);
+    }
+
+    if(l_value != "" && condition != "" && r_value != "" && order_column_and_type.size() == 0){
+        return tables->at(table_name).select(l_value, condition, r_value);
+    }
+    
+    return tables->at(table_name).select(l_value, condition, r_value, order_column_and_type);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// less_than_key //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+// class for sort algorithm
 
 less_than_key::less_than_key(std::vector<std::string> columns,
                 std::vector<std::pair<std::string, std::string>> order_column_and_type):
