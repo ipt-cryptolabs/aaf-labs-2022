@@ -12,6 +12,7 @@ def make_normal(line):
         line_wo_spaces = re.sub("\(\s+", "(", line_wo_spaces)
         line_wo_spaces = re.sub("\s*,\s*", ", ", line_wo_spaces)
         line_wo_spaces = re.sub("\s+\)", ")", line_wo_spaces)
+        line_wo_spaces = re.sub(",\s*\)", ", )", line_wo_spaces)
 
         for i in range(start, len(line_wo_spaces)):
 
@@ -19,7 +20,8 @@ def make_normal(line):
 
                 is_found = True
                 if line_wo_spaces[i - 1] == " ":
-                    line_wo_spaces = line_wo_spaces[0:i - 1] + ";"
+                    i -= 1
+                line_wo_spaces = line_wo_spaces[0:i] + ";"
                 break
 
         if is_found is True:
@@ -48,7 +50,7 @@ def parse(line):
                     if command[1].lower() == "into":
                         command = [command[0] + command[1]] + command[2:]
                     if not re.match("[a-zA-Z]", command[1]):
-                        return "Error: keyword names have to start with letter, not number."
+                        return "Error: table names have to start with letter."
                     args = line[j + 1:-1].split(", ")
                     for k in range(0, len(args)):
                         if args[k] == "" or len(re.findall("\"", args[k])) != 2:
@@ -71,12 +73,14 @@ def parse(line):
                     if len(line[0:j-1].split(" ")) != 2:
                         return "Error: command includes no or too many arguments in name section."
                     command = line[0:j-1].split(" ")
+                    if not re.match("[a-zA-Z]", command[1][0]):
+                        return "Error: table names have to start with letter."
                     args = line[j+1:-1].split(", ")
                     for k in range(0, len(args)):
                         if args[k] == "":
                             return "Error: invalid syntax in argument section."
-                        elif not re.match("[a-zA-Z]", args[k]):
-                            return "Error: keyword names have to start with letter, not number."
+                        elif not re.match("[a-zA-Z]", args[k][0]):
+                            return "Error: column names have to start with letter."
 
                     return command + args
 
@@ -113,10 +117,10 @@ def parse(line):
                 return command
             else:
                 command = line.split(" ")
-                command = [command[0] + command[1]] + [command[2:]]
+                command = [command[0] + command[1]] + command[2:]
                 return command
 
         else:
             return "Error: table name is not given correctly."
     else:
-        print("Error: unknown command.")
+        return "Error: unknown command."
