@@ -27,4 +27,4 @@ hs_err_pid*
 # IntellijIdea files
 *.iml
 .idea/
-# out ??thinking??
+out/

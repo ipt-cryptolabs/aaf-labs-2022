@@ -1,9 +1,6 @@
-package src.main.Parser;
+package Skovron_FI04_Ghilevsky_FI_03.main.Parser;
 
-import src.main.Parser.QueryAsk.Create;
-import src.main.Parser.QueryAsk.Insert;
-import src.main.Parser.QueryAsk.SQLCommand;
-import src.main.Parser.QueryAsk.Select;
+import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.*;
 
 public class Parser {
 
@@ -31,12 +28,12 @@ public class Parser {
         primeCommand = sqlQueryArray[0].toUpperCase();
     }
 
-    public SQLCommand createSQLCommand() throws Exception { // processing
+    public SQLCommand createSQLCommand() throws Exception { // lexical analysis
         return switch (primeCommand) {
-            case CREATE -> new Create();
-            case INSERT -> new Insert();
-            case SELECT -> new Select();
-            default -> throw new Exception();
+            case CREATE -> new Create(sqlQuery);
+            case INSERT -> new Insert(sqlQuery);
+            case SELECT -> new Select(sqlQuery);
+            default -> throw new Exception("Invalid SQL syntax (Error 1)");
         };
     }
 

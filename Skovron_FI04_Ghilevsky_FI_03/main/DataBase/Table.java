@@ -1,4 +1,4 @@
-package src.main.DataBase;
+package Skovron_FI04_Ghilevsky_FI_03.main.DataBase;
 
 import java.util.ArrayList;
 
@@ -42,7 +42,16 @@ public class Table {
         return strArray;
     }
 
-    public void selectAll() { // demo
+    public ArrayList<Row> getRowArrayList(){
+        return rowArrayList;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    @Deprecated
+    public void selectAllAndPrint() { // demo
         String[][] arr = new String[rowArrayList.size() + 1][rowsName.length];
         String[] new_rowsName = new String[rowsName.length + 1];
 
@@ -59,6 +68,7 @@ public class Table {
         printTable(arr);
     }
 
+    @Deprecated
     private static void printTable(String[][] table) {
         int maxColumns = 0;
         for (String[] strings : table) {
