@@ -2,10 +2,8 @@ package Skovron_FI04_Ghilevsky_FI_03.main.Controller;
 
 import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.Table;
 import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Parser;
-import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Create;
-import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Insert;
-import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.SQLCommand;
-import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Select;
+import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.*;
+
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -39,8 +37,10 @@ public class View {
                 Table table = new Table(
                         sqlCommand.getTableName(),
                         ((Create) sqlCommand).getNameOfColum());
-                // + перевірка чи існує вже таблиця
-                tables.add(table);
+
+                if(!isTableExist(sqlCommand.getTableName())){
+                    tables.add(table);
+                }
             }else if(sqlCommand instanceof Insert){
                 String name = sqlCommand.getTableName();
                 Table table;
@@ -54,7 +54,13 @@ public class View {
                     throw new NoSuchElementException("No such table (Error Insert)");
                 }
             }else if(sqlCommand instanceof Select){
-                System.out.println("Select");
+                String name = sqlCommand.getTableName();
+
+                if(isTableExist(name)){
+                    // doSelect();
+                }else{
+                    throw new NoSuchElementException("No such table (Error Insert)");
+                }
             }else {
                 System.out.println("Error");
             }
