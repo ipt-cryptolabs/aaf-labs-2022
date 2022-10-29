@@ -1,5 +1,6 @@
-package Skovron_FI04_Ghilevsky_FI_03.main.Controller;
+package Skovron_FI04_Ghilevsky_FI_03.main;
 
+import Skovron_FI04_Ghilevsky_FI_03.main.Controller.View;
 import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.Row;
 import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.Table;
 
@@ -23,7 +24,7 @@ public class Main {
     public static void main(String[] args) {
         View app = new View();
 
-        app.run(); // still working on arch
+        // app.run(); // still working on
         demo();
     }
 

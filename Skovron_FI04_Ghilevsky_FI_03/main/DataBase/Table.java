@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Table {
 
     private final String tableName;
-    private String[] rowsName;
-    private ArrayList<Row> rowArrayList = new ArrayList();
+    private final String[] rowsName;
+    private final ArrayList<Row> rowArrayList = new ArrayList<>();
 
     public Table(String tableName, String... rowsName){
         this.tableName = tableName;
@@ -50,7 +50,6 @@ public class Table {
         return tableName;
     }
 
-    @Deprecated
     public void selectAllAndPrint() { // demo
         String[][] arr = new String[rowArrayList.size() + 1][rowsName.length];
         String[] new_rowsName = new String[rowsName.length + 1];

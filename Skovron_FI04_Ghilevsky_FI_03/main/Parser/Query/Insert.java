@@ -13,9 +13,21 @@ public class Insert implements SQLCommand{
     public String getTableName() throws IllegalArgumentException {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * if smth wrong return -1;
+     * @return number of rows
+     */
     public int getNumberOfRows(){
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * check sql data and wrap to Row type
+     * if smth wrong throw, text message
+     * @return ArrayList<Row> in sql order
+     * @throws IllegalArgumentException
+     */
     public ArrayList<Row> getRows() throws IllegalArgumentException { // треба ще подумати
         throw new UnsupportedOperationException();
     }
