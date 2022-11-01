@@ -18,12 +18,12 @@ func TestCreate(t *testing.T) {
 	}
 }
 func TestInsert(t *testing.T) {
-	s := "insert s1 {1, 2, 3};"
+	s := "insert s1 {-1234, 2, 345};"
 	regexps := CompileRegexps()
 	want := make(map[string]string)
 	want["command"] = "insert"
 	want["collection_name"] = "s1"
-	want["values"] = "1 2 3"
+	want["values"] = "-1234 2 345"
 	got := Parse(s, regexps)
 
 	if !reflect.DeepEqual(got, want) {
@@ -43,12 +43,12 @@ func TestPrint_index(t *testing.T) {
 	}
 }
 func TestContains(t *testing.T) {
-	s := "contains s1 {1, 2, 3};"
+	s := "contains s1 {1, 2234, -343};"
 	regexps := CompileRegexps()
 	want := make(map[string]string)
 	want["command"] = "contains"
 	want["collection_name"] = "s1"
-	want["values"] = "1 2 3"
+	want["values"] = "1 2234 -343"
 	got := Parse(s, regexps)
 
 	if !reflect.DeepEqual(got, want) {

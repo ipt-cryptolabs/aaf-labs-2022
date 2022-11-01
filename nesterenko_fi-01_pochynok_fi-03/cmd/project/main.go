@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nochzato/set-invin/internal/parser"
+	"github.com/nochzato/set-invin/nesterenko_fi-01_pochynok_fi-03/internal/parser"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 	//reading terminal
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		s, _ := reader.ReadString('\n')
+		s, _ := reader.ReadString(';')
 		o := parser.Parse(s, regexps)
 		fmt.Println(o)
 	}
