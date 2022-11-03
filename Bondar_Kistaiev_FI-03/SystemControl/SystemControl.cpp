@@ -31,7 +31,7 @@ int SystemControl::start()
         word = input_handler;
         std::transform(word.begin(), word.end(), word.begin(), [](char c) { return std::tolower(c); });
 
-        if (word == "exit ;")
+        if (word == "exit;")
             return 1;
 
         DBCommand::Node* executable = Parser::parse_command(input_handler);

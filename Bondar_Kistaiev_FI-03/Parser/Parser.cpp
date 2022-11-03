@@ -17,7 +17,7 @@ bool Parser::is_delim(char c)
 {
     bool is_delim = false;
     for (char d : delims)
-            is_delim = is_delim || (c == d);
+        is_delim = is_delim || (c == d);
         
     return is_delim;
 }
