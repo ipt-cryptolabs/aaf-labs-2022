@@ -1,4 +1,4 @@
-#include "SystemControl\\SystemControl.hpp"
+#include "SystemControl/SystemControl.hpp"
 
 int main()
 {

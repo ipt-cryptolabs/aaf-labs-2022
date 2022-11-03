@@ -1,7 +1,7 @@
 #include "SystemControl.hpp"
-#include "..\\Parser\\Parser.hpp"
-#include "..\\DataBase\\DataBase.hpp"
-#include "..\\Node\\Node.hpp"
+#include "../Parser/Parser.hpp"
+#include "../DataBase/DataBase.hpp"
+#include "../Node/Node.hpp"
 
 // Temporary libs
 #include <iostream>

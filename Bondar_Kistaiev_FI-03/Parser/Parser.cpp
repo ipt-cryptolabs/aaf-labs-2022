@@ -1,5 +1,5 @@
 #include "Parser.hpp"
-#include "..\\Node\\Node.hpp"
+#include "../Node/Node.hpp"
 
 #include <sstream>
 #include <vector>

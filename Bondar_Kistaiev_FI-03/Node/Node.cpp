@@ -1,5 +1,5 @@
 #include "Node.hpp"
-#include "..\\DataBase\\DataBase.hpp"
+#include "../DataBase/DataBase.hpp"
 
 query_result DBCommand::NodeJOIN::exec(DataBase* db)
 {
