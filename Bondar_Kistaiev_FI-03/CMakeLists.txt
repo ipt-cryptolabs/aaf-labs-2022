@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 #Alias
-set(This Lab_AAF_Bondar)
+set(This Lab_AAF_Bondar_Kistaiev)
 
 #Set language
 project(${This} LANGUAGES CXX)
