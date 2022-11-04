@@ -1,0 +1,16 @@
+{
+  "name": "aaf_lab",
+  "version": "1.0.0",
+  "description": "AAF LAB Yegorov FI-03 Kobets FI-03",
+  "main": "parser.js",
+  "scripts": {
+    "start": "node parser.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --watch './log' --exec npm start"
+  },
+  "author": "Yegorov FI-03, Kobets FI-03",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
