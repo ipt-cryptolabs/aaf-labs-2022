@@ -11,7 +11,6 @@ import static java.lang.Integer.parseInt;
 public class Main {
     public static void demo() {
         Table table = new Table("student_info", "age", "avg_mark", "height");
-        table.createTable();
 
         Random random = new Random();
         for(int i = 0; i < 10; i ++){
@@ -25,8 +24,16 @@ public class Main {
 
     public static void main(String[] args) {
         View app = new View();
-        app.run(); // still working on
-        //demo();
+
+        app.run();
+        // demo();
     }
+
+    /*
+
+     create student (age, weight);
+     insert student (1, 2);
+
+     */
 
 }

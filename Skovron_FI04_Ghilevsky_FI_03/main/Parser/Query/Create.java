@@ -3,18 +3,18 @@ package Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query;
 import java.util.Arrays;
 
 public class Create implements SQLCommand {
-    private String TableName;
-    private String[] NameOfColumn;
+    private final String TableName;
+    private final String[] NameOfColumn;
+
     public Create(String sql){
         String[] sql_ = sql.replaceAll("\\W+"," ").split(" ");
         TableName = sql_[1];
         NameOfColumn = Arrays.copyOfRange(sql_, 2, sql_.length);
-        System.out.println("Table " + TableName + " has been created.");
     }
     @Override
     public String getTableName() throws IllegalArgumentException {
-        if(TableName == null || TableName == "") {
-            throw new UnsupportedOperationException("Error: Empty table name");} // ??
+        if(TableName == null || TableName.equals("")) {
+            throw new IllegalArgumentException("Error: Empty table name");} // ??
         return TableName;
     }
 
@@ -25,7 +25,7 @@ public class Create implements SQLCommand {
      */
     public String[] getNameOfColum() throws IllegalArgumentException {
         if(NameOfColumn == null) {
-            throw new UnsupportedOperationException("Error: Empty Column name");} // ??
+            throw new IllegalArgumentException("Error: Empty Column name");} // ??
         return NameOfColumn;
     }
 }

@@ -18,11 +18,22 @@ public class View {
 
     public void run() {
 
-        while (true) { // !!!!
+        while (true) {
             Parser parser = new Parser(readQueryFromConsole());
             action(parser);
+
+            System.out.println();
         }
 
+        /* temp below
+        for (int i = 0; i < 3; i++) {
+            System.out.println(i);
+            Parser parser = new Parser(readQueryFromConsole());
+            action(parser);
+
+            System.out.println();
+         }
+        */
     }
 
     private void action(Parser parser) {
@@ -45,9 +56,7 @@ public class View {
 
                 if(isTableExist(name)){
                     table = findTable(name);
-                    table.rowsInsert(
-                            ((Insert) sqlCommand).getNumberOfRows(),
-                            ((Insert) sqlCommand).getRows());
+                    table.rowInsert(((Insert) sqlCommand).getRow());
                 }else{
                     throw new NoSuchElementException("No such table (Error Insert)");
                 }
@@ -70,6 +79,7 @@ public class View {
             System.out.println(e);
         }
     }
+
     private String readQueryFromConsole(){
         Scanner scanner = new Scanner(System.in);
         StringBuilder query = new StringBuilder();
@@ -80,7 +90,6 @@ public class View {
                 break;
         }
 
-        scanner.close();
         return query.toString();
     }
 

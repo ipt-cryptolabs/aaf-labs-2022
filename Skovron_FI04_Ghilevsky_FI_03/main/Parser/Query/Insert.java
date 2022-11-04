@@ -4,35 +4,26 @@ import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.Row;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
 public class Insert implements SQLCommand{
 
-    private String TableName;
-    private int NumberOfRows;
+    private final String TableName;
     private String[] Rows;
 
     public Insert(String sql){
         String[] sql_ = sql.replaceAll("\\W+"," ").split(" ");
         TableName = sql_[1];
-        NumberOfRows = parseInt(sql_[2]);
         Rows = Arrays.copyOfRange(sql_, 3, sql_.length);
     }
     @Override
     public String getTableName() throws IllegalArgumentException {
-        if(TableName == null || TableName == "") {
-            throw new UnsupportedOperationException("Error: Empty table name");} //??
-        return TableName;
-    }
+        if(TableName == null || TableName.equals("")) {
+            throw new IllegalArgumentException("Error: Empty table name");} //??
 
-    /**
-     * if smth wrong return -1;
-     * @return number of rows
-     */
-    public int getNumberOfRows(){
-        //throw new UnsupportedOperationException();
-        return NumberOfRows;
+        return TableName;
     }
 
     /**
@@ -41,14 +32,17 @@ public class Insert implements SQLCommand{
      * @return ArrayList<Row> in sql order
      * @throws IllegalArgumentException
      */
-    public ArrayList<Row> getRows() throws IllegalArgumentException { // треба ще подумати
-
+    @Deprecated
+    public ArrayList<Row> getRows() throws IllegalArgumentException {
         int[] IntRows = new int[Rows.length];
+
         for(int i = 0; i < Rows.length; i++){
             IntRows[i] = parseInt(Rows[i]);
         }
-        //throw new UnsupportedOperationException();
-        ArrayList<Row> Rows_ = new ArrayList<>(Arrays.asList(new Row(IntRows)));
-        return Rows_;
+        return new ArrayList<>(List.of(new Row(IntRows)));
+    }
+
+    public Row getRow() throws IllegalArgumentException{
+        throw new UnsupportedOperationException();
     }
 }

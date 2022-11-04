@@ -11,17 +11,15 @@ public class Table {
     public Table(String tableName, String... rowsName){
         this.tableName = tableName;
         this.rowsName = rowsName;
-    }
 
-    public Table createTable(){
-        System.out.println(tableName + " has been created\n");
-        return new Table(tableName, rowsName);
+        System.out.println("table " + tableName + " has been created");
     }
 
     public void rowInsert(Row row){
         rowArrayList.add(row);
     }
 
+    @Deprecated
     public void rowsInsert(int num, ArrayList<Row> rows){
         for(int i = 0; i < num; i++){
             rowInsert(rows.get(i));
