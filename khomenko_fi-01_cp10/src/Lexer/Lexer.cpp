@@ -11,64 +11,55 @@ Token *Lexer::GetNextToken() {
                 res_string += current_char_;
                 Advance();
             }
-
-            std::cmatch result;
+            std::string lower_str = MakeLower(res_string);
 
             // CREATE
-            std::regex create_reg("[Cc][Rr][Ee][Aa][Tt][Ee]");
-            if(std::regex_match(res_string.c_str(), result, create_reg)){
+            if(lower_str == "create"){
                 return new Token(kCreate, "Create");
             }
 
             // INSERT
-            std::regex insert_reg("[Ii][Nn][Ss][Ee][Rr][Tt]");
-            if(std::regex_match(res_string.c_str(), result, insert_reg)){
+            if(lower_str == "insert"){
                 return new Token(kInsert, "Insert");
             }
 
             // PRINT_TREE
-            std::regex print_reg("[Pp][Rr][Ii][Nn][Tt]_[Tt][Rr][Ee][Ee]");
-            if(std::regex_match(res_string.c_str(), result, print_reg)){
+            if(lower_str == "print_tree"){
                 return new Token(kPrintTree, "PrintTree");
             }
 
             // CONTAINS
-            std::regex contains_reg("[Cc][Oo][Nn][Tt][Aa][Ii][Nn][Ss]");
-            if(std::regex_match(res_string.c_str(), result, contains_reg)){
+            if(lower_str == "contains"){
                 return new Token(kContains, "Contains");
             }
 
             // SEARCH
-            std::regex search_reg("[Ss][Ee][Aa][Rr][Cc][Hh]");
-            if(std::regex_match(res_string.c_str(), result, search_reg)){
+            if(lower_str == "search"){
                 return new Token(kSearch, "Search");
             }
 
             // WHERE
-            std::regex where_reg("[Ww][Hh][Ee][Rr][Ee]");
-            if(std::regex_match(res_string.c_str(), result, where_reg)){
+            if(lower_str == "where"){
                 return new Token(kWhere, "Where");
             }
 
             // INSIDE
-            std::regex inside_reg("[Ii][Nn][Ss][Ii][Dd][Ee]");
-            if(std::regex_match(res_string.c_str(), result, inside_reg)){
+            if(lower_str == "inside"){
                 return new Token(kInside, "Inside");
             }
 
             // LEFT_OF
-            std::regex left_of_reg("[Ll][Ee][Ff][Tt]_[Oo][Ff]");
-            if(std::regex_match(res_string.c_str(), result, left_of_reg)){
+            if(lower_str == "left_of"){
                 return new Token(kLeftOf, "LeftOf");
             }
 
             // NN
-            std::regex nn_reg("[Nn][Nn]");
-            if(std::regex_match(res_string.c_str(), result, nn_reg)){
+            if(lower_str == "nn"){
                 return new Token(kNN, "NN");
             }
 
             // set_name
+            std::cmatch result;
             std::regex set_name_reg("[a-zA-Z][a-zA-Z0-9_]*");
             if(std::regex_match(res_string.c_str(), result, set_name_reg)){
                 return new Token(kSetName, res_string);
@@ -99,8 +90,8 @@ Token *Lexer::GetNextToken() {
             PointError();
         }
 
-        if(isdigit(current_char_)){
-            // Probably integer
+        if(current_char_ == '-' || isdigit(current_char_)){
+            //probably Integer
             return new Token(kInteger, std::to_string(Integer()));
         }
 
@@ -125,12 +116,22 @@ Token *Lexer::GetNextToken() {
 }
 
 int Lexer::Integer() {
-    // Return a (multidigit) integer consumed from the input
+    // Return a (multidigit) integer(str) consumed from the input
+    bool negative = false;
+
     std::string res_string;
+    if(current_char_ == '-'){
+        negative = true;
+        Advance();
+    }
 
     while(current_char_ != '\0' && isdigit(current_char_)){
         res_string += current_char_;
         Advance();
+    }
+
+    if(negative){
+        return -std::stoi(res_string);
     }
     return std::stoi(res_string);
 }
@@ -153,7 +154,12 @@ void Lexer::Advance() {
     }
 }
 
-std::string Lexer::ClearWhitespaceCharacters(std::string str) {
+bool Lexer::IsWhitespaceCharacter(char el) {
+    std::vector<char> kWhitespaceCharacters = {' ', '\t', '\r', '\n'};
+    return std::find(kWhitespaceCharacters.begin(), kWhitespaceCharacters.end(),el) !=kWhitespaceCharacters.end();
+}
+
+std::string Lexer::ClearWhitespaceCharacters(const std::string& str) {
     std::string res_str;
     for(auto el:str){
         if(!IsWhitespaceCharacter(el)){
@@ -163,4 +169,8 @@ std::string Lexer::ClearWhitespaceCharacters(std::string str) {
     return res_str;
 }
 
-
+std::string Lexer::MakeLower(std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    return str;
+}

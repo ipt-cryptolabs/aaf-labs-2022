@@ -19,18 +19,17 @@ private:
     std::string text_;
     int pos_;
     char current_char_;
-    std::vector<char> kWhitespaceCharacters = {' ', '\t', '\r', '\n'};
-
 
     int Integer();
     void Skip();
     void Advance();
 
-    bool IsWhitespaceCharacter(char el){
-        return std::find(kWhitespaceCharacters.begin(), kWhitespaceCharacters.end(),el) != kWhitespaceCharacters.end();
-    }
-    std::string ClearWhitespaceCharacters(std::string str);
+    // Utils
+    static bool IsWhitespaceCharacter(char el);
+    static std::string ClearWhitespaceCharacters(const std::string& str);
+    static std::string MakeLower(std::string str);
 
+    // Errors
     static void Error(){
         throw Exception("Invalid character!");
     }
