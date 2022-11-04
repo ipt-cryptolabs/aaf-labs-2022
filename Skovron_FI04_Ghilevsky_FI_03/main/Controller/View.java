@@ -18,7 +18,7 @@ public class View {
 
     public void run() {
 
-        while (true) {
+        while (true) { // !!!!
             Parser parser = new Parser(readQueryFromConsole());
             action(parser);
         }
@@ -71,12 +71,10 @@ public class View {
         }
     }
     private String readQueryFromConsole(){
-
         Scanner scanner = new Scanner(System.in);
         StringBuilder query = new StringBuilder();
-
         while (scanner.hasNextLine()) {
-            query.append(" ").append(scanner.nextLine());
+            query.append(" ").append(scanner.nextLine()); // !!!
 
             if (Objects.equals(query.substring(query.length() - 1), ";"))
                 break;
