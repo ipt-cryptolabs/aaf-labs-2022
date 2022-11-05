@@ -19,7 +19,8 @@ Tree::Node::~Node()
     delete letter;//todo delete only that exist, just see that element dont equal null
     for(int i = 0; i < 95; ++i)
     {
-        delete childrens[i];
+        if(childrens[i] != nullptr)
+            delete childrens[i];
     }
 }
 
