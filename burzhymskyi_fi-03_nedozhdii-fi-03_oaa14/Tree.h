@@ -16,7 +16,7 @@ public:
 
         bool endWord;//show that some of substring is string;
         int countChildrens = 0;
-        Node *childrens[94];
+        Node *childrens[95];
         Node();
         Node(const char&);
         void print( std::string prefix, std::string childrenPrefix);

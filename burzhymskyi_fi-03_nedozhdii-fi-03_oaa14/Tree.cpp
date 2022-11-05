@@ -8,7 +8,7 @@ Tree::Node::Node() : letter(nullptr) , endWord(false)
 Tree::Node::Node(const char& letter) : endWord(false)
 {
     this->letter = new char(letter);
-    for(int i = 0; i < 94;++i)
+    for(int i = 0; i < 95;++i)
     {
         childrens[i] = new Node;
     }
@@ -17,7 +17,7 @@ Tree::Node::Node(const char& letter) : endWord(false)
 Tree::Node::~Node()
 {
     delete letter;//todo delete only that exist, just see that element dont equal null
-    for(int i = 0; i < 94; ++i)
+    for(int i = 0; i < 95; ++i)
     {
         delete childrens[i];
     }
@@ -46,9 +46,9 @@ void Tree::insert(std::string letter)
 
     for(int i = 0; i < letter.size(); ++i)
     {
-        if(letter[i] == ' ' || letter[i] > '~')
+        if(letter[i] < ' ' || letter[i] > '~')
             throw "ERROR INCORECT INPUT";
-        int indexNextNode = letter[i] - 33;// letter[i] - '!' = index in exist
+        int indexNextNode = letter[i] - 32;// letter[i] - '!' = index in exist
 
         if(cur->childrens[indexNextNode] == nullptr)
         {
@@ -72,7 +72,7 @@ bool Tree::contains(std::string word)
     Node* cur = root;
     for(int i = 0; i < word.size(); ++i)
     {
-        int indexNextNode = word[i] - 33;// letter[i] - '!' = index in exist
+        int indexNextNode = word[i] - 32;
         if(cur->childrens[indexNextNode] == nullptr)
         {
             return false;
@@ -97,7 +97,7 @@ void Tree::searchTree(Node* cur ,std::string& stringBuilder)
         std::cout<<stringBuilder<<' ';
     if(cur->countChildrens > 0)
     {
-        for(int i = 0; i < 94; ++i)
+        for(int i = 0; i < 95; ++i)
         {
             if(cur->childrens[i] != nullptr)
             {
@@ -115,10 +115,7 @@ void Tree::searchTree(Node* cur ,std::string& stringBuilder)
             }
         }
     }
-    if(cur == root)
-    {
-        std::cout<<'\n';
-    }
+
 
 }
 
@@ -128,7 +125,7 @@ void Tree::Node::print(std::string prefix, std::string childrenPrefix)
     std::cout<<prefix;
     if(letter!= nullptr)
         std::cout<<letter<<'\n';
-    for(int i = 0; i < 94; ++i)
+    for(int i = 0; i < 95; ++i)
     {
         if(childrens[i]!=nullptr && tmpCountChildren > 1 )
         {

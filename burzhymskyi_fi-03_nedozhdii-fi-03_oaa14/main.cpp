@@ -10,7 +10,7 @@ int main() {
 
     //a.insert("abc");//todo check in when two letters in a row
     a.insert("a");
-    a.insert("abc");
+    a.insert("ab c");
     a.insert("fm");
     a.insert("bc");
     a.insert("fmc");
