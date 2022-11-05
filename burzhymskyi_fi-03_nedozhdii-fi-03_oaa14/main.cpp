@@ -8,7 +8,7 @@ int main() {
     Tree a;
     std::string b = "fmc";
 
-    a.insert("abc");//todo check in when two letters in a row
+    //a.insert("abc");//todo check in when two letters in a row
     a.insert("a");
     a.insert("abc");
     a.insert("fm");
@@ -17,12 +17,14 @@ int main() {
     a.insert("fml");
     a.insert("fmlc");
     a.insert("fmlk");
+    a.search();
     a.insert("fmlkncd");
     a.insert("fmlknfd");
     a.insert("ghj");
     a.printTree();
+    a.search();
     a.insert("gmj");
-//    std::cout<<a.search(nullptr,0, nullptr,"");
+    a.search();
     a.printTree();
 
 

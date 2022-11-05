@@ -12,14 +12,13 @@ public:
     class Node
     {
     public:
-        bool exist[94];//symbols from ! to ~ in ASCII, ! =33
         char *letter = nullptr;
-        bool endBranch;
+
         bool endWord;//show that some of substring is string;
         int countChildrens = 0;
         Node *childrens[94];
         Node();
-        Node(const char&, const bool&);
+        Node(const char&);
         void print( std::string prefix, std::string childrenPrefix);
         ~Node();
     };
@@ -30,11 +29,12 @@ public:
 
     void insert(std::string);
     bool contains(std::string);
-    std::string search(Node* cur, int ,std::string*, std::string);
+
+    void search();
     void printTree();
     Node *root;
 private:
-
+    void searchTree(Node* cur, std::string&);
 
 };
 
