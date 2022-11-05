@@ -49,5 +49,4 @@ class table:
         for s in self.data:
             if(s[col_id] == data):
                 return int(s[0])
-        return -1
-        
+        return -1    
