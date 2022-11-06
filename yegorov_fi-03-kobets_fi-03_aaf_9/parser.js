@@ -6,8 +6,8 @@ const print_indexReg = /^PRINT_INDEX+\s+\b[a-zA-Z0-9_]+\b$/i;
 const searchReg = /^SEARCH+\s+\b[a-zA-Z0-9_]+\b$/i;
 const searchRegWhere = /^SEARCH+\s+[a-zA-Z0-9_]+\s+WHERE+\s+"+[^"]+"$/i;
 const searchWhereDashReg = /^SEARCH+\s+[a-zA-Z0-9_]+\s+WHERE+\s+"+[^"]+"+\s+-+\s+"+[^"]+"$/i;
-const searchWhereHooksReg = /^SEARCH+\s+[a-zA-Z0-9_]+\s+WHERE+\s+"+[^"]+"+\s+<+\d+>+\s+"+[^"]+"$/i;
-const hooksReg = /<+\d+>/;
+const searchWhereHooksReg = /^SEARCH+\s+[a-zA-Z0-9_]+\s+WHERE+\s+"+[^"]+"+\s+\d+\s+"+[^"]+"$/i;
+const hooksReg = /\d/;
 
 function ifValid(str){
     if(createReg.test(str))
@@ -43,12 +43,20 @@ function consoleInput() {
 const parser = input => {
     let tokens = [];
     let token = ""
+    let flagQuote = false;
     try {
         for (let i = 0; i < input.length; i++) {
-            if (input[i] === " " || input[i] === ";") {
+            if(input[i] ===  '"'){
+                flagQuote = !flagQuote
+                if(flagQuote) {
+                    token += input[i];
+                }else
+                    token += '"';
+            }
+            else if ((input[i] === " " && !flagQuote) || input[i] === ";" || input[i] === "<" || input[i] === ">") {
                 tokens.push(token);
                 token = "";
-            } else {
+            }else {
                 token += input[i];
             }
         }
@@ -85,7 +93,7 @@ const parser = input => {
 
                 let numInHooksIndex = tokens.indexOf(numInHooks);
 
-                commands.searchWhereHooks(tokens[1], tokens.slice(3,numInHooksIndex), numInHooks.slice(1, numInHooks.length-1), tokens.slice(numInHooksIndex+1, ));
+                commands.searchWhereHooks(tokens[1], tokens.slice(3,numInHooksIndex), numInHooks, tokens.slice(numInHooksIndex+1, ));
                 break;
         }
         console.log(tokens);
