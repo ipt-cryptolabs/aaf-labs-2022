@@ -5,12 +5,28 @@ import java.nio.channels.UnsupportedAddressTypeException;
 
 public class Select implements SQLCommand{
 
+    private String TableName;
+
     public Select(String sql){
+        String[] sql_ = sql.split("\\s+");
+
+        for(int i = 1; i <sql_.length; i++){
+            if(sql_[i].equalsIgnoreCase("FROM")){
+                TableName = sql_[i+1];
+            }
+        }
+
 
     }
     @Override
     public String getTableName() throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        if(TableName.equalsIgnoreCase("")
+                || TableName.equalsIgnoreCase("GROUP_BY")
+                || TableName.equalsIgnoreCase("WHERE")
+        ){
+            throw new UnsupportedOperationException("Error: Empty table name");
+        }
+        return TableName;
     }
 
     /**
