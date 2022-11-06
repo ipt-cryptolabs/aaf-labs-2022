@@ -21,19 +21,7 @@ public class View {
         while (true) {
             Parser parser = new Parser(readQueryFromConsole());
             action(parser);
-
-            System.out.println();
         }
-
-        /* temp below
-        for (int i = 0; i < 3; i++) {
-            System.out.println(i);
-            Parser parser = new Parser(readQueryFromConsole());
-            action(parser);
-
-            System.out.println();
-         }
-        */
     }
 
     private void action(Parser parser) {
@@ -47,6 +35,8 @@ public class View {
 
                 if(!isTableExist(sqlCommand.getTableName())){
                     tables.add(table);
+
+                    System.out.println("table " + sqlCommand.getTableName() + " has been created");
                 }else {
                     throw new Exception("Table already exist (Error Create)");
                 }
@@ -57,6 +47,8 @@ public class View {
                 if(isTableExist(name)){
                     table = findTable(name);
                     table.rowInsert(((Insert) sqlCommand).getRow());
+
+                    System.out.println("1 row has been insert in " + name);
                 }else{
                     throw new NoSuchElementException("No such table (Error Insert)");
                 }
@@ -76,7 +68,7 @@ public class View {
             }
 
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 

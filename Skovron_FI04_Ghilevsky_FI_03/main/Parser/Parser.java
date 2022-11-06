@@ -5,15 +5,12 @@ import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.*;
 public class Parser {
 
     private final String sqlQuery;
+    private String primeCommand;
 
     private static final String CREATE      = "CREATE";
     private static final String INSERT      = "INSERT";
     private static final String INSERT_INTO = "INSERT INTO";
     private static final String SELECT      = "SELECT";
-
-    private String primeCommand;
-    private String tableName;
-    private int[]  rows;
 
     public Parser(String sqlQuery){
         this.sqlQuery = sqlQuery.trim();
@@ -21,8 +18,7 @@ public class Parser {
         primeCommand = queryRead()[0].toUpperCase();
     }
 
-    public SQLCommand createSQLCommand() throws Exception { // lexical analysis
-        SQLCommand sqlCommand;
+    public SQLCommand createSQLCommand() throws Exception {
         primeCommand = primeCommand.toUpperCase();
 
         if(primeCommand.equals(CREATE))

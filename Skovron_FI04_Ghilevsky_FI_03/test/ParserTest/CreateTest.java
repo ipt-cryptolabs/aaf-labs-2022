@@ -46,9 +46,9 @@ public class CreateTest {
     void regularCreateCase4Test(){
         Create create = new Create("create \"student id\" (\"student age\", weight, \"student height\")");
 
-        String[] colName = new String[]{"student age", "weight", "student height"};
+        String[] colName = new String[]{"\"student age\"", "weight", "\"student height\""};
 
-        Assertions.assertEquals("student id", create.getTableName());
+        Assertions.assertEquals("\"student id\"", create.getTableName());
         Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
         Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
         Assertions.assertEquals(colName[2], create.getNameOfColum()[2]);

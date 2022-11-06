@@ -6,28 +6,20 @@ public class Table {
 
     private final String tableName;
     private final String[] rowsName;
+    private final int titleRowLength;
     private final ArrayList<Row> rowArrayList = new ArrayList<>();
 
     public Table(String tableName, String... rowsName){
         this.tableName = tableName;
         this.rowsName = rowsName;
-
-        System.out.println("table " + tableName + " has been created");
+        this.titleRowLength = rowsName.length;
     }
 
     public void rowInsert(Row row){
-        rowArrayList.add(row);
-    }
-
-    @Deprecated
-    public void rowsInsert(int num, ArrayList<Row> rows){
-        for(int i = 0; i < num; i++){
-            rowInsert(rows.get(i));
-        }
-
-        String pl =  num > 1 ? "row" : "rows";
-        String msg =  num + " " + pl + " has been inserted into " + tableName;
-        System.out.println(msg);
+        if(titleRowLength == row.getRow().length - 1)
+            rowArrayList.add(row);
+        else
+            throw new IllegalArgumentException("Error: Invalid number of insert value");
     }
 
     private String[] fromIntToString(int[] intArray){
