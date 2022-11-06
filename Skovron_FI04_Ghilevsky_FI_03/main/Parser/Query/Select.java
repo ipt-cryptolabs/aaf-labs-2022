@@ -4,16 +4,18 @@ import java.lang.annotation.Documented;
 import java.nio.channels.UnsupportedAddressTypeException;
 
 public class Select implements SQLCommand{
-
+    private boolean flag = false;
     private String TableName;
 
     public Select(String sql){
-        String[] sql_ = sql.split("\\s+");
-
+        String[] sql_ = sql.replaceAll(";", "").split("\\s+");
         for(int i = 1; i <sql_.length; i++){
             if(sql_[i].equalsIgnoreCase("FROM")){
                 TableName = sql_[i+1];
             }
+        }
+        if(sql_[0].equalsIgnoreCase("SELECT") && sql_[1].equalsIgnoreCase("FROM")){
+            flag = true;
         }
 
 
@@ -24,7 +26,7 @@ public class Select implements SQLCommand{
                 || TableName.equalsIgnoreCase("GROUP_BY")
                 || TableName.equalsIgnoreCase("WHERE")
         ){
-            throw new UnsupportedOperationException("Error: Empty table name");
+            throw new IllegalArgumentException("Error: Empty table name");
         }
         return TableName;
     }
@@ -35,7 +37,11 @@ public class Select implements SQLCommand{
      * @return is needed display whole table
      */
     public boolean isSelectAll() {
-        throw new UnsupportedOperationException();
+        if (flag){
+            flag = false;
+            return true;
+        }
+        return false;
     }
 
     /**

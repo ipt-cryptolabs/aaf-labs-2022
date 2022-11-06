@@ -11,4 +11,10 @@ public class SelectTest {
             Assertions.assertEquals("students", select.getTableName());
         }
 
+        @Test
+        void isSelectAllTest(){
+            Select select = new Select("SELECT FROM students");
+            Assertions.assertTrue(select.isSelectAll());
+        }
+
 }
