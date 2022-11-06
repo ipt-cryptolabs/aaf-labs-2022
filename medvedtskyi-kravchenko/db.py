@@ -17,13 +17,19 @@ class table:
     def print_table(self) -> None:
         print(tabulate(self.data, headers=self.columns, tablefmt='grid'))
 
+    def get_col_id(self, column: str) -> int:
+        col_id = [i for i, s in enumerate(self.columns) if s == column]
+        if col_id == []:
+            return -1
+        else:
+            return col_id[0]
+
+
 def select(t: table, column: str, data: str) -> table:
-    col_id = [i for i, s in enumerate(t.columns) if s == column]
-    if col_id == []:
-        return table("select", t.columns, [])
+    col_id = t.get_col_id(column)
+    if col_id == -1:
+        raise Exception("Column not found")
     t2 = table("select", t.columns, [])
-    for s in t.data:
-        if(s[col_id[0]] == data):
-            t2.new_row(s)
+    t2.data = [s for i, s in enumerate(t.data) if s[col_id] < data]
     return t2
     
