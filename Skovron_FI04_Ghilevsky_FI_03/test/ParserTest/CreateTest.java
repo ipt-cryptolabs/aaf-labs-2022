@@ -36,7 +36,7 @@ public class CreateTest {
 
         String[] colName = new String[]{"age", "weight", "height"};
 
-        Assertions.assertEquals("student id", create.getTableName());
+        Assertions.assertEquals("\"student id\"", create.getTableName());
         Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
         Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
         Assertions.assertEquals(colName[2], create.getNameOfColum()[2]);

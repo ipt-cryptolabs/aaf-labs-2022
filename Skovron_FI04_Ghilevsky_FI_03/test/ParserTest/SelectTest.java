@@ -27,7 +27,7 @@ public class SelectTest {
 
     @Test
     void regularSelectCase3Test(){
-        Select select = new Select("SELECT FROM");
+        Select select = new Select("SELECT FROM ");
 
         Exception exception = assertThrows(RuntimeException.class, select::getTableName);
         String expectedMessage = "Error: Empty table name (Select)"; // or

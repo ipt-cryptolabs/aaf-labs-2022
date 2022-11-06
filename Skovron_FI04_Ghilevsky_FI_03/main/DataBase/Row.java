@@ -20,8 +20,27 @@ public class Row {
         staticID++;
     }
 
+    public Row(String rowId, int... row){
+        this.rowId = Integer.parseInt(rowId);
+
+        this.row = new int[row.length + 1];
+        this.row[0] = Integer.parseInt(rowId);
+
+        System.arraycopy(row, 0, this.row, 1, row.length);
+
+        staticID++;
+    }
+
     public int[] getRow() {
         return row;
+    }
+
+    @Override
+    public String toString() {
+        return "Row{" +
+                "row=" + Arrays.toString(row) +
+                ", rowId=" + rowId +
+                '}';
     }
 
     @Override
