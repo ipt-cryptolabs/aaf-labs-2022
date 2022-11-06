@@ -1,4 +1,4 @@
-from Tokens import *
+from patterns, Token import *
 import re
 
 
