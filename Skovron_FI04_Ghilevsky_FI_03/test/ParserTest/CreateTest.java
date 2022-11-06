@@ -70,7 +70,7 @@ public class CreateTest {
     void emptyNameCreateTest(){
         Create create = new Create("create (age, weight)");
 
-        String[] colname = new String[]{"age", "weight"};
+        String[] colName = new String[]{"age", "weight"};
 
         Exception exception = assertThrows(RuntimeException.class, create::getTableName);
         String expectedMessage = "Error: Empty table name";
@@ -78,8 +78,8 @@ public class CreateTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
 
-        Assertions.assertEquals(colname[0], create.getNameOfColum()[0]);
-        Assertions.assertEquals(colname[1], create.getNameOfColum()[1]);
+        Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
+        Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
     }
 
     @Test
@@ -89,7 +89,19 @@ public class CreateTest {
         Assertions.assertEquals("student", create.getTableName());
 
         Exception exception = assertThrows(RuntimeException.class, create::getNameOfColum);
-        String expectedMessage = "Error: Empty colum name";
+        String expectedMessage = "Error: Empty Column name";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void wrongSqlQueryTest(){
+        String sqlQuery = "create t(x;";
+        Create create = new Create(sqlQuery);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> create.checkSqlQuery(sqlQuery));
+        String expectedMessage = "Error: Wrong sqlQuery";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

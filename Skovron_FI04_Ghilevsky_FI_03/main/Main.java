@@ -6,8 +6,6 @@ import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.Table;
 
 import java.util.Random;
 
-import static java.lang.Integer.parseInt;
-
 public class Main {
     public static void demo() {
         Table table = new Table("student_info", "age", "avg_mark", "height");
@@ -25,8 +23,9 @@ public class Main {
     public static void main(String[] args) {
         View app = new View();
 
-        app.run();
+        //app.run();
         // demo();
+
     }
 
     /*

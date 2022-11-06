@@ -1,20 +1,19 @@
 package Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query;
 
-import java.util.Arrays;
-
 public class Create implements SQLCommand {
     private final String TableName;
     private final String[] NameOfColumn;
 
-    public Create(String sql){
-        String[] sql_ = sql.replaceAll("\\W+"," ").split(" ");
-        TableName = sql_[1];
-        NameOfColumn = Arrays.copyOfRange(sql_, 2, sql_.length);
+    public Create(String sql) throws IllegalArgumentException{
+        checkSqlQuery(sql);
+        TableName = sql.substring(7, sql.indexOf("(")).trim();
+        String StrNameOfColumn = sql.substring(sql.indexOf("(")+1, sql.indexOf(")"));
+        NameOfColumn = StrNameOfColumn.replaceAll("\\W+"," ").split(" ");
     }
     @Override
     public String getTableName() throws IllegalArgumentException {
         if(TableName == null || TableName.equals("")) {
-            throw new IllegalArgumentException("Error: Empty table name");} // ??
+            throw new IllegalArgumentException("Error: Empty table name");}
         return TableName;
     }
 
@@ -24,8 +23,20 @@ public class Create implements SQLCommand {
      * @throws IllegalArgumentException
      */
     public String[] getNameOfColum() throws IllegalArgumentException {
-        if(NameOfColumn == null) {
-            throw new IllegalArgumentException("Error: Empty Column name");} // ??
+        for (String i: NameOfColumn
+             ) {
+            if(i == null || i.equals("")){
+                throw new IllegalArgumentException("Error: Empty Column name");
+            }
+        }
         return NameOfColumn;
     }
+
+
+    public void checkSqlQuery(String sql) throws IllegalArgumentException { //доделать
+        if(!sql.replaceAll("[^()]", "").equals("()")){
+            throw new IllegalArgumentException("Error: Wrong sqlQuery");
+        }
+    }
+
 }
