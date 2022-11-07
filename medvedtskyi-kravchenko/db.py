@@ -4,10 +4,7 @@ class table:
     
     def __init__(self, table_name: str, table_columns: list, table_params: list) -> None:
         self.name = table_name
-        cols = []
-        for i in table_columns:
-            cols.append(i)
-        self.columns = cols
+        self.columns = table_columns
         self.column_params = table_params
         self.data = []
     
@@ -30,6 +27,6 @@ def select(t: table, column: str, data: str) -> table:
     if col_id == -1:
         raise Exception("Column not found")
     t2 = table("select", t.columns, [])
-    t2.data = [s for i, s in enumerate(t.data) if s[col_id] < data]
+    t2.data = [s for i, s in enumerate(t.data) if s[col_id] > data]
     return t2
     
