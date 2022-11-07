@@ -1,8 +1,9 @@
 import parser1
 from Table import Table
+from database import DataBase
 
 if __name__ == "__main__":
-    database = {}
+    dataBase = DataBase()
     command = None
     line = ' '
     print('Enter:')
@@ -13,11 +14,11 @@ if __name__ == "__main__":
         else:
             command = parser1.parse(line)
             if command[0] == 'CREATE':
-                Table.create(command, database)
+                dataBase.append_table(command)
             elif command[0] == 'INSERT':
-                Table.insert(command, database)
+                dataBase.tables[command[1]].insert(command[2])
             elif command[0] == 'SELECT':
-                Table.select(command, database)
+                dataBase.select(command)
             else:
                 print(command)
             print('Enter:')
