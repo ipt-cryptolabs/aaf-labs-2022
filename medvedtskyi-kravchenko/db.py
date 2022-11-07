@@ -27,6 +27,6 @@ def select(t: table, column: str, data: str) -> table:
     if col_id == -1:
         raise Exception("Column not found")
     t2 = table("select", t.columns, [])
-    t2.data = [s for i, s in enumerate(t.data) if s[col_id] > data]
+    t2.data = [s for i, s in enumerate(t.data) if s[col_id] < data]
     return t2
     
