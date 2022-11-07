@@ -7,32 +7,21 @@ public class Row {
 
     private final int[] row;
     private static int staticID = 0;
-    private int rowId;
+    private final int rowId;
 
     public Row(int... row){
         rowId = staticID;
-
-        this.row = new int[row.length + 1];
-        this.row[0] = rowId;
-
-        System.arraycopy(row, 0, this.row, 1, row.length);
-
         staticID++;
-    }
 
-    public Row(String rowId, int... row){
-        this.rowId = Integer.parseInt(rowId);
-
-        this.row = new int[row.length + 1];
-        this.row[0] = Integer.parseInt(rowId);
-
-        System.arraycopy(row, 0, this.row, 1, row.length);
-
-        staticID++;
+        this.row = row;
     }
 
     public int[] getRow() {
         return row;
+    }
+
+    public int getRowId(){
+        return rowId;
     }
 
     @Override

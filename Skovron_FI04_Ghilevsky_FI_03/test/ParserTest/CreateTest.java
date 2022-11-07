@@ -67,6 +67,16 @@ public class CreateTest {
     }
 
     @Test
+    void sameTableCreate(){
+        Create create1 = new Create("create student (age, weight, height);");
+        Create create2 = new Create("create \"student\" (age, weight, height);");
+        String[] name = {"student"};
+
+        Assertions.assertEquals(name[0], create1.getTableName());
+        Assertions.assertEquals(name[0], create2.getTableName());
+    }
+
+    @Test
     void emptyNameCreateTest(){
         Create create = new Create("create (age, weight)");
 

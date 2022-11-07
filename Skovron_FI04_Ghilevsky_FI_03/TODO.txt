@@ -17,4 +17,15 @@ TODO:
     3. problem 3
     4. problem 4  ?5, 6?
     4.1 regularCreateCase4Test()
-    5.
+    5. Не парсяться відʼємні числа.
+    7. sameTableCreate()
+    8. NegativeAndWhiteSpaceValueTest()
+    9. GROUP_BY + WHERE logic
+    10. parse WHERE
+    10. parse GROUP_BY
+    11. output table NULL BUG
+
+DONE:
+    1. fix table rowID output
+    2. where logic + test
+    3.

@@ -13,7 +13,7 @@ public class Insert implements SQLCommand{
     private final String TableName;
     private final Row Row;
 
-    public Insert(String sql){
+    public Insert(String sql) throws IllegalArgumentException {
         TableName = sql.substring(7, sql.indexOf("(")).trim();
 
         String StrRow = sql.substring(sql.indexOf("(")+1, sql.indexOf(")"));

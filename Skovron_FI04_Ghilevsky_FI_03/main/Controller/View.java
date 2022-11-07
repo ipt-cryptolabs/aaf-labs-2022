@@ -12,9 +12,8 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class View {
-    private final ArrayList<Table> tables = new ArrayList<>();
 
-    public View(){ }
+    private final ArrayList<Table> tables = new ArrayList<>();
 
     public void run() {
 
@@ -24,7 +23,7 @@ public class View {
         }
     }
 
-    private void action(Parser parser) {
+    public void action(Parser parser) {
         try {
             SQLCommand sqlCommand = parser.createSQLCommand();
 

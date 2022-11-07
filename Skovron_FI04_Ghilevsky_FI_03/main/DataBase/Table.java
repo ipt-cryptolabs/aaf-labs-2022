@@ -1,6 +1,7 @@
 package Skovron_FI04_Ghilevsky_FI_03.main.DataBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Table {
 
@@ -16,20 +17,10 @@ public class Table {
     }
 
     public void rowInsert(Row row){
-        if(titleRowLength == row.getRow().length - 1)
+        if(titleRowLength == row.getRow().length)
             rowArrayList.add(row);
         else
             throw new IllegalArgumentException("Error: Invalid number of insert value");
-    }
-
-    private String[] fromIntToString(int[] intArray){
-        String[] strArray = new String[intArray.length];
-
-        for (int i = 0; i < intArray.length; i++) {
-            strArray[i] = String.valueOf(intArray[i]);
-        }
-
-        return strArray;
     }
 
     public ArrayList<Row> getRowArrayList(){
@@ -40,21 +31,28 @@ public class Table {
         return tableName;
     }
 
-    public void selectAllAndPrint() { // demo
+    public String[] getRowsName(){
+        return rowsName;
+    }
+
+    public void selectAllAndPrint() {
         String[][] arr = new String[rowArrayList.size() + 1][rowsName.length];
-        String[] new_rowsName = new String[rowsName.length + 1];
+        arr[0] = rowsName;
 
-        new_rowsName[0] = "sys_id";
-
-        System.arraycopy(rowsName, 0, new_rowsName, 1, rowsName.length);
-
-        arr[0] = new_rowsName;
-
-        for (int i = 0; i < rowArrayList.size(); i++){
+        for (int i = 0; i < rowArrayList.size(); i++) {
             arr[i + 1] = fromIntToString(rowArrayList.get(i).getRow());
         }
-
         printTable(arr);
+    }
+
+    @Deprecated
+    private static String[] fromIntToString(int[] intArray){
+        String[] strArray = new String[intArray.length];
+
+        for (int i = 0; i < intArray.length; i++)
+            strArray[i] = String.valueOf(intArray[i]);
+
+        return strArray;
     }
 
     @Deprecated

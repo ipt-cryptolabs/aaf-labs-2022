@@ -5,7 +5,7 @@ public class Select implements SQLCommand{
     private boolean flag = false;
     private String TableName;
 
-    public Select(String sql){
+    public Select(String sql) throws IllegalArgumentException {
         String[] sql_ = sql.replaceAll(";", "").split("\\s+");
 
         for(int i = 1; i <sql_.length; i++){
@@ -17,6 +17,7 @@ public class Select implements SQLCommand{
         if(sql_[0].equalsIgnoreCase("SELECT") && sql_[1].equalsIgnoreCase("FROM"))
             flag = true;
     }
+
     @Override
     public String getTableName() throws IllegalArgumentException {
         if(TableName.equalsIgnoreCase("")
@@ -28,11 +29,6 @@ public class Select implements SQLCommand{
         return TableName;
     }
 
-    /**
-     *  check if sql query is type of:
-     *  select from tableName
-     * @return is needed display whole table
-     */
     public boolean isSelectAll() {
         if (flag){
             flag = false;
@@ -41,21 +37,42 @@ public class Select implements SQLCommand{
         return false;
     }
 
-    /**
-     * @return int по якому треба порівнювати
-     * @throws IllegalArgumentException
-     */
-    public int selectWhereNum() throws IllegalArgumentException{
+    public boolean isSelectWhereValue() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isSelectWhereColumn() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isSelectGroupBy(){
         throw new UnsupportedOperationException();
     }
 
     /**
-     * поки сам не знаю, що тут треба робити,тому @Deprecated
-     * @return column name
+     * поки не трогати
+     * @return
+     */
+    public String[][] selectGroupBy(){
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return [0] імя стовбця по якому треба порівнювати
+     *         [1] int по якому треба порівнювати
      * @throws IllegalArgumentException
      */
-    @Deprecated
-    public String selectWhereCol() throws IllegalArgumentException{
+    public String[] selectWhereValue() throws IllegalArgumentException{
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return [0] імя 1 стовбця по якому треба порівнювати
+     *         [1] імя 2 стовбця по якому треба порівнювати
+     *         1 стовбець йде першим*
+     * @throws IllegalArgumentException
+     */
+    public String[] selectWhereCol() throws IllegalArgumentException{
         throw new UnsupportedOperationException();
     }
 

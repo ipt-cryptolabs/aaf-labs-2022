@@ -12,9 +12,18 @@ public class Main {
 
     /*
 
-        create student (age, weight);
-        insert student (1, 2);
+        create student (age, weight, height);
+        insert student (1, 2, 3);
         select from student;
+        select from student where age = 1;
+        select from student where weight = height;
+
+        select COUNT(weight), AVG(height) from student group_by age
+
+        age  COUNT(weight)  AVG(height)
+         22             2           178
+         20             1           179
+
 
      */
 }
