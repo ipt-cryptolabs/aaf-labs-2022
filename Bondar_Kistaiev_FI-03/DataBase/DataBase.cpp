@@ -1,8 +1,8 @@
 #include "DataBase.hpp"
 
-query_result DataBase::select_from(const std::string& tbl, const std::string& cond)
+query_result DataBase::select_from(const std::string& tbl, std::string greater_cond, std::string less_cond)
 {
-    return {"SELECT CALLED ON TABLE:  " + tbl + "\nWith condition:  " + cond, Result_Code::TextMessage};
+    return {"SELECT CALLED ON TABLE:  " + tbl + "\nWith condition:  " + greater_cond + " > " + less_cond, Result_Code::TextMessage};
 }
 
 query_result DataBase::create_join(const std::string& t1,  const std::string& t2, const std::string& on_col1, const std::string& on_col2)

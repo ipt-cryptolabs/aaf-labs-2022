@@ -5,7 +5,7 @@
 #include <vector>
 #include <regex>
 
-char Parser::delims[] = {'\"', ',', '(', ')', '=', ';'};
+char Parser::delims[] = {'\"', ',', '(', ')', '=', ';', '>'};
 
 void Parser::make_lower(std::string& str)
 {
@@ -90,15 +90,6 @@ breakdown_result Parser::process_input(const std::string& cmd)
         }
 
         tokens.push_back(word);
-
-        make_lower(word);
-        if (word == "where")
-        {
-            std::getline(to_parse, word, ';');
-            tokens.push_back(word);
-            tokens.push_back(";");
-            break;
-        }
     } while(word != ";");
     
     return {tokens, true};
@@ -326,12 +317,15 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
         }
 
         DBCommand::NodeJOIN* temp  = new DBCommand::NodeJOIN;
-        temp->table1 = new DBCommand::NodeVALUE;
-        dynamic_cast<DBCommand::NodeVALUE*>(temp->table1)->value = name;
-        dynamic_cast<DBCommand::NodeVALUE*>(temp->table1)->type = Result_Code(1);
-        temp->table2 = new DBCommand::NodeVALUE;
-        dynamic_cast<DBCommand::NodeVALUE*>(temp->table2)->value = join_table;
-        dynamic_cast<DBCommand::NodeVALUE*>(temp->table2)->type = Result_Code(1);
+        DBCommand::NodeVALUE* temp1 = new DBCommand::NodeVALUE;
+        temp1->value = name;
+        temp1->type = Result_Code(1);
+        DBCommand::NodeVALUE* temp2 = new DBCommand::NodeVALUE;
+        temp2->value = join_table;
+        temp2->type = Result_Code(1);
+
+        temp->table1 = temp1;
+        temp->table2 = temp2;
         temp->on_column1 = on_tbl1;
         temp->on_column2 = on_tbl2;
         
@@ -339,19 +333,34 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
     }
     else
     {
-        from_table = new DBCommand::NodeVALUE;
-        dynamic_cast<DBCommand::NodeVALUE*>(from_table)->value = name;
-        dynamic_cast<DBCommand::NodeVALUE*>(from_table)->type = Result_Code(1);
+        DBCommand::NodeVALUE* temp3 = new DBCommand::NodeVALUE;
+        temp3->value = name;
+        temp3->type = Result_Code(1);
+        from_table = temp3;
     }
 
     std::string where = *current;
     make_lower(where);
     
-    std::string cond = "";
+    std::string cond_g{}, cond_l{};
     if(where == "where")
     {
         ++current;
-        cond = *current;
+
+        if((*current)[0] == '"' || std::regex_match(*current, base_match, token_regex))
+            cond_g = *current;
+        else
+            return build_ERROR_tree("Not a valid column name or value:  " + *current);
+        ++current;
+
+        if(*current != ">")
+            return build_ERROR_tree("Expected '>' after:  " + cond_g + " _ <-");
+        ++current;
+
+        if((*current)[0] == '"' || std::regex_match(*current, base_match, token_regex))
+            cond_l = *current;
+        else
+            return build_ERROR_tree("Not a valid column name or value:  " + *current);
         ++current;
     }
 
@@ -364,7 +373,8 @@ DBCommand::Node* Parser::build_SELECT_tree(const std::vector<std::string> & toke
 
     DBCommand::NodeSELECT* node = new DBCommand::NodeSELECT; 
     node->from_table = from_table;
-    node->condition = cond;
+    node->g_cond = cond_g;
+    node->l_cond = cond_l;
 
     return node;
 }

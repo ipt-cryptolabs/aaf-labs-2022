@@ -33,7 +33,7 @@ namespace DBCommand
     struct NodeSELECT : public Node
     {
         Node* from_table;
-        std::string condition;
+        std::string g_cond, l_cond;
 
         ~NodeSELECT();
         query_result exec(DataBase*) override;   

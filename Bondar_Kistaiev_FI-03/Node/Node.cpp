@@ -19,7 +19,7 @@ query_result DBCommand::NodeSELECT::exec(DataBase* db)
     auto [res, code] = from_table->exec(db);
 
     if(code == Result_Code::Table)
-        return db->select_from(res, condition);
+        return db->select_from(res, g_cond, l_cond);
     else
         return {res, code};
         

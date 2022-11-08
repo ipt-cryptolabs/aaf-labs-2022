@@ -25,7 +25,7 @@ class DataBase
     std::pair<std::string, Table*> buffer_table;
 
 public:
-    query_result select_from(const std::string& tbl, const std::string& cond);
+    query_result select_from(const std::string& tbl, std::string greater_cond, std::string less_cond);
 
     query_result create_join(const std::string& t1,  const std::string& t2, const std::string& on_col1, const std::string& on_col2);
 
