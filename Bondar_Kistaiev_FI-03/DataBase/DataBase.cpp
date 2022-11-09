@@ -1,9 +1,10 @@
 #include "DataBase.hpp"
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <set>
 
 const size_t MAX_CELL_WIDTH = 15;
-
 
 DataBase::DataBase() : buff_name{"__buff"}
 {
@@ -37,7 +38,7 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
         else
         {
             Table* temp = tables.at(buff_name);
-            tables.at(buff_name) = new Table(table->get_col_info());
+            tables.at(buff_name) = new Table(table->column_info);
             if(temp)
                 delete temp;
                 
@@ -50,11 +51,11 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
         if(l_index == -1)
             return {"Column " + less_cond + " does not exist in table " + tbl_name + ".", Result_Code::Error};
 
-        Table* temp = new Table(table->get_col_info());
-        for(const auto& r : table->get_all_rows())
+        Table* temp = new Table(table->column_info);
+        for(const auto& r : table->rows)
         {
-            if(greater_cond.substr(1, greater_cond.size() - 2) > r.get_full_row().at(l_index))
-                temp->insert(r);
+            if(greater_cond.substr(1, greater_cond.size() - 2) > r.at(l_index))
+                temp->rows.push_back(r);
         }
 
         if(tables.at(buff_name))
@@ -68,11 +69,11 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
         if(g_index == -1)
             return {"Column " + greater_cond + " does not exist in table " + tbl_name + ".", Result_Code::Error};
 
-        Table* temp = new Table(table->get_col_info());
-        for(const auto& r : table->get_all_rows())
+        Table* temp = new Table(table->column_info);
+        for(const auto& r : table->rows)
         {
-            if(r.get_full_row().at(g_index) > less_cond.substr(1, less_cond.size() - 2))
-                temp->insert(r);
+            if(r.at(g_index) > less_cond.substr(1, less_cond.size() - 2))
+                temp->rows.push_back(r);
         }
 
         if(tables.at(buff_name))
@@ -91,11 +92,11 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
             return {"Column " + less_cond + " does not exist in table " + tbl_name + ".", Result_Code::Error};
             
 
-        Table* temp = new Table(table->get_col_info());
-        for(const auto& r : table->get_all_rows())
+        Table* temp = new Table(table->column_info);
+        for(const auto& r : table->rows)
         {
-            if(r.get_full_row().at(g_index) > r.get_full_row().at(l_index))
-                temp->insert(r);
+            if(r.at(g_index) > r.at(l_index))
+                temp->rows.push_back(r);
         }
 
         if(tables.at(buff_name))
@@ -109,20 +110,99 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
 
 query_result DataBase::create_join(const std::string& t1,  const std::string& t2, const std::string& on_col1, const std::string& on_col2)
 {
-    return {"JOIN RESULT: " + t1 + " x " + t2 + " ON " + on_col1 + " = " + on_col2, Result_Code::Table};
+    if(!tables.contains(t1))
+        return {"Table " + t1 + " does not exist.", Result_Code::Error};
+    if(!tables.contains(t2))
+        return {"Table " + t2 + " does not exist.", Result_Code::Error};
+        
+    Table* table1 = tables.at(t1);
+    Table* table2 = tables.at(t2);
+
+    // Create table header
+    std::vector<std::pair<std::string, bool>> new_col_info = table1->column_info;
+    std::transform(table2->column_info.begin(), table2->column_info.end(), std::back_inserter(new_col_info), [&](const auto& c_i)
+    {
+        auto same_pos = std::find_if(new_col_info.begin(), new_col_info.end(), [&c_i](const auto& c_j)
+        {
+            return c_i.first == c_j.first;
+        });
+
+        std::pair<std::string, bool> to_cerf = c_i;
+        if(same_pos != new_col_info.end())
+        {
+            (*same_pos).first = (*same_pos).first + "_" + t1;
+            to_cerf.first = to_cerf.first + "_" + t2;
+        }
+
+        return to_cerf;
+    });
+
+    Table* result = new Table(new_col_info);
+
+    if(on_col1 == ""  && on_col2 == "")
+    {
+        std::vector<std::string> to_add;    
+        for(const auto& row_l : table1->rows)
+        {
+            for(const auto& row_r : table2->rows)
+            {
+                to_add = row_l;
+                to_add.insert(to_add.end(), row_r.begin(), row_r.end());
+                result->rows.push_back(to_add);
+            }
+        }
+
+        if(tables.at(buff_name))
+            delete tables.at(buff_name);
+        tables.at(buff_name) = result;
+
+        return {buff_name, Result_Code::Table};
+    }
+    else
+    {
+        int col1_idx = table1->col_index(on_col1);
+        int col2_idx = table2->col_index(on_col2);
+
+        if(col1_idx == -1)
+            return {"Column " + on_col1 + " does not exist in table " + t1 + ".", Result_Code::Error};
+        if(col2_idx == -1)
+            return {"Column " + on_col2 + " does not exist in table " + t2 + ".", Result_Code::Error};
+
+        // TODO : Indexing condition flowchange
+
+        std::vector<std::string> to_add;
+        for(const auto& row_l : table1->rows)
+        {
+            for(const auto& row_r : table2->rows)
+            {
+                if(row_l.at(col1_idx) == row_r.at(col2_idx))
+                {
+                    to_add = row_l;
+                    to_add.insert(to_add.end(), row_r.begin(), row_r.end());
+                    result->rows.push_back(to_add);
+                }
+            }
+        }
+    }
+
+    if(tables.at(buff_name))
+        delete tables.at(buff_name);
+    tables.at(buff_name) = result;
+
+    return {buff_name, Result_Code::Table};
 }
 
 query_result DataBase::insert(const std::string& tbl_name, const std::vector<std::string>& row)
 {
     if(!tables.contains(tbl_name))
         return {"Table " + tbl_name + " does not exists.", Result_Code::Error};
-
-    bool success = tables.at(tbl_name)->insert(row);
     
-    if(!success)
+    if(tables.at(tbl_name)->column_info.size() != row.size())
         return {"Inserted row's size does not match " + tbl_name + "'s row-size.", Result_Code::Error};
+
+    tables.at(tbl_name)->rows.push_back(row);
     
-    return {tbl_name, Result_Code::Table};      // Switch to TextMessage
+    return {"1 row inserted into table: " + tbl_name, Result_Code::TextMessage};      // Switch to TextMessage
 }
 
 query_result DataBase::create(const std::string& tbl_name, const std::vector<std::pair<std::string, bool>>& columns)
@@ -130,11 +210,28 @@ query_result DataBase::create(const std::string& tbl_name, const std::vector<std
     if(tables.contains(tbl_name))
         return {"Table " + tbl_name + " already exists.", Result_Code::Error};
 
+    std::set<std::string> a;
+    for(const auto& c : columns)
+        a.insert(c.first);
+
+    if(a.size() != columns.size())
+        return {"Table cannot have multiple columns with same name.", Result_Code::Error};
+        
     tables[tbl_name] = new Table(columns);
 
-    return {tbl_name, Result_Code::Table};      // Switch to TextMessage
+    return {"Created table:  " + tbl_name, Result_Code::TextMessage};      // Switch to TextMessage
 }
                 
+void DataBase::draw_krywka(std::ostream& ass, int block_count)
+{
+    ass << '+' << std::setfill('-');
+    for(int i = 0; i < block_count; ++i)
+    {
+        ass << std::setw(MAX_CELL_WIDTH + 8) << "" << '+';
+    }
+    ass << std::endl << std::setfill(' ');
+}
+
 query_result DataBase::get_table_string(const std::string& tbl_name) const
 {
     if(!tables.contains(tbl_name))
@@ -145,40 +242,30 @@ query_result DataBase::get_table_string(const std::string& tbl_name) const
     std::ostringstream to_print;
     
     to_print << std::left;
+    draw_krywka(to_print, tb->column_info.size());
     to_print << '|';
-    for(const auto& c : tb->get_col_info())
+    for(const auto& c : tb->column_info)
     {
         to_print << "   " << std::setw(MAX_CELL_WIDTH + 5) << c.first.substr(0, MAX_CELL_WIDTH) + (c.second ? " (I)" : "") << '|';
     }
     to_print << std::endl;
 
-    for(size_t i = 0; i < tb->row_size(); ++i)
+    draw_krywka(to_print, tb->column_info.size());
+
+    for(size_t i = 0; i < tb->rows.size(); ++i)
     {
         to_print << '|';
-        for(const auto& v : tb->get_row(i).get_full_row())
+        for(const auto& v : tb->rows.at(i))
         {
             to_print << "  \"" << std::setw(MAX_CELL_WIDTH + 5) 
                 << (v.size() < MAX_CELL_WIDTH ? v : (v.substr(0, MAX_CELL_WIDTH - 3) + "...")) + "\"" << '|';
         }
         to_print << std::endl; 
     }
+    
+    draw_krywka(to_print, tb->column_info.size());
 
     return {to_print.str(), Result_Code::Table};
-}
-
-size_t DataBase::Table::row_size() const
-{
-    return this->rows.size();
-}
-
-size_t DataBase::Table::col_size() const
-{
-    return this->column_info.size();
-}
-
-const DataBase::Table::Row& DataBase::Table::get_row(size_t ind) const
-{
-    return this->rows[ind];
 }
 
 DataBase::Table::Table(const std::vector<std::pair<std::string, bool>>& columns)
@@ -187,20 +274,6 @@ DataBase::Table::Table(const std::vector<std::pair<std::string, bool>>& columns)
 
     column_info = columns;
     // Some indexing logic
-}
-
-const std::vector<std::pair<std::string, bool>>& DataBase::Table::get_col_info() const
-{
-    return this->column_info;
-}
-
-bool DataBase::Table::insert(const auto& r)
-{
-    if(r.size() != col_size())
-        return false;               // Incomplete or bad row
-
-    this->rows.emplace_back(r, this);
-    return true;
 }
 
 int DataBase::Table::col_index(const std::string& index) const
@@ -215,28 +288,4 @@ int DataBase::Table::col_index(const std::string& index) const
     }
     
     return -1;
-}
-
-const std::vector<DataBase::Table::Row>& DataBase::Table::get_all_rows() const
-{
-    return this->rows;
-}
-
-DataBase::Table::Row::Row(const Row& cp, Table *new_owner) : r{cp.r}, owner{new_owner} {}
-
-DataBase::Table::Row::Row(const std::vector<std::string>& row, Table *new_owner) : r{row}, owner{new_owner} {}
-
-std::string DataBase::Table::Row::at(const std::string& index) const
-{
-    return r.at(this->owner->col_index(index));
-}
-
-size_t DataBase::Table::Row::size() const
-{
-    return r.size();
-}
-
-const std::vector<std::string>& DataBase::Table::Row::get_full_row() const
-{
-    return this->r;
 }

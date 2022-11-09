@@ -10,6 +10,6 @@ Kistaiev Matvii.
 
 ## Project plan
 - [x] Parser
-- [ ] Data Base Structure
-- [x] Logical expression parser
+- [x] Data Base Structure
+- [x] Logical expression parser (ROFL)
 - [ ] Indexing

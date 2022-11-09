@@ -15,47 +15,21 @@ typedef std::pair<std::string, Result_Code> query_result;
  */
 class DataBase
 {   
-    class Table
+    struct Table
     {
-    public:
-        class Row;
-
         Table(const std::vector<std::pair<std::string, bool>>& columns);
-        bool insert(const auto& r);
-
-        // Getters
-        const std::vector<Row>& get_all_rows() const;
-        const std::vector<std::pair<std::string, bool>>& get_col_info() const;
-        const Row& get_row(size_t ind) const;
-        size_t row_size() const;
-        size_t col_size() const;
 
         int col_index(const std::string& index) const;
 
-        class Row
-        {
-        private:
-            Table* owner = nullptr;
-            std::vector<std::string> r;
-
-        public:
-            Row(const Row& cp, Table *new_owner = nullptr);
-            Row(const std::vector<std::string>& row, Table *new_owner = nullptr);
-
-            size_t size() const;
-            std::string at(const std::string& index) const;
-            const std::vector<std::string>& get_full_row() const;
-        };
-
-    private:
         std::vector<std::pair<std::string, bool>> column_info;
-        std::vector<Row> rows;
+        std::vector<std::vector<std::string>> rows;
     };
 
     std::string buff_name;
     std::map<std::string, Table*> tables;
-    //std::pair<std::string, Table*> buffer_table;
 
+
+    static void draw_krywka(std::ostream& ass, int block_count);
 public:
     query_result select_from(const std::string& tbl_name, std::string greater_cond, std::string less_cond);
 
