@@ -16,7 +16,10 @@ if __name__ == "__main__":
             if command[0] == 'CREATE':
                 dataBase.append_table(command)
             elif command[0] == 'INSERT':
-                dataBase.tables[command[1]].insert(command[2])
+                if command[1] in dataBase.tables.keys():
+                    dataBase.tables[command[1]].insert(command[2])
+                else:
+                    print(f"Table with name {command[1]} doesn`t exists")
             elif command[0] == 'SELECT':
                 dataBase.select(command)
             else:

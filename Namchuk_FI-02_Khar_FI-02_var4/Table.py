@@ -4,5 +4,8 @@ class Table:
         self.columns = args[2]
         self.values = []
     def insert(self, values):
-        self.values.append(values)
-        print(f"Insert in {self.name} values: {tuple(values)}")
+        if len(self.columns) == len(values):
+            self.values.append(values)
+            print(f"Insert in {self.name} values: {tuple(values)}")
+        else:
+            print("The number of values does not match the number of columns!")
