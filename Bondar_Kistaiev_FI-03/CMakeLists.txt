@@ -6,7 +6,7 @@ set(This Lab_AAF_Bondar_Kistaiev)
 #Set language
 project(${This} LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(Headers 
     DataBase/DataBase.hpp

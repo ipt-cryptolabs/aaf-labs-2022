@@ -11,5 +11,5 @@ Kistaiev Matvii.
 ## Project plan
 - [x] Parser
 - [ ] Data Base Structure
-- [ ] Logical expression parser
+- [x] Logical expression parser
 - [ ] Indexing
