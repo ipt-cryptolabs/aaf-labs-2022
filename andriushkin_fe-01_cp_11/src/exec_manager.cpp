@@ -4,24 +4,6 @@ ExecManager::ExecManager() : os(std::cout), is(std::cin), running(true){};
 ExecManager::ExecManager(std::ostream &os_, std::istream &is_) : os(os_), is(is_), running(true){};
 ExecManager::~ExecManager(){};
 
-bool ExecManager::IsRunning()
-{
-    return running;
-}
-/*
-void ExecManager::RunLoop()
-{
-    std::stringstream ss;
-    std::vector<std::string> tokens;
-    Command comm;
-    while(running)
-    {
-        ss = FineReader();
-        tokens = Tokenize(ss);
-        comm = RecognizeComm(tokens);
-    }
-}
-*/
 std::stringstream ExecManager::FineReader()
 {
     std::stringstream ret;

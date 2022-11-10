@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 
+#include "KDtree.hpp"
 #include "exec_manager.hpp"
 
 bool CheckVarName(std::string name);
@@ -15,7 +16,6 @@ protected:
     std::string comm_name;
 public:
     Command();
-    Command(std::vector<std::string> tokens);
     virtual ~Command() = 0;
     virtual void Execute(ExecManager &em) = 0;
 };
@@ -24,7 +24,6 @@ class Exit : public Command
 {
 public:
     Exit();
-    Exit(std::vector<std::string> tokens);
     ~Exit();
     void Execute(ExecManager &em) override;
 };
@@ -35,7 +34,6 @@ private:
     std::string name;
 public:
     Create(std::string name_);
-    Create(std::vector<std::string> tokens);
     ~Create();
     void Execute(ExecManager &em) override;
 };
@@ -44,7 +42,7 @@ class Insert : public Command
 {
 private:
     std::string name;
-    uint64_t y, x;
+    int64_t y, x;
 public:
     Insert(std::string name_, std::int64_t x_, std::int64_t y_);
     ~Insert();
@@ -65,10 +63,20 @@ class Contains : public Command
 {
 private:
     std::string name;
-    uint64_t y, x;
+    int64_t y, x;
 public:
     Contains(std::string name_, std::int64_t x_, std::int64_t y_);
     ~Contains();
+    void Execute(ExecManager &em) override;
+};
+
+class Search : public Command
+{
+private:
+    std::string name;
+public:
+    Search(std::string name_);
+    ~Search();
     void Execute(ExecManager &em) override;
 };
 

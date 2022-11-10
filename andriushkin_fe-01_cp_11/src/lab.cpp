@@ -14,7 +14,14 @@ int main()
     // a = TokenizeInput(std::cin);
     ExecManager exec;
     std::stringstream b;
-    while (exec.IsRunning())
+    Create("t").Execute(exec);
+    Insert("t", 1,2).Execute(exec);
+    Insert("t", 3,2).Execute(exec);
+    Insert("t", -1,2).Execute(exec);
+    Insert("t", 2,1).Execute(exec);
+    Insert("t", 2,4).Execute(exec);
+    PrintTree("t").Execute(exec);
+    while (exec.running)
     {
         try
         {

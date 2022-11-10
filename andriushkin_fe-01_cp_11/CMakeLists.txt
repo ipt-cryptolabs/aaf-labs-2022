@@ -14,4 +14,5 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 add_executable(lab 
     src/commands.cpp
     src/lab.cpp
-    src/exec_manager.cpp)
+    src/exec_manager.cpp
+    src/KDtree.cpp)

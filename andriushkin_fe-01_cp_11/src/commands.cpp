@@ -23,19 +23,82 @@ void Exit::Execute(ExecManager &em){std::cout << "Placeholder for command exit" 
 
 Create::Create(std::string name_): name(name_) {};
 Create::~Create(){};
-void Create::Execute(ExecManager &em){std::cout << "Placeholder for command create" << std::endl;};
+void Create::Execute(ExecManager &em)
+{
+    if( em.vars.emplace(name, KDtree()).second )
+        std::cout << "Set " << name << " has been created" << std::endl;
+    else
+        std::cout << "Set " << name << " already exists" << std::endl;       
+};
 
 Insert::Insert(std::string name_, std::int64_t x_, std::int64_t y_): name(name_), x(x_), y(y_) {};
 Insert::~Insert(){};
-void Insert::Execute(ExecManager &em){std::cout << "Placeholder for command insert" << std::endl;};
+void Insert::Execute(ExecManager &em)
+{
+    std::map<std::string, KDtree>::iterator tree_it;
+    tree_it = em.vars.find(name);
+    if( tree_it != em.vars.end())
+    {    
+        if(tree_it->second.Insert(x,y))
+            std::cout << "Inserted point (" << x << ", " << y << ") into set " << name << std::endl;
+        else
+            std::cout << "Point (" << x << ", " << y << ") already exists in set " << name << std::endl;
+
+    }
+    else
+        std::cout << "Set " << name << " does not exists" << std::endl;
+}
 
 PrintTree::PrintTree(std::string name_): name(name_) {};
 PrintTree::~PrintTree(){};
-void PrintTree::Execute(ExecManager &em){std::cout << "Placeholder for command PrintTree" << std::endl;};
+void PrintTree::Execute(ExecManager &em)
+{
+    std::map<std::string, KDtree>::iterator tree_it;
+    tree_it = em.vars.find(name);
+    if( tree_it != em.vars.end())
+       tree_it->second.PrintTree();
+    else
+        std::cout << "Set " << name << " does not exists" << std::endl;
+}
 
 Contains::Contains(std::string name_, std::int64_t x_, std::int64_t y_): name(name_), x(x_), y(y_) {};
 Contains::~Contains(){};
-void Contains::Execute(ExecManager &em){std::cout << "Placeholder for command Contains" << std::endl;};
+void Contains::Execute(ExecManager &em)
+{
+    std::map<std::string, KDtree>::iterator tree_it;
+    tree_it = em.vars.find(name);
+    if( tree_it != em.vars.end())
+    {
+        std::cout << "Set " << name << 
+            (tree_it->second.Contains(x,y) ? "" : " not") << " contain point (" << x << ',' << y << ")" << std::endl;
+    }
+    else
+        std::cout << "Set " << name << " does not exists" << std::endl;
+}
+
+Search::Search(std::string name_) : name(name_) {};
+Search::~Search(){};
+void Search::Execute(ExecManager &em)
+{
+    std::map<std::string, KDtree>::iterator tree_it;
+    tree_it = em.vars.find(name);
+    if( tree_it != em.vars.end())
+    {
+        std::vector<KDtree::Node*> nodes = tree_it->second.GetAll();
+        if(nodes.size())
+        {
+            std::cout << "Set " << name << " contain points: " << std::endl;
+            for(KDtree::Node* node : nodes)
+                std::cout << *node << " ";
+            std::cout << std::endl;
+        }
+        else
+            std::cout << "Set " << name << " is empty" << std::endl;
+    }
+    else
+        std::cout << "Set " << name << " does not exists" << std::endl;
+}
+
 
 std::shared_ptr<Command> RecognizeComm(std::vector<std::string> tokens)
 {
@@ -93,6 +156,14 @@ std::shared_ptr<Command> RecognizeComm(std::vector<std::string> tokens)
         {
             throw std::invalid_argument("invalid numbers");
         }
+    }
+    else if( tokens[0] == "SEARCH")
+    {
+        if( !(tokens.size() == 2))
+            throw std::invalid_argument("invalid count of arguments");
+        if( !CheckVarName(tokens[1]))
+            throw std::invalid_argument("invalid var name");
+        return std::make_shared<Search>(tokens[1]);
     }
     throw std::invalid_argument("unexpected command");
 }
