@@ -14,7 +14,7 @@ class DataBase:
     def select(self, command):
         if len(command)<= 2 and command[1] not in self.tables.keys():
             print(f"Table with name {command[1]} doesn`t exists")
-        elif len(command)>2:
+        elif len(command)>2 and (command[1] not in self.tables.keys() or command[3] not in self.tables.keys()):
             if command[1] not in self.tables.keys():
                 print(f"Table with name {command[1]} doesn`t exists")
             if command[3] not in self.tables.keys():
@@ -122,28 +122,100 @@ class DataBase:
                     print(tab)
             elif (command[2] == "JOIN") and (command[4] == "ON") and (command[7] == "WHERE"):
                 pass
-            """elif (command[2] == "JOIN") and (command[4] == "WHERE"):
+            elif (command[2] == "JOIN") and (command[4] == "WHERE"):
                 table_1 = self.tables[command[1]]
                 table_2 = self.tables[command[3]]
-                index_column_1 = table_1.columns.index(command[3])
-                if command[6][0] == '"':
-                    command[6] = command[6][1:-1]
-                    i = 0
-                    if len(table_1.values) == len(table_2.values):
+                values = []
+                if len(table_1.values) == len(table_2.values):
+                    if command[6][0] == '"':
+                        if command[5] in table_1.columns:
+                            index_column_1 = table_1.columns.index(command[5])
+                            check_table = 1
+                        elif command[5] in table_2.columns:
+                            index_column_1 = table_2.columns.index(command[5])
+                            check_table = 2
+                        command[6] = command[6][1:-1]
+                        i = 0
                         while i < len(table_1.values):
-                            if table.values[i][index_column_1] > command[4]:
-                                values.append(table.values[i])
+                            if check_table == 1:
+                                if table_1.values[i][index_column_1] > command[6]:
+                                    values.append(table_1.values[i] + table_2.values[i])
+                            elif check_table == 2:
+                                if table_2.values[i][index_column_1] > command[6]:
+                                    values.append(table_1.values[i] + table_2.values[i])
                             i += 1
                         if values == []:
-                            table = [table.columns, *table.values]
+                            i = 0
+                            while i < len(table_1.values):
+                                values.append(table_1.values[i] + table_2.values[i])
+                                i += 1
+                            table = [[*table_1.columns, *table_2.columns], *values]
                             tab = PrettyTable(table[0])
                             tab.add_rows(table[1:])
                             print(tab)
                         else:
-                            table = [table.columns, *values]
+                            table = [[*table_1.columns, *table_2.columns], *values]
                             tab = PrettyTable(table[0])
                             tab.add_rows(table[1:])
-                            print(tab)"""
+                            print(tab)
+                    else:
+                        table_1 = self.tables[command[1]]
+                        table_2 = self.tables[command[3]]
+                        values = []
+                        if command[5] in table_1.columns:
+                            index_column_1 = table_1.columns.index(command[5])
+                            check_table_1 = 1
+                        elif command[5] in table_2.columns:
+                            index_column_1 = table_2.columns.index(command[5])
+                            check_table_1 = 2
+                        if command[6] in table_1.columns:
+                            index_column_2 = table_1.columns.index(command[6])
+                            check_table_2 = 1
+                        elif command[6] in table_2.columns:
+                            index_column_2 = table_2.columns.index(command[6])
+                            check_table_2 = 2
+                        i = 0
+                        while i < len(table_1.values):
+                            if check_table_1 == 1 and check_table_2 == 1:
+                                if table_1.values[i][index_column_1] > table_1.values[i][index_column_2]:
+                                    values.append(table_1.values[i] + table_2.values[i])
+                            elif check_table_1 == 1 and check_table_2 == 2:
+                                if table_1.values[i][index_column_1] > table_2.values[i][index_column_2]:
+                                    values.append(table_1.values[i] + table_2.values[i])
+                            elif check_table_1 == 2 and check_table_2 == 1:
+                                if table_2.values[i][index_column_1] > table_1.values[i][index_column_2]:
+                                    values.append(table_1.values[i] + table_2.values[i])
+                            else:
+                                if table_2.values[i][index_column_1] > table_2.values[i][index_column_2]:
+                                    values.append(table_1.values[i] + table_2.values[i])
+                            i += 1
+                        if values == []:
+                            i = 0
+                            while i < len(table_1.values):
+                                values.append(table_1.values[i] + table_2.values[i])
+                                i += 1
+                            table = [[*table_1.columns, *table_2.columns], *values]
+                            tab = PrettyTable(table[0])
+                            tab.add_rows(table[1:])
+                            print(tab)
+                        else:
+                            table = [[*table_1.columns, *table_2.columns], *values]
+                            tab = PrettyTable(table[0])
+                            tab.add_rows(table[1:])
+                            print(tab)
+                else:
+                    values = []
+                    i = 0
+                    while i < len(table_1.values):
+                        j = 0
+                        while j < len(table_2.values):
+                            values.append(table_1.values[i] + table_2.values[j])
+                            j += 1
+                        i += 1
+                    table = [[*table_1.columns, *table_2.columns], *values]
+                    tab = PrettyTable(table[0])
+                    tab.add_rows(table[1:])
+                    print(tab)
         '''
         CREATE cats (name, group);
         CREATE owners (name2, group2);
@@ -152,4 +224,5 @@ class DataBase:
         INSERT INTO owners ("1", "Vasya");
         INSERT INTO owners ("3", "Vasya");
         select from cats join owners on name = name2;
+        select from cats join owners where name > "0";
         '''
