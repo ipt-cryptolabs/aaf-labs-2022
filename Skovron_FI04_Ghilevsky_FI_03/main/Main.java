@@ -2,6 +2,7 @@ package Skovron_FI04_Ghilevsky_FI_03.main;
 
 import Skovron_FI04_Ghilevsky_FI_03.main.Controller.View;
 
+
 public class Main {
 
     public static void main(String[] args) {

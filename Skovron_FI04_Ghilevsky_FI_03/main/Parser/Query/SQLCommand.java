@@ -6,5 +6,6 @@ public interface SQLCommand {
      * @return name of table
      * @throws IllegalArgumentException
      */
-    String getTableName() throws IllegalArgumentException;
+    String getTableName();
+    void checkSqlQuery(String sql) throws IllegalArgumentException;
 }

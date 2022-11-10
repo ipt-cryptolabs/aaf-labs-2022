@@ -32,6 +32,11 @@ public class Select implements SQLCommand{
         return tableName;
     }
 
+    @Override
+    public void checkSqlQuery(String sql) throws IllegalArgumentException {
+
+    }
+
     public boolean isSelectAll() {
         return isSelectAll;
     }

@@ -12,14 +12,14 @@ Case
      select from "student info"; // problem 6?
 
 TODO:
-    1. insert into
-    2. select fro student
+    1. insert into - done
+    2. select from student
     3. problem 3
-    4. problem 4  ?5, 6?
-    4.1 regularCreateCase4Test()
-    5. Не парсяться відʼємні числа.
-    7. sameTableCreate()
-    8. NegativeAndWhiteSpaceValueTest()
+    4. problem 4  ?5, 6?    -done 4,5
+    4.1 regularCreateCase4Test() - done
+    5. Не парсяться відʼємні числа. - done
+    7. sameTableCreate() - ?
+    8. NegativeAndWhiteSpaceValueTest() - done
     9. GROUP_BY + WHERE logic
     10. parse WHERE
     10. parse GROUP_BY

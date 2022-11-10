@@ -73,9 +73,7 @@ public class InsertTest {
 
     @Test
     void emptyInsertCase1Test(){
-        Insert insert = new Insert("insert (3, 175, 72);");
-
-        Exception exception = assertThrows(RuntimeException.class, insert::getTableName);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Insert("insert (3, 175, 72);"));
         String expectedMessage = "Error: Empty table name";
         String actualMessage = exception.getMessage();
 
@@ -84,9 +82,9 @@ public class InsertTest {
 
     @Test
     void emptyInsertCase2Test(){
-        Exception exception = assertThrows(RuntimeException.class,  () -> new Insert("insert student ();"));
+        Exception exception = assertThrows(IllegalArgumentException.class,  () -> new Insert("insert student ();"));
 
-        String expectedMessage = "Error: Invalid insert value (Insert)";
+        String expectedMessage = "Error: Empty Column name (Insert)";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

@@ -4,66 +4,66 @@ import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Create;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CreateTest {
+
     @Test
     void regularCreateCase1Test(){
-        Create create = new Create("create student (age, weight)");
+        Create create = new Create("create student (age, weight);");
         String[] colName = new String[]{"age", "weight"};
 
-        Assertions.assertEquals("student", create.getTableName());
-        Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
-        Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
+        assertEquals("student", create.getTableName());
+        assertEquals(colName[0], create.getNameOfColum()[0]);
+        assertEquals(colName[1], create.getNameOfColum()[1]);
     }
 
     @Test
     void regularCreateCase2Test(){
-        Create create = new Create("create student (age, weight, height)");
+        Create create = new Create("create student (age, weight, height);");
 
         String[] colName = new String[]{"age", "weight", "height"};
 
-        Assertions.assertEquals("student", create.getTableName());
-        Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
-        Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
-        Assertions.assertEquals(colName[2], create.getNameOfColum()[2]);
+        assertEquals("student", create.getTableName());
+        assertEquals(colName[0], create.getNameOfColum()[0]);
+        assertEquals(colName[1], create.getNameOfColum()[1]);
+        assertEquals(colName[2], create.getNameOfColum()[2]);
     }
 
     @Test
     void regularCreateCase3Test(){
-        Create create = new Create("create \"student id\" (age, weight, height)");
+        Create create = new Create("create \"student id\" (age, weight, height);");
 
         String[] colName = new String[]{"age", "weight", "height"};
 
-        Assertions.assertEquals("\"student id\"", create.getTableName());
-        Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
-        Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
-        Assertions.assertEquals(colName[2], create.getNameOfColum()[2]);
+        assertEquals("\"student id\"", create.getTableName());
+        assertEquals(colName[0], create.getNameOfColum()[0]);
+        assertEquals(colName[1], create.getNameOfColum()[1]);
+        assertEquals(colName[2], create.getNameOfColum()[2]);
     }
 
     @Test
     void regularCreateCase4Test(){
-        Create create = new Create("create \"student id\" (\"student age\", weight, \"student height\")");
+        Create create = new Create("create \"student id\" (\"student age\", weight, \"student height\");");
 
         String[] colName = new String[]{"\"student age\"", "weight", "\"student height\""};
 
-        Assertions.assertEquals("\"student id\"", create.getTableName());
-        Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
-        Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
-        Assertions.assertEquals(colName[2], create.getNameOfColum()[2]);
+        assertEquals("\"student id\"", create.getTableName());
+        assertEquals(colName[0], create.getNameOfColum()[0]);
+        assertEquals(colName[1], create.getNameOfColum()[1]);
+        assertEquals(colName[2], create.getNameOfColum()[2]);
     }
 
     @Test
     void regularCreateCase5Test(){
-        Create create = new Create("CreAtE student (age, weight, height)");
+        Create create = new Create("CreAtE student (age, weight, height);");
 
         String[] colName = new String[]{"age", "weight", "height"};
 
-        Assertions.assertEquals("student", create.getTableName());
-        Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
-        Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
-        Assertions.assertEquals(colName[2], create.getNameOfColum()[2]);
+        assertEquals("student", create.getTableName());
+        assertEquals(colName[0], create.getNameOfColum()[0]);
+        assertEquals(colName[1], create.getNameOfColum()[1]);
+        assertEquals(colName[2], create.getNameOfColum()[2]);
     }
 
     @Test
@@ -72,33 +72,22 @@ public class CreateTest {
         Create create2 = new Create("create \"student\" (age, weight, height);");
         String[] name = {"student"};
 
-        Assertions.assertEquals(name[0], create1.getTableName());
-        Assertions.assertEquals(name[0], create2.getTableName());
+        assertEquals(name[0], create1.getTableName());
+        assertEquals(name[0], create2.getTableName());
     }
 
     @Test
     void emptyNameCreateTest(){
-        Create create = new Create("create (age, weight)");
-
-        String[] colName = new String[]{"age", "weight"};
-
-        Exception exception = assertThrows(RuntimeException.class, create::getTableName);
+        Exception exception = assertThrows(RuntimeException.class, () -> new Create("create (age, weight);"));
         String expectedMessage = "Error: Empty table name";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
-
-        Assertions.assertEquals(colName[0], create.getNameOfColum()[0]);
-        Assertions.assertEquals(colName[1], create.getNameOfColum()[1]);
     }
 
     @Test
     void emptyColumnNameCreateTest(){
-        Create create = new Create("create student ()");
-
-        Assertions.assertEquals("student", create.getTableName());
-
-        Exception exception = assertThrows(RuntimeException.class, create::getNameOfColum);
+        Exception exception = assertThrows(RuntimeException.class, () -> new Create("create student ();"));
         String expectedMessage = "Error: Empty Column name";
         String actualMessage = exception.getMessage();
 
@@ -106,12 +95,27 @@ public class CreateTest {
     }
 
     @Test
-    void wrongSqlQueryTest(){
-        String sqlQuery = "create t(x;";
-        Create create = new Create(sqlQuery);
+    void wrongSqlQueryTest1(){
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> new Create("create t(x;"));
+        String expectedMessage = "Error: Invalid SQL syntax (Creation Error 1)";
+        String actualMessage = exception.getMessage();
 
-        Exception exception = assertThrows(RuntimeException.class, () -> create.checkSqlQuery(sqlQuery));
-        String expectedMessage = "Error: Wrong sqlQuery";
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void wrongSqlQueryTest2(){
+        Exception exception = assertThrows(RuntimeException.class, () -> new Create("create x y(age, weight);"));
+        String expectedMessage = "Error: Invalid SQL syntax (Creation Error 2)";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void wrongSqlQueryTest3(){
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> new Create("create t(x)y;"));
+        String expectedMessage = "Error: Invalid SQL syntax (Creation Error 3)";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
