@@ -23,9 +23,12 @@ TODO:
     9. GROUP_BY + WHERE logic
     10. parse WHERE
     10. parse GROUP_BY
-    11. output table NULL BUG
+    11. перевірити чи обробляється "select student;"
+    12.
 
 DONE:
     1. fix table rowID output
     2. where logic + test
-    3.
+    3. output table NULL BUG
+    4. demo group_by
+    5.

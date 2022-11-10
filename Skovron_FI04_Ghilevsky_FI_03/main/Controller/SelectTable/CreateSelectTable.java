@@ -4,16 +4,17 @@ import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.Row;
 import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.Table;
 import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Select;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CreateSelectTable {
 
     private final Table primeTable;
     private final Table outTable;
     private final Select select;
+
+    private final static String COUNT = "COUNT";
+    private final static String AVG   = "AVG";
+    private final static String MAX   = "MAX";
 
     public CreateSelectTable(Select select, Table table){
         this.select = select;
@@ -34,10 +35,9 @@ public class CreateSelectTable {
     }
 
     public void select() {
-        if (select.isSelectAll())
+        if (select.isSelectAll()) {
             primeTable.selectAllAndPrint();
-
-        if(select.isSelectGroupBy()){ // TODO
+        } else if(select.isSelectGroupBy()){ // TODO
             Table tempTable = new Table(primeTable.getTableName(), primeTable.getRowsName());
 
             if (select.isSelectWhereValue()){
@@ -49,7 +49,6 @@ public class CreateSelectTable {
                 for (Row row: rows)
                     rowCompare(row, colName, value, tempTable);
             }
-
             if(select.isSelectWhereColumn()){
                 List<Row> rows =  primeTable.getRowArrayList();
 
@@ -58,37 +57,22 @@ public class CreateSelectTable {
 
                 for (Row row: rows)
                     rowCompare(row, colName1, colName2, tempTable);
-            }
+            }else // suspicious?? work??
+                tempTable = primeTable;
 
-            /**
-             * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-             */ // будуть одні костилі напевно))
+            String[] groupNames = select.getGroupNames();
+            String[] aggMethods = select.getAggMethods();
+            String[] aggFun = select.getAggFun();
+            String[] aggCol = select.getAggCol();
 
-            // TODO GROUP_BY ??how??
-            String[] groupNames = {""}; // some method from parser
-            String[] aggMethods = {""}; // some method from parser
             String[] rowsName = new String[groupNames.length + aggMethods.length];
-
             System.arraycopy(groupNames, 0, rowsName, 0 , groupNames.length);
             System.arraycopy(aggMethods, 0, rowsName, groupNames.length, aggMethods.length);
 
-            Table outTableGroup = new Table("outComeTable", rowsName);
+            // TODO
+            doGroupBY(tempTable.getRowArrayList(), rowsName, groupNames, aggCol, aggFun).selectAllAndPrint();
 
-            int[] cells = new int[rowsName.length];
-
-            for (int i = 0; i < tempTable.getRowArrayList().size(); i++){ // eh не так треба
-                System.arraycopy(
-                        insertInCells(tempTable.getRowArrayList().get(i), groupNames),
-                        0, cells, 0, groupNames.length);
-                //System.arraycopy();
-
-                outTableGroup.rowInsert(new Row(cells));
-            }
-
-            outTableGroup.selectAllAndPrint();
-        }
-
-        if (select.isSelectWhereValue()) {
+        } else if (select.isSelectWhereValue()) {
             List<Row> rows =  primeTable.getRowArrayList();
 
             String colName = select.selectWhereValue()[0];
@@ -98,9 +82,7 @@ public class CreateSelectTable {
                 rowCompare(row, colName, value, outTable);
 
             outTable.selectAllAndPrint();
-        }
-
-        if (select.isSelectWhereColumn()) {
+        } else if (select.isSelectWhereColumn()) {
             List<Row> rows =  primeTable.getRowArrayList();
 
             String colName1 = select.selectWhereCol()[0];
@@ -115,17 +97,87 @@ public class CreateSelectTable {
         }
     }
 
-    public int[] insertInCells(Row row, String[] groupNames){
-        int[] res = new int[groupNames.length];
+    // TODO @DOING
+    public Table doGroupBY(
+            ArrayList<Row> primeRow, String[] rowsName,
+            String[] groupNames, String[] aggCol, String[] aggFun) {
+        Table table = new Table("name", rowsName);
 
-        for(int i = 0; i < groupNames.length; i++){
-            res[i] = row.getRow()[findColName(groupNames[i])];
+        ArrayList<List<Row>> groupRow = new ArrayList<>();
+        Set<Integer[]> sets = new HashSet<>();
+
+        // находим необхідні колонки
+        int[] poss = new int[rowsName.length];
+        for (int i = 0; i < rowsName.length; i++)
+            poss[i] = findColName(rowsName[i]);
+
+        // находим унікільні елементи по всім необхідним колонкам
+        for (Row row : primeRow) {
+            Integer[] integers = new Integer[rowsName.length];
+            for (int i = 0; i < poss.length; i++)
+                integers[i] = row.getRow()[poss[i]];
+
+            sets.add(integers); // працює?
         }
 
-        return res;
+        // робим по цим унікльним елементам групи
+        int unique = sets.size();
+        for (int i = 0; i < unique; i++){
+            ArrayList<Row> list = new ArrayList<>();
+            groupRow.add(list);
+        }
+
+        // заносим в ці групи відповідні елементи
+        int k = 0;
+        for (Integer[] integer : sets) { // працює?
+            for (Row row : primeRow) {
+                Integer[] cell = getCell(row, integer, poss);
+                if (Arrays.equals(cell, integer))
+                    groupRow.get(k).add(row);
+            }
+                k++;
+        }
+
+        // TODO hard
+        // рахуєм відповідні функції
+        for (List<Row> rowList : groupRow) {
+            int[] cells = new int[rowsName.length];
+
+            int count = rowList.size();
+            int max = 0;
+            int avg = 0;
+
+            for (Row row : rowList) {
+                max = Math.max(row.getRow()[0], max);
+                avg += row.getRow()[0];
+
+                System.out.println(row);
+            }
+
+            cells[0] = rowList.get(0).getRow()[0];
+            cells[1] = count;
+            cells[2] = avg / count;
+            cells[3] = max;
+
+            table.rowInsert(new Row(cells));
+            System.out.println();
+        }
+
+        return table;
     }
 
-    public int findColName(String colName) { // public for test
+    private Integer[] getCell(Row row, Integer[] compArr, int[] poss){
+        if(compArr.length != poss.length)
+            throw new IllegalArgumentException("Wrong work GROUP_BY of something else wrong, ((VERY BAD ERROR!!))");
+
+        Integer[] temp = new Integer[compArr.length];
+        for(int i = 0; i < row.getRow().length; i++)
+            temp[i] = row.getRow()[poss[i]];
+
+        return temp;
+    }
+
+    public int findColName(String colName) {
         for (int i = 0; i < primeTable.getRowsName().length; i++)
             if (primeTable.getRowsName()[i].equals(colName))
                 return i;
@@ -138,32 +190,19 @@ public class CreateSelectTable {
         return outTable;
     }
 
-    public void rowCompare(Row row, String colName, int value, Table outTable) { // public for test
+    public void rowCompare(Row row, String colName, int value, Table outTable) {
         int pos = findColName(colName);
 
         if (row.getRow()[pos] == value)
             outTable.rowInsert(row);
-
     }
 
-    public void rowCompare(Row row, String colName1, String colName2, Table outTable){ // public for test
+    public void rowCompare(Row row, String colName1, String colName2, Table outTable){
         int pos1 = findColName(colName1);
         int pos2 = findColName(colName2);
 
         if (row.getRow()[pos1] == row.getRow()[pos2])
             outTable.rowInsert(row);
-    }
-
-    private void COUNT(Row row, String colName){
-        throw new UnsupportedOperationException();
-    }
-
-    private void MAX(Row row, String colName){
-        throw new UnsupportedOperationException();
-    }
-
-    private void AVG(Row row, String colName){
-        throw new UnsupportedOperationException();
     }
 
 }
