@@ -14,6 +14,8 @@ int main()
     // a = TokenizeInput(std::cin);
     ExecManager exec;
     std::stringstream b;
+<<<<<<< HEAD
+=======
     Create("t").Execute(exec);
     Insert("t", 1,2).Execute(exec);
     Insert("t", 3,2).Execute(exec);
@@ -21,6 +23,7 @@ int main()
     Insert("t", 2,1).Execute(exec);
     Insert("t", 2,4).Execute(exec);
     PrintTree("t").Execute(exec);
+>>>>>>> b52f2acadaf2629df835314eefdb7bb70e33c6d8
     while (exec.running)
     {
         try
