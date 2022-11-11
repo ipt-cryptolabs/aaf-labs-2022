@@ -1,8 +1,10 @@
 import re
+
+
 def parse(line):
     line = line.lstrip()
     command = re.sub(r'\s+', ' ', line)
-    command = re.sub(r'\(\s*', '(', command) # + or * ?
+    command = re.sub(r'\(\s*', '(', command)  # + or * ?
     command = re.sub(r'\s*,\s*', ',', command)
     command = re.sub(r'\s*\)\s*', ')', command)
     split_command = command.split(' ')
@@ -13,6 +15,8 @@ def parse(line):
         parameters = parameters + ','
         findParameters = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*,', parameters)
         concatParameters = ''
+        if findParameters == []:
+            return "Incorrect command syntax"
         for i in findParameters:
             concatParameters += i
         if concatParameters == parameters:
@@ -28,7 +32,7 @@ def parse(line):
             split_command[2] = split_command[2].replace(split_command[2][-1], '')
             split_command[2] = split_command[2].replace(split_command[2][-1], '')
             result_command.append(split_command[2].split(','))
-            return result_command
+        return result_command
     elif re.match(r'(?i)(insert|insert\s+into)\s+[a-zA-Z][a-zA-Z0-9_]*\s*\(.+\)\s*\;', line):
         line = re.sub(r'\s*\)\s*;$', ',);', line)
         parenthesized_expression = re.findall(r'\(.*\)', line)
@@ -51,28 +55,30 @@ def parse(line):
                 result_command.append(split_command[1])
                 result_command.append(args)
             result_command[1] = re.sub(r'\(.+\)\s*\;', '', result_command[1])
-            return result_command
-    elif re.match(r'(?i)(select\s+from)\s+[a-zA-Z][a-zA-Z0-9_]*((|\s+(?i)(join)\s+[a-zA-Z][a-zA-Z0-9_]*(|\s+(?i)(on)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\=\s+[a-zA-Z][a-zA-Z0-9_]*)|\s+(?i)(where)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\>\s+([a-zA-Z][a-zA-Z0-9_]*|\s*\"\s*.*\s*\"))|\s+(?i)(join)\s+[a-zA-Z][a-zA-Z0-9_]*(|\s+(?i)(on)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\=\s+[a-zA-Z][a-zA-Z0-9_]*)\s+(?i)(where)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\>\s+([a-zA-Z][a-zA-Z0-9_]*|\s*\"\s*.*\s*\"))\s*\;',line):
+        return result_command
+    elif re.match(
+            r'(?i)(select\s+from)\s+[a-zA-Z][a-zA-Z0-9_]*((|\s+(?i)(join)\s+[a-zA-Z][a-zA-Z0-9_]*(|\s+(?i)(on)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\=\s+[a-zA-Z][a-zA-Z0-9_]*)|\s+(?i)(where)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\>\s+([a-zA-Z][a-zA-Z0-9_]*|\s*\"\s*.*\s*\"))|\s+(?i)(join)\s+[a-zA-Z][a-zA-Z0-9_]*(|\s+(?i)(on)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\=\s+[a-zA-Z][a-zA-Z0-9_]*)\s+(?i)(where)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\>\s+([a-zA-Z][a-zA-Z0-9_]*|\s*\"\s*.*\s*\"))\s*\;',
+            line):
         split_command[-1] = split_command[-1][:-1]
         args = re.findall(r'\".*?\"', line)
         if args != []:
             split_command[-1] = args[0]
         result_command.append("SELECT")
         result_command.append(split_command[2])
-        if len(split_command)==5:
+        if len(split_command) == 5:
             result_command.append("JOIN")
             result_command.append(split_command[4])
-        elif len(split_command)==7:
+        elif len(split_command) == 7:
             result_command.append("WHERE")
             result_command.append(split_command[4])
             result_command.append(split_command[6])
-        elif len(split_command)==9 and re.match(r'(?i)(on)', split_command[5]):
+        elif len(split_command) == 9 and re.match(r'(?i)(on)', split_command[5]):
             result_command.append("JOIN")
             result_command.append(split_command[4])
             result_command.append("ON")
             result_command.append(split_command[6])
             result_command.append(split_command[8])
-        elif len(split_command)==9 and re.match(r'(?i)(where)', split_command[5]):
+        elif len(split_command) == 9 and re.match(r'(?i)(where)', split_command[5]):
             result_command.append("JOIN")
             result_command.append(split_command[4])
             result_command.append("WHERE")
