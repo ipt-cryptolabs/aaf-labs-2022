@@ -74,6 +74,9 @@ class DataBase:
             elif (command[2] == "JOIN") and (len(command) == 4):
                 table_1 = self.tables[command[1]]
                 table_2 = self.tables[command[3]]
+                if len(table_1.columns + table_2.columns) != len(set(table_1.columns + table_2.columns)):
+                    print("Сolumns in tables are not unique!")
+                    return
                 if len(table_1.values) == len(table_2.values):
                     values = []
                     i = 0
@@ -100,6 +103,9 @@ class DataBase:
             elif (command[2] == "JOIN") and (command[4] == "ON") and (len(command) == 7):
                 table_1 = self.tables[command[1]]
                 table_2 = self.tables[command[3]]
+                if len(table_1.columns + table_2.columns) != len(set(table_1.columns + table_2.columns)):
+                    print("Сolumns in tables are not unique!")
+                    return
                 if command[5] not in table_1.columns:
                     print(f"There is no such column with name {command[5]}")
                     return
@@ -135,6 +141,9 @@ class DataBase:
             elif (command[2] == "JOIN") and (command[4] == "ON") and (command[7] == "WHERE"):
                 table_1 = self.tables[command[1]]
                 table_2 = self.tables[command[3]]
+                if len(table_1.columns + table_2.columns) != len(set(table_1.columns + table_2.columns)):
+                    print("Сolumns in tables are not unique!")
+                    return
                 values = []
                 if len(table_1.values) == len(table_2.values):
                     if command[9][0] == '"':
@@ -239,6 +248,9 @@ class DataBase:
             elif (command[2] == "JOIN") and (command[4] == "WHERE"):
                 table_1 = self.tables[command[1]]
                 table_2 = self.tables[command[3]]
+                if len(table_1.columns + table_2.columns) != len(set(table_1.columns + table_2.columns)):
+                    print("Сolumns in tables are not unique!")
+                    return
                 values = []
                 if len(table_1.values) == len(table_2.values):
                     if command[6][0] == '"':
