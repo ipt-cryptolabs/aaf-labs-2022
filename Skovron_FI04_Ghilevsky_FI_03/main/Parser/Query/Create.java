@@ -20,7 +20,12 @@ public class Create implements SQLCommand {
         LinkedList<String> sqlList = new LinkedList<>();
         Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(sql_);
         while (m.find())
-            sqlList.add(m.group(1));
+            if(m.group().split("\\s+").length == 1){
+                sqlList.add(m.group(1).replace("\"", ""));
+            }
+            else{
+                sqlList.add(m.group(1));
+            }
 
         TableName = sqlList.get(1);
         sqlList.pop();
