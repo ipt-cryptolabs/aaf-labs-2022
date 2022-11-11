@@ -9,25 +9,27 @@ void Parser::insert(std::string str)
     switch (match(str))
     {
         case 0:
-            std::cout<< "ERROR INPUT";
+            std::cout<< "ERROR INPUT" << std::endl;
             break;
         case 1:
-            //std::cout<<"create "+tokens[1];
             createTree(tokens[1]);
+            std::cout<<"create " + tokens[1] + " done" << std::endl;
             break;
         case 2:
-            std::cout<<"input "<<tokens[1]<<tokens[2];
-            insertTree(tokens[1], tokens[2]);
+            insertTree(tokens[1], tokens[2].substr(1, tokens[2].length()-2));
+            std::cout << "input: " << tokens[1] << " " << tokens[2] + " done" << std::endl;
             break;
         case 3:
-            std::cout<<"print "<<tokens[1];
             printTree(tokens[1]);
+            std::cout << "print " << tokens[1] + " done" << std::endl;
             break;
         case 4:
-            std::cout<<"contains "<<tokens[1];
+
+            std::cout << "contains " << tokens[1] + " done" << std::endl;
             break;
         case 5:
-            std::cout<<"search "<<tokens[1];
+
+            std::cout << "search "<< tokens[1] + " done" << std::endl;
             break;
     }
 }
@@ -35,7 +37,6 @@ void Parser::insert(std::string str)
 void Parser::createTokens(std::string s)
 {
     std::string temp;
-    char delims[] = {' ', '\t', '\r', '\n'};
     bool flag = true;
     bool quote = false;
     for (int i = 0; i < s.length(); i++)
@@ -103,21 +104,26 @@ int Parser::match(std::string str)
 
 void Parser::createTree(std::string name) {
     Tree* t = new Tree;
-    if(treeName.contains(name))
+    if(treeName.contains(name)) {
+        std::cout << "Tree with such name already exists" << std::endl;
         throw "Tree with such name already exists";
-
+    }
     treeName[name] = t;
 }
 
 void Parser::insertTree(std::string name, std::string val) {
-    if(!treeName.contains(name))
-        throw "Tree with such name already exists";
+    if(!treeName.contains(name)) {
+        std::cout << "Tree with such name doesn't exist" << std::endl;
+        throw "Tree with such name doesn't exist";
+    }
     treeName[name]->insert(val);
 }
 
 void Parser::printTree(std::string name) {
-    if(!treeName.contains(name))
-        throw "Tree with such name already exists";
+    if(!treeName.contains(name)) {
+        std::cout << "Tree with such name doesn't exist" << std::endl;
+        throw "Tree with such name doesn't exist";
+    }
     treeName[name]->printTree();
 }
 
