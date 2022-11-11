@@ -27,7 +27,8 @@ int main() {
     Parser p;
     for (std::string line; std::getline(std::cin, line, ';');)
     {
-        p.insert(line);
+        if(!p.insert(line))
+            return 0;
     }
     return 0;
 }

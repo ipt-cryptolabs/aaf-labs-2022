@@ -23,15 +23,16 @@ private:
     void createTokens(std::string);
     std::string combineTokens();
     int match(std::string);
-    void createTree(std::string);
-    void insertTree(std::string, std::string);
-    void printTree(std::string);
-    void containsTree(std::string, std::string);
-    void searchTree();
-    void exitTree();
+    bool createTree(std::string);
+    bool insertTree(std::string, std::string);
+    bool printTree(std::string);
+    int containsTree(std::string, std::string);
+    bool searchTree(std::string name);
+
 public:
     Parser(){};
-    void insert(std::string);
+    ~Parser();
+    bool insert(std::string);
 };
 
 
