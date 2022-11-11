@@ -32,7 +32,9 @@ def parse(line):
             split_command[2] = split_command[2].replace(split_command[2][-1], '')
             split_command[2] = split_command[2].replace(split_command[2][-1], '')
             result_command.append(split_command[2].split(','))
-        return result_command
+            return result_command
+        else:
+            return "Incorrect command syntax"
     elif re.match(r'(?i)(insert|insert\s+into)\s+[a-zA-Z][a-zA-Z0-9_]*\s*\(.+\)\s*\;', line):
         line = re.sub(r'\s*\)\s*;$', ',);', line)
         parenthesized_expression = re.findall(r'\(.*\)', line)
@@ -55,6 +57,8 @@ def parse(line):
                 result_command.append(split_command[1])
                 result_command.append(args)
             result_command[1] = re.sub(r'\(.+', '', result_command[1])
+        else:
+            return "Incorrect command syntax"
         return result_command
     elif re.match(
             r'(?i)(select\s+from)\s+[a-zA-Z][a-zA-Z0-9_]*((|\s+(?i)(join)\s+[a-zA-Z][a-zA-Z0-9_]*(|\s+(?i)(on)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\=\s+[a-zA-Z][a-zA-Z0-9_]*)|\s+(?i)(where)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\>\s+([a-zA-Z][a-zA-Z0-9_]*|\s*\"\s*.*\s*\"))|\s+(?i)(join)\s+[a-zA-Z][a-zA-Z0-9_]*(|\s+(?i)(on)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\=\s+[a-zA-Z][a-zA-Z0-9_]*)\s+(?i)(where)\s+[a-zA-Z][a-zA-Z0-9_]*\s+\>\s+([a-zA-Z][a-zA-Z0-9_]*|\s*\"\s*.*\s*\"))\s*\;',
