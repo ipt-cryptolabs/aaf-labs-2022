@@ -2,15 +2,18 @@
 
 Tree::Node::Node() : letter(nullptr) , endWord(false)
 {
-
+    for(int i = 0; i < 95; ++i)
+    {
+        childrens[i] = nullptr;
+    }
 }
 
 Tree::Node::Node(const char& letter) : endWord(false)
 {
     this->letter = new char(letter);
-    for(int i = 0; i < 95;++i)
+    for(int i = 0; i < 95; ++i)
     {
-        childrens[i] = new Node;
+        childrens[i] = nullptr;
     }
 }
 
@@ -32,6 +35,8 @@ Tree::~Tree()
 Tree::Tree()
 {
     root = new Node;
+    for(int i = 0; i < 95; ++i)
+        root->childrens[i] = nullptr;
 }
 
 Tree::Tree(const std::string word)

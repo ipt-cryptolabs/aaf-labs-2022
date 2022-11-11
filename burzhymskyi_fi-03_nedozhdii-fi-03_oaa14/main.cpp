@@ -1,9 +1,8 @@
 #include "Parser.h"
-
+#include "Tree.h"
 
 int main() {
-//
-//
+
 //    Tree a;
 //    std::string b = "fmc";
 //
@@ -25,10 +24,10 @@ int main() {
 //    a.insert("gmj");
 //    a.search();
 //    a.printTree();
-//
+
     for (std::string line; std::getline(std::cin, line, ';');)
     {
-        Parser a(line);
+        Parser p(line);
     }
     return 0;
 }
