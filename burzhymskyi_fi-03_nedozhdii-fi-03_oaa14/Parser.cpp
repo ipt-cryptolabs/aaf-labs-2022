@@ -10,11 +10,9 @@ Parser::~Parser()
 
 bool Parser::insert(std::string str)
 {
-    std::smatch mt;
     tokens.clear();
     createTokens(str);
     str = combineTokens();
-    //std::cout<<str+"\n";
     if(tokens[0] == "q:")
     {
         return 0;
@@ -92,7 +90,7 @@ void Parser::createTokens(std::string s)
         {
             temp += s[i];
         }
-        if (temp.length() > 0 && flag == false && quote == false || s.length() - 1 == i)
+        if ((temp.length() > 0 && flag == false && quote == false) || (s.length() - 1 == i && flag == true))
         {
             tokens.push_back(temp);
             temp = "";
@@ -176,5 +174,6 @@ bool Parser::searchTree(std::string name)
         return 0;
     }
     treeName[name]->search();
+    std::cout << '\n';
     return 1;
 }
