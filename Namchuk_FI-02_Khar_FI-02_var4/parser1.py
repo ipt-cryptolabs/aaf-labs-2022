@@ -20,7 +20,7 @@ def parse(line):
             table_name = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*\(', split_command[1])
             if table_name != []:
                 split_command[1] = table_name
-                split_command[1] = split_command[1][0][:1]
+                split_command[1] = split_command[1][0][:-1]
                 parenthesizedExpression[0] = re.sub(r'\)', ');', parenthesizedExpression[0])
                 split_command.append(parenthesizedExpression[0])
             result_command.append(split_command[1])
