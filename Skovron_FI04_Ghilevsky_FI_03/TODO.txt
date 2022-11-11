@@ -1,8 +1,4 @@
 Case
-     create student (age, weight);
-     insert student (1, 2);
-     select from student;
-
      create "student info" (age, weight);
      insert "student info" (1, 2);
      select from "student info"; // problem 3
@@ -12,23 +8,10 @@ Case
      select from "student info"; // problem 6?
 
 TODO:
-    1. insert into - done
-    2. select from student
+    2. select fro student
     3. problem 3
-    4. problem 4  ?5, 6?    -done 4,5
-    4.1 regularCreateCase4Test() - done
-    5. Не парсяться відʼємні числа. - done
-    7. sameTableCreate() - ?
-    8. NegativeAndWhiteSpaceValueTest() - done
-    9. GROUP_BY + WHERE logic
+    4. problem 6
     10. parse WHERE
     10. parse GROUP_BY
-    11. перевірити чи обробляється "select student;"
-    12.
-
-DONE:
-    1. fix table rowID output
-    2. where logic + test
-    3. output table NULL BUG
-    4. demo group_by
-    5.
+    11. parse "select student;"
+    12. переписати doGroupBY sets через TreeSet<>(new Comparator<int[]>() {})

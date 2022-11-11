@@ -14,7 +14,7 @@ public class SelectGroupByTest {
      * демо логіка "select ... group_by age" для однієї групуючої колонки
      */
     @Test
-    void test(){
+    void logicGroupByTest(){
         ArrayList<Row> primeRow = new ArrayList<>();
 
         primeRow.add(new Row(1,2,3));
@@ -84,25 +84,27 @@ public class SelectGroupByTest {
 
     @Test
     void test2(){
-        CreateSelectTable createSelectTable = new CreateSelectTable(new Select(""), new Table(""));
+        CreateSelectTable createSelectTable = new CreateSelectTable(
+                new Select(""),
+                new Table("tableName", "age", "grade", "mark", "weight", "height"));
         ArrayList<Row> primeRow = new ArrayList<>();
 
-        primeRow.add(new Row(1,2,3));
-        primeRow.add(new Row(3,4,5));
-        primeRow.add(new Row(2,3,6));
-        primeRow.add(new Row(4,4,5));
-        primeRow.add(new Row(1,4,5));
-        primeRow.add(new Row(3,5,6));
-        primeRow.add(new Row(1,5,3));
-        primeRow.add(new Row(2,3,4));
-        primeRow.add(new Row(3,4,5));
-        primeRow.add(new Row(4,5,3));
-        primeRow.add(new Row(5,5,6));
+        //colName: age, grade, mark, weight, height
+        primeRow.add(new Row(20, 3, 75, 90, 200));
+        primeRow.add(new Row(20, 3, 77, 90, 180));
 
-        //SELECT COUNT(age), AVG(age), AVG(mark), MAX(mark), AVG(height) FROM student GROUP_BY age, grade, spec
-        String[] rowsName = {"age", "grade", "spec", "COUNT(age)", "AVG(age)", "AVG(mark)", "MAX(mark)", "AVG(height)"};
-        String[] aggCol = {"", ""};
-        String[] aggFun = {"", ""};
+        primeRow.add(new Row(21, 2, 80, 95, 195));
+
+        primeRow.add(new Row(21, 3, 80, 95, 195));
+
+        //SELECT COUNT(age) AVG(mark) MAX(mark) AVG(height) AVG(weight) MAX(height) FROM student GROUP_BY age, grade
+        String[] rowsName = {"age", "grade", "COUNT(age)", "AVG(mark)", "MAX(mark)", "AVG(height)", "AVG(weight)", "MAX(height)"};
+        String[] groupNames = {"age", "grade"};
+
+        String[] aggCol = {"age", "mark", "mark", "height", "weight", "height"};
+        String[] aggFun = {"COUNT", "AVG", "MAX", "AVG", "AVG", "MAX"};
+
+        createSelectTable.doGroupBY(primeRow, rowsName, groupNames, aggCol, aggFun).selectAllAndPrint();
 
     }
 }
