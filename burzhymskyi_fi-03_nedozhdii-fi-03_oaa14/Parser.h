@@ -28,7 +28,8 @@ private:
     void printTree(std::string);
     void containsTree(std::string, std::string);
 public:
-    Parser(std::string);
+    Parser(){};
+    void insert(std::string);
 };
 
 

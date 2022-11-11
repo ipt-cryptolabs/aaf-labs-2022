@@ -1,17 +1,18 @@
 #include "Parser.h"
 
-Parser::Parser(std::string str)
+void Parser::insert(std::string str)
 {
+    tokens.clear();
     createTokens(str);
     str = combineTokens();
-
+    //std::cout<<str+"\n";
     switch (match(str))
     {
         case 0:
             std::cout<< "ERROR INPUT";
             break;
         case 1:
-            std::cout<<"create "+tokens[1];
+            //std::cout<<"create "+tokens[1];
             createTree(tokens[1]);
             break;
         case 2:
@@ -105,17 +106,17 @@ void Parser::createTree(std::string name) {
     if(treeName.contains(name))
         throw "Tree with such name already exists";
 
-    treeName[name] = &*t;
+    treeName[name] = t;
 }
 
 void Parser::insertTree(std::string name, std::string val) {
-    if(treeName.contains(name))
+    if(!treeName.contains(name))
         throw "Tree with such name already exists";
     treeName[name]->insert(val);
 }
 
 void Parser::printTree(std::string name) {
-    if(treeName.contains(name))
+    if(!treeName.contains(name))
         throw "Tree with such name already exists";
     treeName[name]->printTree();
 }

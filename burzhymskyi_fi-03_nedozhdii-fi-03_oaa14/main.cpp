@@ -24,10 +24,10 @@ int main() {
 //    a.insert("gmj");
 //    a.search();
 //    a.printTree();
-
+    Parser p;
     for (std::string line; std::getline(std::cin, line, ';');)
     {
-        Parser p(line);
+        p.insert(line);
     }
     return 0;
 }
