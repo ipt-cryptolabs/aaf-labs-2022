@@ -19,7 +19,8 @@ Tree::Node::Node(const char& letter) : endWord(false)
 
 Tree::Node::~Node()
 {
-    delete letter;//todo delete only that exist, just see that element dont equal null
+    if(letter != nullptr)
+        delete letter;
     for(int i = 0; i < 95; ++i)
     {
         if(childrens[i] != nullptr)
@@ -85,6 +86,8 @@ bool Tree::contains(std::string word)
         }
         cur = cur->childrens[indexNextNode];
     }
+    if(!cur->endWord)
+        return false;
     return true;
 }
 

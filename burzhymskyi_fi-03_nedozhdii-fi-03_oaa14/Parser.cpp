@@ -1,5 +1,13 @@
 #include "Parser.h"
 
+Parser::~Parser()
+{
+    for(auto & [key, value] : treeName)
+    {
+        delete value;
+    }
+}
+
 bool Parser::insert(std::string str)
 {
     std::smatch mt;
