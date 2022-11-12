@@ -61,8 +61,8 @@ public class CreateSelectTable {
         } else if (select.isSelectWhereValue()) {
             List<Row> rows =  primeTable.getRowArrayList();
 
-            String colName = select.selectWhereValue()[0];
-            int value = Integer.parseInt(select.selectWhereValue()[1]);
+            String colName = select.selectWhereCol()[0];
+            int value = Integer.parseInt(select.selectWhereValue()[0]);
 
             for (Row row: rows)
                 rowCompare(row, colName, value, outTable);
@@ -72,7 +72,7 @@ public class CreateSelectTable {
             List<Row> rows =  primeTable.getRowArrayList();
 
             String colName1 = select.selectWhereCol()[0];
-            String colName2 = select.selectWhereCol()[0];
+            String colName2 = select.selectWhereValue()[0];
 
             for (Row row: rows)
                 rowCompare(row, colName1, colName2, outTable);

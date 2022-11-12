@@ -15,6 +15,7 @@ public class Main {
 
         create student (age, weight, height);
         insert student (1, 2, 3);
+        insert student (1, 4, 5);
         select from student;
         select from student where age = 1;
         select from student where weight = height;
