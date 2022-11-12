@@ -22,7 +22,7 @@ public class Insert implements SQLCommand{
         checkSqlQuery(sql.trim());
 
         String sql_ = sql.trim()
-                .replaceAll("\\(|\\)", " ")
+                .replaceAll("[()]", " ")
                 .replaceAll(",", " ")
                 .replaceAll(";", " ")
                 .replaceAll("\\s+", " ");
@@ -50,12 +50,8 @@ public class Insert implements SQLCommand{
 
         int[] IntRows = new int[sqlList.size() - 1];
 
-        try {
-            for (int i = 0; i < sqlList.size() - 1; i++) {
-                IntRows[i] = parseInt(sqlList.get(i + 1));
-            }
-        } catch(NumberFormatException e){
-            throw new IllegalArgumentException("Error: Invalid insert value (Insert)");
+        for (int i = 0; i < sqlList.size() - 1; i++) {
+            IntRows[i] = parseInt(sqlList.get(i + 1));
         }
 
         Row = new Row(IntRows);

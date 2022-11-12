@@ -19,12 +19,12 @@ public class Main {
         select from student where age = 1;
         select from student where weight = height;
 
-        select COUNT(weight), AVG(height) from student group_by age
+        select COUNT(weight), AVG(height) from student group_by age;
 
-        age  COUNT(weight)  AVG(height)
+        age  COUNT(weight)  AVG(height);
          22             2           178
          20             1           179
 
-
+         select COUNT(id) from student where height = 170 group_by weight;
      */
 }
