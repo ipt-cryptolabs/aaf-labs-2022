@@ -1,7 +1,8 @@
 package Skovron_FI04_Ghilevsky_FI_03.main.DataBase;
 
+import Skovron_FI04_Ghilevsky_FI_03.main.DataBase.PrintTable.FlipTable;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Table {
 
@@ -36,16 +37,14 @@ public class Table {
     }
 
     public void selectAllAndPrint() {
-        String[][] arr = new String[rowArrayList.size() + 1][rowsName.length];
-        arr[0] = rowsName;
+        String[][] arr = new String[rowArrayList.size()][rowsName.length];
 
-        for (int i = 0; i < rowArrayList.size(); i++) {
-            arr[i + 1] = fromIntToString(rowArrayList.get(i).getRow());
-        }
-        printTable(arr);
+        for (int i = 0; i < rowArrayList.size(); i++)
+            arr[i] = fromIntToString(rowArrayList.get(i).getRow());
+
+        System.out.println(FlipTable.of(rowsName, arr));
     }
 
-    @Deprecated
     private static String[] fromIntToString(int[] intArray){
         String[] strArray = new String[intArray.length];
 
@@ -58,27 +57,21 @@ public class Table {
     @Deprecated
     private static void printTable(String[][] table) {
         int maxColumns = 0;
-        for (String[] strings : table) {
+        for (String[] strings : table)
             maxColumns = Math.max(strings.length, maxColumns);
-        }
 
         int[] lengths = new int[maxColumns];
-        for (String[] strings : table) {
-            for (int j = 0; j < strings.length; j++) {
+        for (String[] strings : table)
+            for (int j = 0; j < strings.length; j++)
                 lengths[j] = Math.max(strings[j].length(), lengths[j]);
-            }
-        }
 
         String[] formats = new String[lengths.length];
-        for (int i = 0; i < lengths.length; i++) {
+        for (int i = 0; i < lengths.length; i++)
             formats[i] = "%1$" + lengths[i] + "s"
                     + (i + 1 == lengths.length ? "\n" : "   ");
-        }
 
-        for (String[] strings : table) {
-            for (int j = 0; j < strings.length; j++) {
+        for (String[] strings : table)
+            for (int j = 0; j < strings.length; j++)
                 System.out.printf(formats[j], strings[j]);
-            }
-        }
     }
 }
