@@ -13,11 +13,13 @@ public class SelectTest {
     @Test
     void regularSelectCase1Test(){
         Select select = new Select("SELECT FROM students");
+
         Assertions.assertEquals("students", select.getTableName());
+        Assertions.assertTrue(select.isSelectAll());
     }
 
     @Test
-    void regularSelectCase2Test(){
+    void invalidSQLSyntaxCase1Test(){
         Select select = new Select("SELECT FRO students");
 
         Exception exception = assertThrows(RuntimeException.class, select::getTableName);
@@ -28,7 +30,7 @@ public class SelectTest {
     }
 
     @Test
-    void regularSelectCase3Test(){
+    void emptyTableNameTest(){
         Select select = new Select("SELECT FROM ");
 
         Exception exception = assertThrows(RuntimeException.class, select::getTableName);
@@ -39,7 +41,7 @@ public class SelectTest {
     }
 
     @Test
-    void regularSelectCase4Test(){
+    void regularSelectCase2Test(){
         Select select = new Select("select COUNT(id) from student where height = 170 group_by weight;");
 
         Assertions.assertEquals("student", select.getTableName());
@@ -56,7 +58,7 @@ public class SelectTest {
     }
 
     @Test
-    void regularSelectCase5Test(){
+    void regularSelectCase3Test(){
         Select select = new Select("select from student where age = 1;");
 
         Assertions.assertEquals("student", select.getTableName());
@@ -69,7 +71,7 @@ public class SelectTest {
     }
 
     @Test
-    void regularSelectCase6Test(){
+    void regularSelectCase4Test(){
         Select select = new Select("select COUNT(weight), AVG(height) from student group_by age;");
 
         Assertions.assertEquals("student", select.getTableName());
@@ -84,7 +86,7 @@ public class SelectTest {
     }
 
     @Test
-    void regularSelectCase7Test(){
+    void regularSelectCase5Test(){
         Select select = new Select("select from student where weight = height;");
 
         Assertions.assertEquals("student", select.getTableName());
@@ -97,9 +99,73 @@ public class SelectTest {
     }
 
     @Test
-    void isSelectAllTest(){
-        Select select = new Select("SELECT FROM students");
-        Assertions.assertTrue(select.isSelectAll());
+    void emptyGroupNameTest(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) from student group_by ;"));
+
+    }
+
+    @Test
+    void emptyFunNameTest(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select from student group_by age;"));
+
+    }
+
+    @Test
+    void emptyColFunNameTest(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT() from student group_by age;"));
+
+    }
+
+    @Test
+    void invalidFunNameTest(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) from student group_by age;"));
+
+    }
+
+    @Test
+    void invalidSQLSyntaxCase2Test(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) from student group_b age;"));
+
+    }
+
+    @Test
+    void invalidSQLSyntaxCase3Test(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) fro student group_by age;"));
+
+    }
+
+    @Test
+    void invalidSQLSyntaxCase4Test(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) fro student group_b age;"));
+
+    }
+
+    @Test
+    void invalidSQLSyntaxCase5Test(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) from student wher age = 1 group_by age;"));
+
+    }
+
+    @Test
+    void invalidSQLOrder1Test(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) from student group_by age where age = 1;"));
+
+    }
+
+    @Test
+    void invalidSQLOrder2Test(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Select("select COUNT(id) group_by age where age = 1 from student ;"));
+
     }
 
 }
