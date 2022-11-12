@@ -1,7 +1,6 @@
 package Skovron_FI04_Ghilevsky_FI_03.test.ParserTest;
 
 import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Create;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

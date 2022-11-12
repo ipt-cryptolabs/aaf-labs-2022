@@ -1,24 +1,113 @@
 package Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
 public class Select implements SQLCommand{
 
     private boolean isSelectAll         = false;
     private boolean isSelectWhereValue  = false;
     private boolean isSelectWhereColumn = false;
     private boolean isSelectGroupBy     = false;
-    private String tableName;
+    private final String tableName;
+    private final String[] groupNames;
+    private final String[] aggMethods;
+    private final String[] aggFun;
+    private final String[] aggCol;
+    private final String[] whereValue;
+    private final String[] whereCol;
 
     public Select(String sql) throws IllegalArgumentException {
-        String[] sql_ = sql.replaceAll(";", "").split("\\s+");
+        String sql_ = sql.trim()
+                .replaceAll("[()]", " ")
+                .replaceAll(",", " ")
+                .replaceAll(";", " ")
+                .replaceAll("\\s+", " ");
 
-        for(int i = 1; i <sql_.length; i++){
-            if(sql_[i].equalsIgnoreCase("FROM")){
-                tableName = sql_[i+1];
+        ArrayList<String> sqlList = new ArrayList<>();
+        Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(sql_);
+        while (m.find())
+            if(m.group().split("\\s+").length == 1){
+                sqlList.add(m.group(1).replace("\"", ""));
+            }
+            else{
+                sqlList.add(m.group(1));
+            }
+
+        LinkedList<String> aggMethods_ = new LinkedList<>();
+        LinkedList<String> aggFun_ = new LinkedList<>();
+        LinkedList<String> aggCol_ = new LinkedList<>();
+        LinkedList<String> whereCol_ = new LinkedList<>();
+        LinkedList<String> whereValue_ = new LinkedList<>();
+        LinkedList<String> groupNames_ = new LinkedList<>();
+
+        int counter = 1;
+        int i = 0;
+        while (!sqlList.get(counter).equalsIgnoreCase("FROM"))   {
+            aggFun_.add(sqlList.get(counter));
+            counter+=1;
+            aggCol_.add(sqlList.get(counter));
+            counter+=1;
+            aggMethods_.add(aggFun_.get(i) + "(" + aggCol_.get(i) + ")");
+            i+=1;
+        }
+
+        counter+=1;
+        tableName = sqlList.get(counter);
+        counter+=1;
+
+        if(counter < sqlList.size() && sqlList.get(counter).equalsIgnoreCase("WHERE")){
+            counter+=1;
+            while (counter < sqlList.size() && !sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
+                whereCol_.add(sqlList.get(counter));
+                counter+=2;
+                whereValue_.add(sqlList.get(counter));
+                counter+=1;
             }
         }
 
-        if(sql_[0].equalsIgnoreCase("SELECT") && sql_[1].equalsIgnoreCase("FROM"))
+        counter+=1;
+
+        while (counter < sqlList.size()){
+            groupNames_.add(sqlList.get(counter));
+            counter+=1;
+        }
+
+        groupNames = groupNames_.toArray(new String[0]);
+        aggMethods = aggMethods_.toArray(new String[0]);
+        aggFun = aggFun_.toArray(new String[0]);
+        aggCol = aggCol_.toArray(new String[0]);
+        whereValue = whereValue_.toArray(new String[0]);
+        whereCol = whereCol_.toArray(new String[0]);
+
+        if(aggFun_.isEmpty() && groupNames_.isEmpty() && whereCol_.isEmpty()) {
             isSelectAll = true;
+        }
+
+        if(!groupNames_.isEmpty()){
+            isSelectGroupBy = true;
+        }
+
+        if(!whereCol_.isEmpty()){
+                if(isNumeric(whereValue_.get(0))){
+                    isSelectWhereValue = true;
+            }
+                else{
+                    isSelectWhereColumn = true;
+            }
+        }
+
+    }
+    private static boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
     }
 
     @Override
@@ -62,7 +151,10 @@ public class Select implements SQLCommand{
      *         [n-1] імя N-1 групи
      */
     public String[] getGroupNames() throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        if(groupNames == null){
+            throw new UnsupportedOperationException();
+        }
+        return groupNames;
     }
 
     /**
@@ -75,7 +167,10 @@ public class Select implements SQLCommand{
      * наприклад {"COUNT(id)", ...}
      */
     public String[] getAggMethods() throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        if(aggMethods == null){
+            throw new UnsupportedOperationException("Error: Empty Agg Methods (Select)");
+        }
+        return aggMethods;
     }
 
     /**
@@ -89,7 +184,10 @@ public class Select implements SQLCommand{
      * P.S можуть бути лише COUNT, MAX, AVG
      */
     public String[] getAggFun(){
-        throw new UnsupportedOperationException();
+        if(aggFun == null){
+            throw new UnsupportedOperationException("Error: Empty Agg Function (Select)");
+        }
+        return aggFun;
     }
 
     /**
@@ -102,7 +200,10 @@ public class Select implements SQLCommand{
      * наприклад {"id", "age", "weight", ...}
      */
     public String[] getAggCol(){
-        throw new UnsupportedOperationException();
+        if(aggCol == null){
+            throw new UnsupportedOperationException();
+        }
+        return aggCol;
     }
 
     /**
@@ -110,7 +211,10 @@ public class Select implements SQLCommand{
      *         [1] int по якому треба порівнювати
      */
     public String[] selectWhereValue() throws IllegalArgumentException{
-        throw new UnsupportedOperationException();
+        if(whereValue == null){
+            throw new UnsupportedOperationException();
+        }
+        return whereValue;
     }
 
     /**
@@ -119,7 +223,10 @@ public class Select implements SQLCommand{
      *         1 стовбець йде першим*
      */
     public String[] selectWhereCol() throws IllegalArgumentException{
-        throw new UnsupportedOperationException();
+        if(whereCol == null){
+            throw new UnsupportedOperationException();
+        }
+        return whereCol;
     }
 
 }

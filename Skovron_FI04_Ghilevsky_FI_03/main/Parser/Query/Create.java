@@ -12,7 +12,7 @@ public class Create implements SQLCommand {
     public Create(String sql) throws IllegalArgumentException{
         checkSqlQuery(sql.trim());
         String sql_ = sql.trim()
-                .replaceAll("\\(|\\)", " ")
+                .replaceAll("[()]", " ")
                 .replaceAll(",", " ")
                 .replaceAll(";", " ")
                 .replaceAll("\\s+", " ");
