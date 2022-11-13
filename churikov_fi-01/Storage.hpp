@@ -9,19 +9,18 @@
 class Storage {
 private:
     std::map<std::string, Trie> tries;
-
-    void create(CreateRequest request, std::stringstream &ss);
-
-    void insert(InsertRequest request, std::stringstream &ss);
-
-    void print_tree(PrintTreeRequest request, std::stringstream &ss);
-
-    void contains(ContainsRequest request, std::stringstream &ss);
-
-    void search(SearchRequest request, std::stringstream &ss);
-
 public:
     Storage();
+
+    std::string create(CreateRequest request);
+
+    std::string insert(InsertRequest request);
+
+    std::string print_tree(PrintTreeRequest request);
+
+    std::string contains(ContainsRequest request);
+
+    std::string search(SearchRequest request);
 
     std::string execute(const std::shared_ptr<Request> &request);
 };
