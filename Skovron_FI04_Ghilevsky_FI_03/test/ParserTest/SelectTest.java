@@ -1,5 +1,6 @@
 package Skovron_FI04_Ghilevsky_FI_03.test.ParserTest;
 
+import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Create;
 import Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query.Select;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,10 +21,8 @@ public class SelectTest {
 
     @Test
     void invalidSQLSyntaxCase1Test(){
-        Select select = new Select("SELECT FRO students");
-
-        Exception exception = assertThrows(RuntimeException.class, select::getTableName);
-        String expectedMessage = "Error: Invalid slq syntax (Select)";
+        Exception exception = assertThrows(RuntimeException.class, () -> new Select("SELECT FRO students"));
+        String expectedMessage = "Error: Invalid SQL syntax (Selection Error 1)";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -31,12 +30,10 @@ public class SelectTest {
 
     @Test
     void emptyTableNameTest(){
-        Select select = new Select("SELECT FROM ");
-
-        Exception exception = assertThrows(RuntimeException.class, select::getTableName);
-        String expectedMessage = "Error: Empty table name (Select)"; // or
+        Exception exception = assertThrows(RuntimeException.class, () -> new Select("SELECT FROM ;"));
+        String expectedMessage = "Error: Empty table name"; // or
         String actualMessage = exception.getMessage();
-
+        System.out.println(actualMessage);
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
@@ -72,7 +69,7 @@ public class SelectTest {
 
     @Test
     void regularSelectCase4Test(){
-        Select select = new Select("select COUNT(weight), AVG(height) from student group_by age;");
+         Select select = new Select("select COUNT(weight), AVG(height) from student group_by age;");
 
         Assertions.assertEquals("student", select.getTableName());
         Assertions.assertEquals(Arrays.toString(new String[]{"COUNT", "AVG"}), Arrays.toString(select.getAggFun()));
@@ -122,7 +119,7 @@ public class SelectTest {
     @Test
     void invalidFunNameTest(){
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> new Select("select COUNT(id) from student group_by age;"));
+                () -> new Select("select COUN(id) from student group_by age;"));
 
     }
 

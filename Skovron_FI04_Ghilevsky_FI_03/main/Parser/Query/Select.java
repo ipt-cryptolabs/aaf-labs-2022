@@ -2,6 +2,8 @@ package Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,7 @@ public class Select implements SQLCommand{
     private final String[] whereCol;
 
     public Select(String sql) throws IllegalArgumentException {
+        checkSqlQuery(sql);
         String sql_ = sql.trim()
                 .replaceAll("[()]", " ")
                 .replaceAll(",", " ")
@@ -100,6 +103,7 @@ public class Select implements SQLCommand{
             }
         }
 
+
     }
     private static boolean isNumeric(String str) {
         try {
@@ -121,9 +125,111 @@ public class Select implements SQLCommand{
         return tableName;
     }
 
-    @Override
     public void checkSqlQuery(String sql) throws IllegalArgumentException {
+        String sql_ = sql.trim()
+                .replaceAll("[()]", " ")
+                .replaceAll(",", " ")
+                .replaceAll(";", " ")
+                .replaceAll("\\s+", " ");
 
+        ArrayList<String> sqlList = new ArrayList<>();
+        Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(sql_);
+        while (m.find()) {
+            if (m.group().split("\\s+").length == 1) {
+                sqlList.add(m.group(1).replace("\"", ""));
+            } else {
+                sqlList.add(m.group(1));
+            }
+        }
+
+        boolean checkFrom = false;
+        int counter = 1;
+        for (int i = 1; i < sqlList.size(); i++) {
+            if (sqlList.get(i).equalsIgnoreCase("FROM")) {
+                checkFrom = true;
+                counter = i;
+                break;
+            }
+            if(sqlList.get(i).equalsIgnoreCase("WHERE") || sqlList.get(i).equalsIgnoreCase("GROUP_BY")){
+                throw new IllegalArgumentException("Error: Invalid SQL order");
+            }
+            counter+=1;
+        }
+
+        if(!checkFrom){
+            throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 1)"); //missing "from"
+        }
+
+        String brackets = sql.replaceAll("[^()]", "");
+        if(!balancedBrackets(brackets)){
+            throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 2)"); //brackets placed incorrectly
+        }
+        if(!brackets.equals("")){
+            ArrayList<String> AggFun_ = new ArrayList<>();
+            for (int i = 1; i < counter; i++) {
+                AggFun_.add(sqlList.get(i));
+            }
+            if(AggFun_.size() % 2 == 1){
+                throw new IllegalArgumentException("Error: Invalid func name or empty column name");
+            }
+            int i = 0;
+            while (i < AggFun_.size()){
+                if(!AggFun_.get(i).equals("COUNT") && !AggFun_.get(i).equals("MAX") && !AggFun_.get(i).equals("AVG")){
+                    throw new IllegalArgumentException("Error: Invalid func name");
+                }
+                i+=1;
+                if(AggFun_.get(i).equals("") || AggFun_.get(i).equals("COUNT") || AggFun_.get(i).equals("MAX") || AggFun_.get(i).equals("AVG")){
+                    throw new IllegalArgumentException("Error: Empty or invalid column name ");
+                }
+                i+=1;
+            }
+        }
+
+        counter+=1;
+        if(counter == sqlList.size()){
+            throw new IllegalArgumentException("Error: Empty table name");
+        }
+        if(sqlList.get(counter).equals("") || sqlList.get(counter).equals("WHERE") || sqlList.get(counter).equals("GROUP_BY")){
+            throw new IllegalArgumentException("Error: Empty table name");
+        }
+
+
+        counter+=1;
+        if(counter < sqlList.size()) {
+            if(sqlList.get(counter).equalsIgnoreCase("WHERE")){
+                checkWhere(counter, sqlList);
+            }
+            else if(sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
+                checkGroupBy(counter, sqlList);
+            }
+            else{
+                throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 3)");
+            }
+        }
+
+    }
+
+    private void checkWhere(int counter, ArrayList<String> sqlList){
+        //доделать
+    }
+
+    private void checkGroupBy(int counter, ArrayList<String> sqlList){
+        //доделать
+    }
+    private static boolean balancedBrackets(String input) {
+        if ((input.length() % 2) == 1) return false;
+        else {
+            Stack<Character> stack = new Stack<>();
+            for (char bracket : input.toCharArray()) {
+                if (bracket == '(') {
+                    stack.push(')');
+                    continue;
+                }
+                if (stack.isEmpty() || bracket != stack.peek()) return false;
+                stack.pop();
+            }
+            return stack.isEmpty();
+        }
     }
 
     public boolean isSelectAll() {
