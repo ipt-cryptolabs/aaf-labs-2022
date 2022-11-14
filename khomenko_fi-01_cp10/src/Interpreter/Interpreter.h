@@ -3,17 +3,17 @@
 
 
 #include "NodeVisitor.h"
-#include "../DB/DatabaseDAO.h"
+#include "../DB/DB.h"
 
 class Interpreter: NodeVisitor {
 public:
-    Interpreter(Parser* parser, DatabaseDAO* db): parser_(parser), db_(db){   }
+    Interpreter(Parser* parser, DB* db): parser_(parser), db_(db){   }
 
     void Interpret();
 
 private:
     Parser* parser_;
-    DatabaseDAO* db_;
+    DB* db_;
 
     void VisitCommand(CommandNode* node) override;
     int VisitInteger(IntegerNode* node) override;

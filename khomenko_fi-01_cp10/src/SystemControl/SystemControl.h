@@ -6,14 +6,17 @@
 #include "../Lexer/Lexer.h"
 #include "../Parser/Parser.h"
 #include "../Interpreter/Interpreter.h"
-#include "../DB/DBImpl.h"
+#include "../DB/DB.h"
 #include "../Exception.h"
 
-class CLI {
+class SystemControl {
 public:
+    SystemControl();
     void Run();
 
 private:
+    DB* db_;
+
     void Info();
 };
 

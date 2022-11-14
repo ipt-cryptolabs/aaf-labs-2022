@@ -1,8 +1,8 @@
-#include "CLI/CLI.h"
+#include "SystemControl/SystemControl.h"
 
 int main() {
-    CLI cli;
-    cli.Run();
+    SystemControl system_control;
+    system_control.Run();
 
     return 0;
 }

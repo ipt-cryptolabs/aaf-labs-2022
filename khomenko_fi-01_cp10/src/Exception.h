@@ -8,6 +8,9 @@
 class Exception : public std::exception {
 public:
     Exception(const char *msg) : msg_(msg) {    }
+
+    Exception(const std::basic_string<char>& error_string):msg_(error_string.c_str()) {  }
+
     ~Exception() {  }
 
     const char *what() const noexcept override {

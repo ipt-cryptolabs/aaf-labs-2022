@@ -1,7 +1,10 @@
-#include "CLI.h"
+#include "SystemControl.h"
 
+SystemControl::SystemControl(){
+    db_ = new DB();
+}
 
-void CLI::Run() {
+void SystemControl::Run() {
     Info();
 
     while(true){
@@ -30,7 +33,7 @@ void CLI::Run() {
         try{
             Lexer lexer(res_input);
             Parser parser(&lexer);
-            Interpreter interpreter(&parser, new DBImpl());
+            Interpreter interpreter(&parser, db_);
 
             interpreter.Interpret();
         }
@@ -40,6 +43,6 @@ void CLI::Run() {
     }
 }
 
-void CLI::Info() {
+void SystemControl::Info() {
     std::cout << "---\tDB based on R-Tree\t---\n\n";
 }
