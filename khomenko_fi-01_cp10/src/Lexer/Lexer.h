@@ -19,14 +19,16 @@ private:
     std::string text_;
     int pos_;
     char current_char_;
+    
+    static std::vector<char> kWhitespaceCharacters;
 
-    int Integer();
+    std::string Integer();
     void Skip();
     void Advance();
 
     // Utils
     static bool IsWhitespaceCharacter(char el);
-    static std::string ClearWhitespaceCharacters(const std::string& str);
+    static std::string ToPoint(const std::string& str);
     static std::string MakeLower(std::string str);
 
     // Errors

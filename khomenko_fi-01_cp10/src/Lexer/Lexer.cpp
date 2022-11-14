@@ -1,5 +1,6 @@
 #include "Lexer.h"
 
+std::vector<char> Lexer::kWhitespaceCharacters = {' ', '\t', '\r', '\n'};
 
 Token *Lexer::GetNextToken() {
     while(current_char_ != '\0') {
@@ -85,14 +86,14 @@ Token *Lexer::GetNextToken() {
             std::cmatch result;
             std::regex point_reg(R"(\(\s*([+-]?[1-9]\d*|0)\s*,\s*([+-]?[1-9]\d*|0)\s*\))");
             if(std::regex_match(res_string.c_str(), result, point_reg)){
-                return new Token(kPoint, ClearWhitespaceCharacters(res_string));
+                return new Token(kPoint, ToPoint(res_string));
             }
             PointError();
         }
 
         if(current_char_ == '-' || isdigit(current_char_)){
             //probably Integer
-            return new Token(kInteger, std::to_string(Integer()));
+            return new Token(kInteger, Integer());
         }
 
         if (IsWhitespaceCharacter(current_char_)) {
@@ -115,13 +116,12 @@ Token *Lexer::GetNextToken() {
     return new Token(kEOF, "");
 }
 
-int Lexer::Integer() {
+std::string Lexer::Integer() {
     // Return a (multidigit) integer(str) consumed from the input
-    bool negative = false;
 
     std::string res_string;
     if(current_char_ == '-'){
-        negative = true;
+        res_string += current_char_;
         Advance();
     }
 
@@ -129,11 +129,7 @@ int Lexer::Integer() {
         res_string += current_char_;
         Advance();
     }
-
-    if(negative){
-        return -std::stoi(res_string);
-    }
-    return std::stoi(res_string);
+    return res_string;
 }
 
 void Lexer::Skip() {
@@ -155,14 +151,13 @@ void Lexer::Advance() {
 }
 
 bool Lexer::IsWhitespaceCharacter(char el) {
-    std::vector<char> kWhitespaceCharacters = {' ', '\t', '\r', '\n'};
     return std::find(kWhitespaceCharacters.begin(), kWhitespaceCharacters.end(),el) !=kWhitespaceCharacters.end();
 }
 
-std::string Lexer::ClearWhitespaceCharacters(const std::string& str) {
+std::string Lexer::ToPoint(const std::string& str) {
     std::string res_str;
     for(auto el:str){
-        if(!IsWhitespaceCharacter(el)){
+        if(!IsWhitespaceCharacter(el) && el != '(' && el != ')'){
             res_str += el;
         }
     }

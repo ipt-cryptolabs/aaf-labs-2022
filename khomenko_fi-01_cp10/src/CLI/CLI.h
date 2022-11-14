@@ -2,8 +2,11 @@
 #define AAF_LABS_2022_CLI_H
 
 #include "iostream"
-#include "../Parser/Parser.h"
+
 #include "../Lexer/Lexer.h"
+#include "../Parser/Parser.h"
+#include "../Interpreter/Interpreter.h"
+#include "../DB/DBImpl.h"
 #include "../Exception.h"
 
 class CLI {
@@ -11,7 +14,6 @@ public:
     void Run();
 
 private:
-    std::string ProcessInput(std::string input);
     void Info();
 };
 

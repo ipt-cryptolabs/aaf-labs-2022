@@ -19,36 +19,25 @@ void CLI::Run() {
             std::getline(std::cin, input);
             input += '\n';
 
-            if(input.find(';') != std::string::npos){
-                res_input += ProcessInput(input);
+            auto it = input.find(';');
+            if(it != std::string::npos){
+                res_input += std::string(input.begin(), input.begin() + it + 1);
                 break;
             }
             res_input += input;
         }
 
-
-        Lexer lexer(res_input);
-
         try{
+            Lexer lexer(res_input);
             Parser parser(&lexer);
-            parser.Parse();
+            Interpreter interpreter(&parser, new DBImpl());
+
+            interpreter.Interpret();
         }
         catch (Exception& exception){
             std::cout<< exception.what() << std::endl;
         }
     }
-}
-
-std::string CLI::ProcessInput(std::string input) {
-    std::string res_string;
-
-    for(auto el: input){
-        res_string += el;
-        if(el == ';'){
-            break;
-        }
-    }
-    return res_string;
 }
 
 void CLI::Info() {

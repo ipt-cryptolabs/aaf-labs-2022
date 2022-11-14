@@ -3,6 +3,11 @@
 
 
 #include "../Lexer/Lexer.h"
+#include "ASTNode.h"
+#include "CommandNode.h"
+#include "IntegerNode.h"
+#include "PointNode.h"
+#include "SetNameNode.h"
 
 class Parser {
 public:
@@ -10,25 +15,24 @@ public:
         current_token_ = lexer_->GetNextToken();
     }
 
-    void Parse();
+    ASTNode* Parse();
 
 private:
     Lexer* lexer_;
     Token* current_token_;
 
-    void Eat(TokenType token_type);
+    Token* Eat(TokenType token_type);
 
-    void Expr();
-    void CreateExpr();
-    void InsertExpr();
-    void PrintExpr();
-    void ContainsExpr();
-    void SearchExpr();
-    void WhereExpr();
-    void InsideExpr();
-    void LeftOfExpr();
-    void NNExpr();
-
+    ASTNode* Expr();
+    ASTNode* CreateExpr();
+    ASTNode* InsertExpr();
+    ASTNode* PrintExpr();
+    ASTNode* ContainsExpr();
+    ASTNode* SearchExpr();
+    ASTNode* WhereExpr();
+    ASTNode* InsideExpr();
+    ASTNode* LeftOfExpr();
+    ASTNode* NNExpr();
 
 
     void Error(){
