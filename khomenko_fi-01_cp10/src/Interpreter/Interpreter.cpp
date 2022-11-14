@@ -50,17 +50,17 @@ void Interpreter::VisitCommand(CommandNode *node) {
             CommandNode* qualifier_node = dynamic_cast<CommandNode*>(subcommand_node->get_left());
 
             if(qualifier_node->get_op()->get_type() == kNN){
-                PointNode* point_node = dynamic_cast<PointNode*>(node->get_left());
+                PointNode* point_node = dynamic_cast<PointNode*>(qualifier_node->get_left());
                 db_->SearchNN(VisitSetName(set_name_node), VisitPoint(point_node));
             }
             else{
                 if(qualifier_node->get_op()->get_type() == kLeftOf){
-                    IntegerNode* integer_node = dynamic_cast<IntegerNode*>(node->get_left());
+                    IntegerNode* integer_node = dynamic_cast<IntegerNode*>(qualifier_node->get_left());
                     db_->SearchLeftOf(VisitSetName(set_name_node), VisitInteger(integer_node));
                 }
                 else{
-                    PointNode* point_node1 = dynamic_cast<PointNode*>(node->get_left());
-                    PointNode* point_node2 = dynamic_cast<PointNode*>(node->get_right());
+                    PointNode* point_node1 = dynamic_cast<PointNode*>(qualifier_node->get_left());
+                    PointNode* point_node2 = dynamic_cast<PointNode*>(qualifier_node->get_right());
                     db_->SearchInside(VisitSetName(set_name_node), VisitPoint(point_node1), VisitPoint(point_node2));
                 }
             }
@@ -68,7 +68,7 @@ void Interpreter::VisitCommand(CommandNode *node) {
         }
 
         default:
-            // never get_value here
+            // never gets here
             break;
     }
 }
