@@ -1,3 +1,5 @@
+//search where <> hooks in reg
+
 const commands = require('./commands');
 
 const createReg = /^CREATE+\s+\b[a-zA-Z0-9_]+\b$/i;
@@ -67,7 +69,7 @@ const parser = input => {
                 commands.create(tokens[1]);
                 break;
             case 1:
-                commands.insert(tokens[1], tokens.slice(2,));
+                commands.insert(tokens[1], tokens.slice(2,)[0]);
                 break;
             case 2:
                 commands.print_index(tokens[1]);
@@ -76,7 +78,7 @@ const parser = input => {
                 commands.search(tokens[1]);
                 break;
             case 4:
-                commands.searchWhere(tokens[1], tokens.slice(3));
+                commands.searchWhere(tokens[1], tokens.slice(3)[0]);
                 break;
             case 5:
                 let dashIndex = tokens.indexOf('-');
