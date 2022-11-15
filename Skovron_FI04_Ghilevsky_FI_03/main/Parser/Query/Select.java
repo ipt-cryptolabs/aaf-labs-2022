@@ -125,6 +125,7 @@ public class Select implements SQLCommand{
         return tableName;
     }
 
+    @Override
     public void checkSqlQuery(String sql) throws IllegalArgumentException {
         String sql_ = sql.trim()
                 .replaceAll("[()]", " ")

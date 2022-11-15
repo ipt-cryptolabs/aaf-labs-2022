@@ -83,12 +83,12 @@ public class SelectGroupByTest {
     }
 
     @Test
-    void test2(){
-        CreateSelectTable createSelectTable = new CreateSelectTable(
-                new Select(""),
+    void test2() {
+        CreateSelectTable createSelectTable;
+        createSelectTable = new CreateSelectTable(
+                new Select("select from student"),
                 new Table("tableName", "age", "grade", "mark", "weight", "height"));
         ArrayList<Row> primeRow = new ArrayList<>();
-
         //colName: age, grade, mark, weight, height
         primeRow.add(new Row(20, 3, 75, 90, 200));
         primeRow.add(new Row(20, 3, 77, 90, 180));
