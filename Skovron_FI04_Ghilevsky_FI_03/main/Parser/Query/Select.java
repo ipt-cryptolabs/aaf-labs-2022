@@ -160,11 +160,13 @@ public class Select implements SQLCommand{
             throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 1)"); //missing "from"
         }
 
+        boolean checkAggFun = false;
         String brackets = sql.replaceAll("[^()]", "");
         if(!balancedBrackets(brackets)){
             throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 2)"); //brackets placed incorrectly
         }
         if(!brackets.equals("")){
+            checkAggFun = true;
             ArrayList<String> AggFun_ = new ArrayList<>();
             for (int i = 1; i < counter; i++) {
                 AggFun_.add(sqlList.get(i));
@@ -200,6 +202,9 @@ public class Select implements SQLCommand{
                 checkWhere(counter, sqlList);
             }
             else if(sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
+                if(!checkAggFun){
+                    throw new IllegalArgumentException("Error: Empty func name");
+                }
                 checkGroupBy(counter, sqlList);
             }
             else{
@@ -210,12 +215,34 @@ public class Select implements SQLCommand{
     }
 
     private void checkWhere(int counter, ArrayList<String> sqlList){
-        //доделать
+        counter+=2;
+        if(!sqlList.get(counter).equals("=")){
+            throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 4)");
+        }
+        counter+=2;
+        if(counter < sqlList.size()){
+            if(!sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
+                throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 5)");
+            }
+            else{
+                checkGroupBy(counter, sqlList);
+            }
+        }
     }
 
     private void checkGroupBy(int counter, ArrayList<String> sqlList){
-        //доделать
+        counter+=1;
+        if(counter == sqlList.size()){
+            throw new IllegalArgumentException("Error: Empty group name");
+        }
+        while(counter < sqlList.size()){
+            if(sqlList.get(counter).equalsIgnoreCase("WHERE")){
+                throw new IllegalArgumentException("Error: Invalid SQL order");
+            }
+            counter+=1;
+        }
     }
+
     private static boolean balancedBrackets(String input) {
         if ((input.length() % 2) == 1) return false;
         else {
