@@ -18,7 +18,7 @@ private:
     void VisitCommand(CommandNode* node) override;
     int VisitInteger(IntegerNode* node) override;
     std::string VisitSetName(SetNameNode* node) override;
-    std::pair<int, int> VisitPoint(PointNode* node) override;
+    Point* VisitPoint(PointNode* node) override;
 };
 
 

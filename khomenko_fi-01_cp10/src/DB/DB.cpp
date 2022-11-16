@@ -11,7 +11,7 @@ void DB::Create(const std::string& set_name) {
     }
 }
 
-void DB::Insert(const std::string& set_name, std::pair<int, int> point) {
+void DB::Insert(const std::string& set_name, Point* point) {
     CheckSetPresence(set_name);
     sets_[set_name]->Insert(point);
 }
@@ -21,7 +21,7 @@ void DB::Print(const std::string& set_name) {
     sets_[set_name]->Print();
 }
 
-void DB::Contains(const std::string& set_name, std::pair<int, int> point) {
+void DB::Contains(const std::string& set_name, Point* point) {
     CheckSetPresence(set_name);
     sets_[set_name]->Contains(point);
 }
@@ -31,12 +31,12 @@ void DB::Search(const std::string& set_name) {
     sets_[set_name]->Search();
 }
 
-void DB::SearchInside(const std::string& set_name, std::pair<int, int> point1, std::pair<int, int> point2) {
+void DB::SearchInside(const std::string& set_name, Point* point1, Point* point2) {
     CheckSetPresence(set_name);
     sets_[set_name]->SearchInside(point1, point2);
 }
 
-void DB::SearchNN(const std::string& set_name, std::pair<int, int> point) {
+void DB::SearchNN(const std::string& set_name, Point* point) {
     CheckSetPresence(set_name);
     sets_[set_name]->SearchNN(point);
 }

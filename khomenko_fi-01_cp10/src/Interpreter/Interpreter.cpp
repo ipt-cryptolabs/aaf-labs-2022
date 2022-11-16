@@ -81,7 +81,7 @@ std::string Interpreter::VisitSetName(SetNameNode *node) {
     return node->get_value();
 }
 
-std::pair<int, int> Interpreter::VisitPoint(PointNode *node) {
+Point* Interpreter::VisitPoint(PointNode *node) {
     return node->get_value();
 }
 

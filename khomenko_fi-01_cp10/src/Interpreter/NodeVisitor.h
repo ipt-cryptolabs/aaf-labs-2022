@@ -9,7 +9,7 @@ public:
     virtual void VisitCommand(CommandNode* node) = 0;
     virtual int VisitInteger(IntegerNode* node) = 0;
     virtual std::string VisitSetName(SetNameNode* node) = 0;
-    virtual std::pair<int, int> VisitPoint(PointNode* node) = 0;
+    virtual Point* VisitPoint(PointNode* node) = 0;
 };
 
 

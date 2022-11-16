@@ -8,6 +8,6 @@ set(Headers src/SystemControl/SystemControl.h src/Exception.h  src/Lexer/Lexer.h
             src/Interpreter/Interpreter.h src/Interpreter/NodeVisitor.h src/DB/DB.h src/DB/RTree/RTree.h)
 
 set(Sources src/main.cpp src/SystemControl/SystemControl.cpp src/Lexer/Lexer.cpp src/Parser/Parser.cpp src/Interpreter/Interpreter.cpp
-        src/DB/DB.cpp src/DB/RTree/RTree.cpp)
+        src/DB/DB.cpp src/DB/RTree/RTree.cpp src/DB/RTree/Rectangle.h src/DB/RTree/Point.h)
 
 add_executable(SetOf2DPoints ${Headers} ${Sources})
