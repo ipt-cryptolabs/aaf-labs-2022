@@ -34,7 +34,11 @@ void DB::Contains(const std::string& set_name, Point* point) {
 
 void DB::Search(const std::string& set_name) {
     CheckSetPresence(set_name);
-    sets_[set_name]->Search();
+    std::vector<Point *> res = sets_[set_name]->Search();
+
+    for(auto el: res){
+        std::cout << el->ToString() << std::endl;
+    }
 }
 
 void DB::SearchInside(const std::string& set_name, Point* point1, Point* point2) {

@@ -1,6 +1,11 @@
 #include "RTree.h"
 
 
+void RTree::Insert(Point *point) {
+
+}
+
+
 void RTree::Print() {
     if(root_){
         SubPrint(root_, "", true);
@@ -113,13 +118,43 @@ bool RTree::SubContains(Point *point, RTree::Node *node) {
 }
 
 
-void RTree::Insert(Point *point) {
+std::vector<Point *> RTree::Search() {
+    std::vector<Point*> res;
 
+    if(root_){
+        SubSearch(root_, res);
+    }
+    return res;
 }
 
+void RTree::SubSearch(RTree::Node *node, std::vector<Point *>& collected_points) {
+    Leaf* leaf_node = dynamic_cast<Leaf*>(node);
 
-std::vector<Point *> RTree::Search() {
-    return std::vector<Point *>();
+    if(leaf_node){
+        auto leaf_node_iter = leaf_node->points_.begin();
+        for (; leaf_node_iter != leaf_node->points_.end(); leaf_node_iter++) {
+            if (!IsPointIn(*leaf_node_iter, collected_points)){
+                collected_points.push_back(*leaf_node_iter);
+            }
+        }
+    }
+    else{
+        INode* inner_node = dynamic_cast<INode*>(node);
+        auto inner_node_iter = inner_node->nodes_.begin();
+
+        for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
+            SubSearch(*inner_node_iter, collected_points);
+        }
+    }
+}
+
+bool RTree::IsPointIn(Point* point, const std::vector<Point*>& points) {
+    for(auto el: points){
+        if((el->x == point->x) && (el->y == point->y)){
+            return true;
+        }
+    }
+    return false;
 }
 
 std::vector<Point *> RTree::SearchInside(Point *point1, Point *point2) {
