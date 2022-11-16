@@ -29,8 +29,9 @@ public class Main {
         select from student where weight = height;
 
         select COUNT(age) from student group_by age;
-        select COUNT(age) from student where age = 20 group_by age; // працює
-        select COUNT(age) from student where weight = height group_by age; // працює
+        select COUNT(age), AVG(height), MAX(height) from student group_by age;
+        select COUNT(age) from student where age = 20 group_by age;
+        select COUNT(age) from student where weight = height group_by age;
 
         age  COUNT(weight)  AVG(height);
          22             2           178

@@ -82,7 +82,7 @@ public class CreateSelectTable {
         }
     }
 
-    public boolean checkEquals(int[] comp, Set<int[]> set){
+    private boolean checkEquals(int[] comp, Set<int[]> set){
         for(int[] ints : set)
             if (Arrays.equals(ints, comp))
                 return false;
@@ -90,7 +90,6 @@ public class CreateSelectTable {
         return true;
     }
 
-    // TODO @DOING
     public Table doGroupBY(
             ArrayList<Row> primeRow, String[] rowsName,
             String[] groupNames, String[] aggCol, String[] aggFun) {
@@ -114,16 +113,6 @@ public class CreateSelectTable {
                 sets.add(integers);
         }
 
-        /* TEMP виводим всі унікільні
-        System.out.println("temp point 1.1");
-        for (int[] integers : sets){
-            for (int integer : integers)
-                System.out.print(integer + " ");
-            System.out.println();
-        }
-        System.out.println("temp point 2.2");
-         */
-
         // робим по цим унікльним елементам групи
         int unique = sets.size();
         for (int i = 0; i < unique; i++){
@@ -141,7 +130,6 @@ public class CreateSelectTable {
             k++;
         }
 
-        // TODO ??done?? //hard
         // рахуєм відповідні функції
         for (List<Row> rowList : groupRow) {
             int[] cells = new int[rowsName.length];
@@ -153,13 +141,11 @@ public class CreateSelectTable {
             for (int i = 0; i < aggFun.length; i++)
                 aggColPos[i] = findColName(aggCol[i]);
 
-            int count = 0;
+            boolean once = true;
             for (Row row : rowList) {
-                aggColumn = prepare(row.getRow(), aggColPos, aggFunPos, aggColumn);
-                count++;
+                aggColumn = prepare(row.getRow(), aggColPos, aggFunPos, aggColumn, once);
+                once = false;
             }
-
-            aggColumn = after(aggColumn, aggFunPos, count);
 
             System.arraycopy(groupName, 0, cells, 0, groupName.length);
             System.arraycopy(aggColumn, 0, cells, groupName.length, aggColumn.length);
@@ -170,20 +156,25 @@ public class CreateSelectTable {
         return table;
     }
 
-    public int[] prepare(int[] rowArr, int[] colPos, int[] funPos, int[] accum){
+    private int[] prepare(int[] rowArr, int[] colPos, int[] funPos, int[] accum, boolean once){
         for (int i = 0; i < accum.length; i++){
             if (funPos[i] == 1)
                 accum[i] += 1;
-            if (funPos[i] == 2)
-                accum[i] += rowArr[colPos[i]];
+            if (funPos[i] == 2) {
+                if(once)
+                    accum[i] = rowArr[colPos[i]];
+
+                accum[i] = (accum[i] + rowArr[colPos[i]]) / 2;
+            }
             if (funPos[i] == 3)
-                accum[i] = Math.max(rowArr[colPos[i]], rowArr[colPos[i]]);
+                accum[i] = Math.max(accum[i], rowArr[colPos[i]]);
         }
 
         return accum;
     }
 
-    public int[] after(int[] acc, int[] funPos, int count){
+    @Deprecated
+    private int[] after(int[] acc, int[] funPos, int count){
         for (int i = 0; i < acc.length; i++)
             if(funPos[i] == 2)
                 acc[i] = acc[i]/count;
@@ -205,7 +196,7 @@ public class CreateSelectTable {
      * 2 - AVG
      * 3 - MAX
      */
-    public int[] findFunName(String[] funNames){
+    private int[] findFunName(String[] funNames){
         int[] res = new int[funNames.length];
         for (int i = 0; i < funNames.length; i++){
             if (funNames[i].equals(COUNT))
@@ -219,7 +210,7 @@ public class CreateSelectTable {
         return res;
     }
 
-    public int[] getCell(int[] rowArr, int[] poss){
+    private int[] getCell(int[] rowArr, int[] poss){
         int[] res = new int[poss.length];
 
         for (int i = 0; i < poss.length; i++)
