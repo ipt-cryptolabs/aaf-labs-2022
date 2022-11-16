@@ -10,11 +10,15 @@ public:
     }
 
     std::string ToString() {
-        return {"[" + rt_point_->ToString() + ", " + "(" + rt_point_->ToString() + "]"};
+        return {"[" + lb_point_->ToString() + ", " + rt_point_->ToString() + "]"};
     }
 
     int Square() const{
         return (rt_point_->x - lb_point_->x) * (rt_point_->y - lb_point_->y);
+    }
+
+    bool Contains(Point* point){
+        return (lb_point_->x <= point->x <= rt_point_->x) && (lb_point_->y <= point->y <= rt_point_->y);
     }
 
     Point* get_lb_point(){

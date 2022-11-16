@@ -8,8 +8,10 @@ public:
     PointNode(Token* point){
         std::string str = point->get_value();
         size_t idx = str.find(',');
-        value_->x = std::atoi(str.substr(0, idx).c_str());
-        value_->y = std::atoi(str.substr(idx + 1, str.size() - idx).c_str());
+        int x = std::atoi(str.substr(0, idx).c_str());
+        int y = std::atoi(str.substr(idx + 1, str.size() - idx).c_str());
+
+        value_ = new Point(x, y);
     }
 
     Point* get_value(){

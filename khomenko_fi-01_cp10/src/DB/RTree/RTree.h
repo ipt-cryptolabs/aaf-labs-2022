@@ -52,6 +52,7 @@ private:
 
     void SubPrint(Node* node, const std::string& shift, bool last);
     void SubPrint(Point* point, const std::string& shift, bool last);
+    bool SubContains(Point* point, Node* node);
 };
 
 

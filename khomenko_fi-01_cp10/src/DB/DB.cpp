@@ -23,7 +23,13 @@ void DB::Print(const std::string& set_name) {
 
 void DB::Contains(const std::string& set_name, Point* point) {
     CheckSetPresence(set_name);
-    sets_[set_name]->Contains(point);
+
+    if(sets_[set_name]->Contains(point)){
+        std::cout << "TRUE" << std::endl;
+    }
+    else{
+        std::cout << "FALSE" << std::endl;
+    }
 }
 
 void DB::Search(const std::string& set_name) {

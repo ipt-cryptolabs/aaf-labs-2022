@@ -79,14 +79,44 @@ void RTree::SubPrint(Point *point, const std::string &shift, bool last) {
     std::cout << point->ToString() << std::endl;
 }
 
+bool RTree::Contains(Point *point) {
+    if(root_){
+        return SubContains(point, root_);
+    }
+    return false;
+}
+
+bool RTree::SubContains(Point *point, RTree::Node *node) {
+    Rectangle* rect = node->rect_;
+    bool res = false;
+
+    INode* inner_node = dynamic_cast<INode*>(node);
+    if(inner_node) {
+        auto inner_node_iter = inner_node->nodes_.begin();
+
+        for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
+            if(rect->Contains(point)){
+                res = res || SubContains(point, *inner_node_iter);
+            }
+        }
+    }
+    else{
+        Leaf* leaf_node = dynamic_cast<Leaf*>(node);
+        auto leaf_node_iter = leaf_node->points_.begin();
+
+        for (; leaf_node_iter != leaf_node->points_.end(); leaf_node_iter++) {
+            res = res || (((*leaf_node_iter)->x == point->x) && ((*leaf_node_iter)->y == point->y));
+        }
+    }
+
+    return res;
+}
+
 
 void RTree::Insert(Point *point) {
 
 }
 
-bool RTree::Contains(Point *point) {
-    return false;
-}
 
 std::vector<Point *> RTree::Search() {
     return std::vector<Point *>();
@@ -103,5 +133,3 @@ std::vector<Point *> RTree::SearchNN(Point *point) {
 std::vector<Point *> RTree::SearchLeftOf(int number) {
     return std::vector<Point *>();
 }
-
-
