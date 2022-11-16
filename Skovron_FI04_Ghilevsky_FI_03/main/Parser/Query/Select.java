@@ -2,7 +2,6 @@ package Skovron_FI04_Ghilevsky_FI_03.main.Parser.Query;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +27,7 @@ public class Select implements SQLCommand{
                 .replaceAll("[()]", " ")
                 .replaceAll(",", " ")
                 .replaceAll(";", " ")
+                .replaceAll("=", " ")
                 .replaceAll("\\s+", " ");
 
         ArrayList<String> sqlList = new ArrayList<>();
@@ -66,7 +66,7 @@ public class Select implements SQLCommand{
             counter+=1;
             while (counter < sqlList.size() && !sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
                 whereCol_.add(sqlList.get(counter));
-                counter+=2;
+                counter+=1;
                 whereValue_.add(sqlList.get(counter));
                 counter+=1;
             }
@@ -130,6 +130,7 @@ public class Select implements SQLCommand{
                 .replaceAll("[()]", " ")
                 .replaceAll(",", " ")
                 .replaceAll(";", " ")
+                .replaceAll("=", " ")
                 .replaceAll("\\s+", " ");
 
         ArrayList<String> sqlList = new ArrayList<>();
@@ -199,6 +200,9 @@ public class Select implements SQLCommand{
         counter+=1;
         if(counter < sqlList.size()) {
             if(sqlList.get(counter).equalsIgnoreCase("WHERE")){
+                if(!sql.contains("=")){
+                    throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 4)"); //missed "="
+                }
                 checkWhere(counter, sqlList);
             }
             else if(sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
@@ -215,11 +219,7 @@ public class Select implements SQLCommand{
     }
 
     private void checkWhere(int counter, ArrayList<String> sqlList){
-        counter+=2;
-        if(!sqlList.get(counter).equals("=")){
-            throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 4)");
-        }
-        counter+=2;
+        counter+=3;
         if(counter < sqlList.size()){
             if(!sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
                 throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 5)");
