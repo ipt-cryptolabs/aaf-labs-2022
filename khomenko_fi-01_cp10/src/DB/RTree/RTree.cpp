@@ -133,9 +133,7 @@ void RTree::SubSearch(RTree::Node *node, std::vector<Point *>& collected_points)
     if(leaf_node){
         auto leaf_node_iter = leaf_node->points_.begin();
         for (; leaf_node_iter != leaf_node->points_.end(); leaf_node_iter++) {
-            if (!IsPointIn(*leaf_node_iter, collected_points)){
-                collected_points.push_back(*leaf_node_iter);
-            }
+            collected_points.push_back(*leaf_node_iter);
         }
     }
     else{
@@ -146,15 +144,6 @@ void RTree::SubSearch(RTree::Node *node, std::vector<Point *>& collected_points)
             SubSearch(*inner_node_iter, collected_points);
         }
     }
-}
-
-bool RTree::IsPointIn(Point* point, const std::vector<Point*>& points) {
-    for(auto el: points){
-        if((el->x == point->x) && (el->y == point->y)){
-            return true;
-        }
-    }
-    return false;
 }
 
 std::vector<Point *> RTree::SearchInside(Point *point1, Point *point2) {

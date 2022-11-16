@@ -54,7 +54,6 @@ private:
     void SubPrint(Point* point, const std::string& shift, bool last);
     bool SubContains(Point* point, Node* node);
     void SubSearch(Node* node, std::vector<Point*>& collected_points);
-    bool IsPointIn(Point* point, const std::vector<Point*>& points);
 };
 
 
