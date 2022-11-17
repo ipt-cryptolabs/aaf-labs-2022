@@ -1,7 +1,9 @@
 from run import run
 
+
 while True:
     text = input('shit_DB > ')
+   
     result, error = run(text)
 
     if error:
