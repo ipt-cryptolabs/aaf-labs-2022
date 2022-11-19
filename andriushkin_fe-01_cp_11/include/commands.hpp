@@ -80,4 +80,34 @@ public:
     void Execute(ExecManager &em) override;
 };
 
+class RangeSearch : public Command
+{
+private:
+    int64_t x1, y1, x2, y2;
+    std::string name;
+public:
+    RangeSearch(std::string name_, int64_t x1_, int64_t y1_, int64_t x2_, int64_t y2_);
+    void Execute(ExecManager &em) override;
+};
+
+class NNSearch : public Command
+{
+private:
+    int64_t x, y;
+    std::string name;
+public:
+    NNSearch(std::string name_, int64_t x_, int64_t y_);
+    void Execute(ExecManager &em) override;
+};
+
+class AboveSearch : public Command
+{
+private:
+    int64_t y;
+    std::string name;
+public:
+    AboveSearch(std::string name_, int64_t y_);
+    void Execute(ExecManager &em) override;
+};
+
 std::shared_ptr<Command> RecognizeComm(std::vector<std::string> tokens);

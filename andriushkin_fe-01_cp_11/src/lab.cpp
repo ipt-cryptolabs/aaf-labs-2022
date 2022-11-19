@@ -10,8 +10,6 @@
 int main()
 {
     std::shared_ptr<Command> comm;
-    // std::vector<std::string> a;
-    // a = TokenizeInput(std::cin);
     ExecManager exec;
     std::stringstream b;
     while (exec.running)

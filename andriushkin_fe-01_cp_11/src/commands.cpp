@@ -99,6 +99,80 @@ void Search::Execute(ExecManager &em)
         std::cout << "Set " << name << " does not exists" << std::endl;
 }
 
+RangeSearch::RangeSearch(std::string name_,int64_t x1_, int64_t y1_, int64_t x2_, int64_t y2_) 
+    : name(name_), x1(x1_), y1(y1_), x2(x2_), y2(y2_) {};
+void RangeSearch::Execute(ExecManager &em)
+{
+    std::map<std::string, KDtree>::iterator tree_it;
+    tree_it = em.vars.find(name);
+    if( tree_it != em.vars.end())
+    {
+        std::vector<KDtree::Node*> nodes = tree_it->second.RangeSearch(x1,y1,x2,y2);
+        if(nodes.size())
+        {
+            std::cout << "Set " << name << " contain points in rectangle " 
+                << '(' << x1 << ',' << y1 << ") (" << x2 << ',' << y2 << ')'
+                << ": " << std::endl;
+            for(KDtree::Node* node : nodes)
+                std::cout << *node << " ";
+            std::cout << std::endl;
+        }
+        else
+            std::cout << "Set " << name << " have no points in rectangle"
+            << '(' << x1 << ',' << y1 << ") (" << x2 << ',' << y2 << ')'
+            << std::endl;
+    }
+    else
+        std::cout << "Set " << name << " does not exists" << std::endl;
+}
+
+NNSearch::NNSearch(std::string name_,int64_t x_, int64_t y_) 
+    : name(name_), x(x_), y(y_){};
+void NNSearch::Execute(ExecManager &em)
+{
+    std::map<std::string, KDtree>::iterator tree_it;
+    tree_it = em.vars.find(name);
+    if( tree_it != em.vars.end())
+    {
+        std::vector<KDtree::Node*> nodes = tree_it->second.NNSearch(x, y);
+        if(nodes.size())
+        {
+            std::cout << "Nearest neighbor to " 
+            << '(' << x << ',' << y << ')'
+            << " in set " << name << ": " << std::endl;
+            for(KDtree::Node* node : nodes)
+                std::cout << *node << " ";
+            std::cout << std::endl;
+        }
+        else
+            std::cout << "Set " << name << " is empty" << std::endl;
+    }
+    else
+        std::cout << "Set " << name << " does not exists" << std::endl;
+}
+
+AboveSearch::AboveSearch(std::string name_, int64_t y_) : name(name_), y(y_){};
+void AboveSearch::Execute(ExecManager &em)
+{
+    std::map<std::string, KDtree>::iterator tree_it;
+    tree_it = em.vars.find(name);
+    if( tree_it != em.vars.end())
+    {
+        std::vector<KDtree::Node*> nodes = tree_it->second.AboveSearch(y);
+        if(nodes.size())
+        {
+            std::cout << "Points above " << y << " in set " << name << ":" << std::endl;
+            for(KDtree::Node* node : nodes)
+                std::cout << *node << " ";
+            std::cout << std::endl;
+        }
+        else
+            std::cout << "Set " << name << " is empty" << std::endl;
+    }
+    else
+        std::cout << "Set " << name << " does not exists" << std::endl;
+}
+
 
 std::shared_ptr<Command> RecognizeComm(std::vector<std::string> tokens)
 {
@@ -159,11 +233,53 @@ std::shared_ptr<Command> RecognizeComm(std::vector<std::string> tokens)
     }
     else if( tokens[0] == "SEARCH")
     {
-        if( !(tokens.size() == 2))
-            throw std::invalid_argument("invalid count of arguments");
         if( !CheckVarName(tokens[1]))
-            throw std::invalid_argument("invalid var name");
-        return std::make_shared<Search>(tokens[1]);
+                throw std::invalid_argument("invalid var name");
+        if(tokens.size() == 2)
+        {
+            return std::make_shared<Search>(tokens[1]);
+        }
+        else if(tokens.size() == 14 && tokens[2] == "INSIDE")
+        {
+            if ( !(tokens[3] == "(" && tokens[5] == "," && tokens[7] == ")"
+                && tokens[8] == "," && tokens[9] == "(" && tokens[11] == "," && tokens[13] == ")"))
+                throw std::invalid_argument("invalid syntax");
+            try
+            {
+                return std::make_shared<RangeSearch>(tokens[1] ,stoi(tokens[4]), stoi(tokens[6]), stoi(tokens[10]), stoi(tokens[12]));
+            }
+            catch (std::exception& exc)
+            {
+                throw std::invalid_argument("invalid numbers");
+            }
+        }
+        else if(tokens.size() == 8 && tokens[2] == "NN")
+        {
+            if ( !(tokens[3] == "(" && tokens[5] == "," && tokens[7] == ")"))
+                throw std::invalid_argument("invalid syntax");
+            try
+            {
+                return std::make_shared<NNSearch>(tokens[1] ,stoi(tokens[4]), stoi(tokens[6]));
+            }
+            catch (std::exception& exc)
+            {
+                throw std::invalid_argument("invalid numbers");
+            }
+        }
+        else if(tokens.size() == 4 && tokens[2] == "ABOVE_TO")
+        {
+            try
+            {
+                return std::make_shared<AboveSearch>(tokens[1] ,stoi(tokens[3]));
+            }
+            catch (std::exception& exc)
+            {
+                throw std::invalid_argument("invalid numbers");
+            }
+        }
+        else
+            throw std::invalid_argument("invalid count of arguments");
+        
     }
     throw std::invalid_argument("unexpected command");
 }
