@@ -8,13 +8,14 @@
 
 class RTree {
     // RTree class represents storage for spacial data, namely 2D points(in this case)
-    // Node is either INode or Leaf, m - min children nodes amount in node, M - max.
+    // Node is either INode or Leaf, m_ - min children nodes amount in node, M_ - max.
 public:
-    RTree(): root_(nullptr) {
-
+    RTree(int m, int M): root_(nullptr) {
+        m_ = m;
+        M_ = M;
     }
 
-    void Insert(Point* point);
+    bool Insert(Point* point);
     void Print();
     bool Contains(Point* point);
     std::vector<Point*> Search();
@@ -26,27 +27,43 @@ private:
     class Node{
     public:
         virtual void polimorph() {  }
-        Rectangle* rect_;
+        Rectangle rect_;
+
+        virtual void UpdateMBR() = 0;
     };
 
     class Leaf: public Node{
     public:
-        Leaf(Rectangle* rect, std::vector<Point*> points): points_(std::move(points)){
-            rect_ = rect;
+        Leaf() = default;
+
+        void UpdateMBR() override{
+            rect_ = Rectangle(*points_[0], *points_[0]);
+
+            for(int i = 1; i < points_.size(); i++){
+                rect_ = rect_.UpdatedRectangle(points_[i]);
+            }
         }
+
         std::vector<Point*> points_;
     };
 
     class INode: public Node{
     public:
-        INode(Rectangle* rect, std::vector<Node*> nodes): nodes_(std::move(nodes)){
-            rect_ = rect;
+        INode() = default;
+
+        void UpdateMBR() override{
+            rect_ = Rectangle(nodes_[0]->rect_);
+
+            for(int i = 1; i < nodes_.size(); i++){
+                rect_ = rect_.UpdatedRectangle(&nodes_[i]->rect_);
+            }
         }
+
         std::vector<Node*> nodes_;
     };
 
-    int const M = 3;
-    int const m = 2;
+    int M_;
+    int m_;
 
     Node* root_;
 
@@ -54,6 +71,10 @@ private:
     void SubPrint(Point* point, const std::string& shift, bool last);
     bool SubContains(Point* point, Node* node);
     void SubSearch(Node* node, std::vector<Point*>& collected_points);
+    Node* SubInsert(Point* point, Node* node);
+    Node* ChooseSubtree(RTree::INode* node, Point* point);
+    INode* Split(INode* inode);
+    Leaf* Split(Leaf* leaf);
 };
 
 

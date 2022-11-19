@@ -1,40 +1,95 @@
 #ifndef SETOF2DPOINTS_RECTANGLE_H
 #define SETOF2DPOINTS_RECTANGLE_H
 
+#include <cmath>
 #include "Point.h"
 
 class Rectangle {
 public:
-    Rectangle(Point* lb_point, Point* rt_point): rt_point_(rt_point), lb_point_(lb_point) {
+    Rectangle(): lb_point_(Point(0, 0)), rt_point_(Point(0, 0)){
 
+    }
+
+    Rectangle(const Point& lb_point, const Point& rt_point): rt_point_(rt_point), lb_point_(lb_point) {
+
+    }
+
+    Rectangle(int left_bottom_x, int left_bottom_y, int right_top_x, int right_top_y) {
+        lb_point_ = Point(left_bottom_x, left_bottom_y);
+        rt_point_ = Point(right_top_x, right_top_y);
     }
 
     std::string ToString() {
-        return {"[" + lb_point_->ToString() + ", " + rt_point_->ToString() + "]"};
+        return {"[" + lb_point_.ToString() + ", " + rt_point_.ToString() + "]"};
     }
 
     int Square() const{
-        return (rt_point_->x - lb_point_->x) * (rt_point_->y - lb_point_->y);
+        return (rt_point_.x - lb_point_.x) * (rt_point_.y - lb_point_.y);
     }
 
-    bool Contains(Point* point){
-        return (lb_point_->x <= point->x <= rt_point_->x) && (lb_point_->y <= point->y <= rt_point_->y);
-    }
-
-    Point* get_lb_point(){
+    Point get_lb_point(){
         return lb_point_;
     }
 
-    Point* get_rt_point(){
+    Point get_rt_point(){
         return rt_point_;
+    }
+
+    bool Contains(Point* point){
+        return (lb_point_.x <= point->x <= rt_point_.x) && (lb_point_.y <= point->y <= rt_point_.y);
+    }
+
+    Rectangle UpdatedRectangle(Point* point){
+        // find new rectangle which includes point
+
+        Point new_lb_point = lb_point_;
+        Point new_rt_point = rt_point_;
+
+        if(point->x < lb_point_.x){
+            new_lb_point.x = point->x;
+        }
+
+        if(point->x > rt_point_.x){
+            new_rt_point.x = point->x;
+        }
+
+        if(point->y < lb_point_.y){
+            new_lb_point.y = point->y;
+        }
+
+        if(point->y > rt_point_.y){
+            new_rt_point.y = point->y;
+        }
+
+        return {new_lb_point, new_rt_point};
+    }
+
+    Rectangle UpdatedRectangle(Rectangle* other_rectangle){
+        // find new rectangle which includes this rectangle and other_rectangle
+
+        Rectangle rect1 = UpdatedRectangle(&other_rectangle->lb_point_);
+        Rectangle rect2 = rect1.UpdatedRectangle(&other_rectangle->rt_point_);
+
+        return rect2;
+    }
+
+    int MinAreaIncrease(Point* point){
+        Rectangle new_rect = UpdatedRectangle(point);
+
+        int square_increase = new_rect.Square() - this->Square();
+
+        if(square_increase < 0){
+            return 0;
+        }
+        return square_increase;
     }
 
 private:
     // lb - left bottom
     // rt - right top
 
-    Point* lb_point_;
-    Point* rt_point_;
+    Point lb_point_;
+    Point rt_point_;
 };
 
 

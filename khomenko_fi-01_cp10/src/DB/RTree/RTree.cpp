@@ -1,11 +1,6 @@
 #include "RTree.h"
 
 
-void RTree::Insert(Point *point) {
-
-}
-
-
 void RTree::Print() {
     if(root_){
         SubPrint(root_, "", true);
@@ -28,7 +23,7 @@ void RTree::SubPrint(Node* node, const std::string& shift, bool last) {
         }
     }
 
-    std::cout << node->rect_->ToString() << std::endl;
+    std::cout << node->rect_.ToString() << std::endl;
 
     INode* inner_node = dynamic_cast<INode*>(node);
     if(inner_node){
@@ -92,7 +87,7 @@ bool RTree::Contains(Point *point) {
 }
 
 bool RTree::SubContains(Point *point, RTree::Node *node) {
-    Rectangle* rect = node->rect_;
+    Rectangle rect = node->rect_;
     bool res = false;
 
     INode* inner_node = dynamic_cast<INode*>(node);
@@ -100,7 +95,7 @@ bool RTree::SubContains(Point *point, RTree::Node *node) {
         auto inner_node_iter = inner_node->nodes_.begin();
 
         for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
-            if(rect->Contains(point)){
+            if(rect.Contains(point)){
                 res = res || SubContains(point, *inner_node_iter);
             }
         }
@@ -156,4 +151,133 @@ std::vector<Point *> RTree::SearchNN(Point *point) {
 
 std::vector<Point *> RTree::SearchLeftOf(int number) {
     return std::vector<Point *>();
+}
+
+
+bool RTree::Insert(Point *point) {
+    // returns true if point was added to set
+
+    if(!root_){
+        Leaf* leaf = new Leaf;
+        leaf->points_.push_back(point);
+        leaf->UpdateMBR();
+        root_ = leaf;
+        return true;
+    }
+
+    if(Contains(point)){
+        return false;
+    }
+
+    Node* new_node = SubInsert(point, root_);
+    if(new_node){
+        INode* new_root = new INode();
+        new_root->nodes_.push_back(root_);
+        new_root->nodes_.push_back(new_node);
+        root_ = new_root;
+        root_->UpdateMBR();
+    }
+    return true;
+}
+
+RTree::Node *RTree::SubInsert(Point *point, RTree::Node *node) {
+    // choosing subtree
+
+    Leaf* leaf_node = dynamic_cast<Leaf*>(node);
+
+    if(leaf_node){
+        // leaf node
+
+        if(leaf_node->points_.size() == M_){
+            // split leaf
+            leaf_node->points_.push_back(point);
+            return Split(leaf_node);
+        }
+        else{
+            leaf_node->points_.push_back(point);
+            leaf_node->UpdateMBR();
+            return nullptr;
+        }
+    }
+    else{
+        // inode
+
+        INode* internal_node = dynamic_cast<INode*>(node);
+        Node* next_node = ChooseSubtree(internal_node, point);
+
+        Node* new_split_node = SubInsert(point, next_node);
+
+        if(new_split_node){
+            if(internal_node->nodes_.size() == M_){
+                // split here ; return new node
+
+                internal_node->nodes_.push_back(new_split_node);
+                return Split(internal_node);
+            }
+            else{
+                internal_node->nodes_.push_back(new_split_node);
+            }
+        }
+        internal_node->UpdateMBR();
+        return nullptr;
+    }
+}
+
+RTree::Node *RTree::ChooseSubtree(RTree::INode *node, Point *point) {
+    // node - leaf or inode
+
+    int min_area_increase = -1;
+    int area;
+    Node* selected_node;
+
+    for(auto inode: node->nodes_){
+        area = inode->rect_.MinAreaIncrease(point);
+
+        if(min_area_increase == -1){
+            min_area_increase = area;
+            selected_node = inode;
+        }
+        else{
+            if(area < min_area_increase){
+                min_area_increase = area;
+                selected_node = inode;
+            }
+        }
+    }
+    return selected_node;
+}
+
+RTree::INode *RTree::Split(RTree::INode *inode) {
+    INode* new_node = new INode();
+    Node* current_inode;
+
+    int size1 = inode->nodes_.size() / 2;
+
+    for(int i = size1; i <= inode->nodes_.size(); i++){
+        current_inode = inode->nodes_.back();
+        new_node->nodes_.push_back(current_inode);
+        inode->nodes_.pop_back();
+    }
+
+    inode->UpdateMBR();
+    new_node->UpdateMBR();
+
+    return new_node;
+}
+
+RTree::Leaf *RTree::Split(RTree::Leaf *leaf) {
+    Leaf* new_leaf = new Leaf();
+    Point* current_point;
+
+    int size1 = leaf->points_.size() / 2;
+
+    for(int i = size1; i <= leaf->points_.size(); i++){
+        current_point = leaf->points_.back();
+        new_leaf->points_.push_back(current_point);
+        leaf->points_.pop_back();
+    }
+
+    leaf->UpdateMBR();
+    new_leaf->UpdateMBR();
+    return new_leaf;
 }

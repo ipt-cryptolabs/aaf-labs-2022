@@ -3,7 +3,7 @@
 
 void DB::Create(const std::string& set_name) {
     if(sets_.find(set_name) == sets_.end()){
-        sets_[set_name] = new RTree();
+        sets_[set_name] = new RTree(2, 4);
         std::cout << "Set " << set_name << " has been created" << std::endl;
     }
     else{
@@ -13,7 +13,12 @@ void DB::Create(const std::string& set_name) {
 
 void DB::Insert(const std::string& set_name, Point* point) {
     CheckSetPresence(set_name);
-    sets_[set_name]->Insert(point);
+    if(sets_[set_name]->Insert(point)){
+        std::cout << "Point " << point->ToString() + " has been added to " + set_name << std::endl;
+    }
+    else{
+        std::cout << set_name + " already contains " + point->ToString() << std::endl;
+    }
 }
 
 void DB::Print(const std::string& set_name) {

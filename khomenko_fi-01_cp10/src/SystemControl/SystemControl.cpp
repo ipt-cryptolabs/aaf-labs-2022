@@ -20,6 +20,10 @@ void SystemControl::Run() {
             }
 
             std::getline(std::cin, input);
+
+            if(input == "EXIT"){
+                return;
+            }
             input += '\n';
 
             auto it = input.find(';');
@@ -45,4 +49,5 @@ void SystemControl::Run() {
 
 void SystemControl::Info() {
     std::cout << "---\tDB based on R-Tree\t---\n\n";
+    std::cout << "Write EXIT to exit\n\n";
 }
