@@ -20,5 +20,5 @@
 ### Plan
 
 - [x] Part1
-- [ ] Part2
+- [x] Part2
 - [ ] Part3
