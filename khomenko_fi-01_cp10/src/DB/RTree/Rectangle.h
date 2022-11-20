@@ -2,6 +2,7 @@
 #define SETOF2DPOINTS_RECTANGLE_H
 
 #include <cmath>
+#include <algorithm>
 #include "Point.h"
 
 class Rectangle {
@@ -73,15 +74,17 @@ public:
         return rect2;
     }
 
-    int MinAreaIncrease(Point* point){
-        Rectangle new_rect = UpdatedRectangle(point);
+    int DistanceBetween(Point* point){
+        Point center((lb_point_.x + rt_point_.x) / 2, (lb_point_.y + rt_point_.y) / 2);
+        return Point::SqrDistance(&center, point);
+    }
 
-        int square_increase = new_rect.Square() - this->Square();
+    int DistanceBetween(Rectangle* rectangle){
+        Point center((lb_point_.x + rt_point_.x) / 2, (lb_point_.y + rt_point_.y) / 2);
+        Point other_center((rectangle->lb_point_.x + rectangle->rt_point_.x) / 2,
+                           (rectangle->lb_point_.y + rectangle->rt_point_.y) / 2);
 
-        if(square_increase < 0){
-            return 0;
-        }
-        return square_increase;
+        return Point::SqrDistance(&center, &other_center);
     }
 
 private:

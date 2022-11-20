@@ -73,8 +73,17 @@ private:
     void SubSearch(Node* node, std::vector<Point*>& collected_points);
     Node* SubInsert(Point* point, Node* node);
     Node* ChooseSubtree(RTree::INode* node, Point* point);
-    INode* Split(INode* inode);
-    Leaf* Split(Leaf* leaf);
+
+    INode* QuadraticSplit(INode* inode);
+    Leaf* QuadraticSplit(Leaf* leaf);
+
+    void PickSeeds(Leaf* leaf, Leaf* split_leaf, std::vector<Point*>& points);
+    void QDistribute(Leaf* leaf, Leaf* split_leaf, std::vector<Point*>& points);
+    Point* PickNext(Leaf* leaf, Leaf* split_leaf, const std::vector<Point *>& points);
+
+    void PickSeeds(INode* node, INode* split_node,  std::vector<Node*>& nodes);
+    void QDistribute(INode* node, INode* split_node, std::vector<Node*>& nodes);
+    Node* PickNext(Node* node, Node* split_node, const std::vector<Node*>& nodes);
 };
 
 
