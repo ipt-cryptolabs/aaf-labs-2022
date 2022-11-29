@@ -11,20 +11,20 @@ public class Table {
     private final int titleRowLength;
     private final ArrayList<Row> rowArrayList = new ArrayList<>();
 
-    public Table(String tableName, String... rowsName){
+    public Table(String tableName, String... rowsName) {
         this.tableName = tableName;
         this.rowsName = rowsName;
         this.titleRowLength = rowsName.length;
     }
 
-    public void rowInsert(Row row){
-        if(titleRowLength == row.getRow().length)
+    public void rowInsert(Row row) {
+        if (titleRowLength == row.getRow().length)
             rowArrayList.add(row);
         else
             throw new IllegalArgumentException("Error: Invalid number of insert value");
     }
 
-    public ArrayList<Row> getRowArrayList(){
+    public ArrayList<Row> getRowArrayList() {
         return rowArrayList;
     }
 
@@ -32,7 +32,7 @@ public class Table {
         return tableName;
     }
 
-    public String[] getRowsName(){
+    public String[] getRowsName() {
         return rowsName;
     }
 
@@ -45,7 +45,7 @@ public class Table {
         System.out.println(FlipTable.of(rowsName, arr));
     }
 
-    private static String[] fromIntToString(int[] intArray){
+    private static String[] fromIntToString(int[] intArray) {
         String[] strArray = new String[intArray.length];
 
         for (int i = 0; i < intArray.length; i++)

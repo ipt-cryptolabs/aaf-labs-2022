@@ -9,14 +9,14 @@ import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 
-public class Insert implements SQLCommand{
+public class Insert implements SQLCommand {
     private boolean isInto = false;
     private final String TableName;
     private final Row Row;
 
     public Insert(String sql) throws IllegalArgumentException {
         String[] checkInto = sql.split("\\s+");
-        if(checkInto[1].equalsIgnoreCase("INTO")){
+        if (checkInto[1].equalsIgnoreCase("INTO")) {
             isInto = true;
         }
         checkSqlQuery(sql.trim());
@@ -30,19 +30,17 @@ public class Insert implements SQLCommand{
         LinkedList<String> sqlList = new LinkedList<>();
         Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(sql_);
         while (m.find())
-            if(m.group().split("\\s+").length == 1){
+            if (m.group().split("\\s+").length == 1) {
                 sqlList.add(m.group(1).replace("\"", ""));
-            }
-            else{
+            } else {
                 sqlList.add(m.group(1));
             }
 
-        if(isInto) {
+        if (isInto) {
             isInto = false;
             sqlList.pop();
             sqlList.pop();
-        }
-        else{
+        } else {
             sqlList.pop();
         }
 
@@ -62,7 +60,7 @@ public class Insert implements SQLCommand{
         return TableName;
     }
 
-    public Row getRow(){
+    public Row getRow() {
         return Row;
     }
 
@@ -75,19 +73,18 @@ public class Insert implements SQLCommand{
         String sql_ = ReplaceSpacesInQuotes(sql).replaceAll("\"", "");
 
         String[] split1 = sql_.substring(0, sql_.indexOf('(')).split("\\s+");
-        if(isInto) {
+        if (isInto) {
             if (split1.length == 2) {
                 throw new IllegalArgumentException("Error: Empty table name");
             }
-            if (split1.length > 3){
+            if (split1.length > 3) {
                 throw new IllegalArgumentException("Error: Invalid SQL syntax (Insertion Error 2)");
             }
-        }
-        else{
+        } else {
             if (split1.length == 1) {
                 throw new IllegalArgumentException("Error: Empty table name");
             }
-            if (split1.length > 2){
+            if (split1.length > 2) {
                 throw new IllegalArgumentException("Error: Invalid SQL syntax (Insertion Error 2)");
             }
         }

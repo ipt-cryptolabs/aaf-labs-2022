@@ -7,12 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Select implements SQLCommand{
+public class Select implements SQLCommand {
 
-    private boolean isSelectAll         = false;
-    private boolean isSelectWhereValue  = false;
+    private boolean isSelectAll = false;
+    private boolean isSelectWhereValue = false;
     private boolean isSelectWhereColumn = false;
-    private boolean isSelectGroupBy     = false;
+    private boolean isSelectGroupBy = false;
     private final String tableName;
     private final String[] groupNames;
     private final String[] aggMethods;
@@ -33,10 +33,9 @@ public class Select implements SQLCommand{
         ArrayList<String> sqlList = new ArrayList<>();
         Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(sql_);
         while (m.find())
-            if(m.group().split("\\s+").length == 1){
+            if (m.group().split("\\s+").length == 1) {
                 sqlList.add(m.group(1).replace("\"", ""));
-            }
-            else{
+            } else {
                 sqlList.add(m.group(1));
             }
 
@@ -49,34 +48,34 @@ public class Select implements SQLCommand{
 
         int counter = 1;
         int i = 0;
-        while (!sqlList.get(counter).equalsIgnoreCase("FROM"))   {
+        while (!sqlList.get(counter).equalsIgnoreCase("FROM")) {
             aggFun_.add(sqlList.get(counter));
-            counter+=1;
+            counter += 1;
             aggCol_.add(sqlList.get(counter));
-            counter+=1;
+            counter += 1;
             aggMethods_.add(aggFun_.get(i) + "(" + aggCol_.get(i) + ")");
-            i+=1;
+            i += 1;
         }
 
-        counter+=1;
+        counter += 1;
         tableName = sqlList.get(counter);
-        counter+=1;
+        counter += 1;
 
-        if(counter < sqlList.size() && sqlList.get(counter).equalsIgnoreCase("WHERE")){
-            counter+=1;
-            while (counter < sqlList.size() && !sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
+        if (counter < sqlList.size() && sqlList.get(counter).equalsIgnoreCase("WHERE")) {
+            counter += 1;
+            while (counter < sqlList.size() && !sqlList.get(counter).equalsIgnoreCase("GROUP_BY")) {
                 whereCol_.add(sqlList.get(counter));
-                counter+=1;
+                counter += 1;
                 whereValue_.add(sqlList.get(counter));
-                counter+=1;
+                counter += 1;
             }
         }
 
-        counter+=1;
+        counter += 1;
 
-        while (counter < sqlList.size()){
+        while (counter < sqlList.size()) {
             groupNames_.add(sqlList.get(counter));
-            counter+=1;
+            counter += 1;
         }
 
         groupNames = groupNames_.toArray(new String[0]);
@@ -86,40 +85,38 @@ public class Select implements SQLCommand{
         whereValue = whereValue_.toArray(new String[0]);
         whereCol = whereCol_.toArray(new String[0]);
 
-        if(aggFun_.isEmpty() && groupNames_.isEmpty() && whereCol_.isEmpty()) {
+        if (aggFun_.isEmpty() && groupNames_.isEmpty() && whereCol_.isEmpty()) {
             isSelectAll = true;
         }
 
-        if(!groupNames_.isEmpty()){
+        if (!groupNames_.isEmpty()) {
             isSelectGroupBy = true;
         }
 
-        if(!whereCol_.isEmpty()){
-                if(isNumeric(whereValue_.get(0))){
-                    isSelectWhereValue = true;
-            }
-                else{
-                    isSelectWhereColumn = true;
+        if (!whereCol_.isEmpty()) {
+            if (isNumeric(whereValue_.get(0))) {
+                isSelectWhereValue = true;
+            } else {
+                isSelectWhereColumn = true;
             }
         }
-
-
     }
+
     private static boolean isNumeric(String str) {
         try {
             Integer.parseInt(str);
             return true;
-        } catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             return false;
         }
     }
 
     @Override
     public String getTableName() throws IllegalArgumentException {
-        if(tableName.equalsIgnoreCase("")
+        if (tableName.equalsIgnoreCase("")
                 || tableName.equalsIgnoreCase("GROUP_BY")
                 || tableName.equalsIgnoreCase("WHERE")
-        ){
+        ) {
             throw new IllegalArgumentException("Error: Empty table name (Select)");
         }
         return tableName;
@@ -152,95 +149,92 @@ public class Select implements SQLCommand{
                 counter = i;
                 break;
             }
-            if(sqlList.get(i).equalsIgnoreCase("WHERE") || sqlList.get(i).equalsIgnoreCase("GROUP_BY")){
+            if (sqlList.get(i).equalsIgnoreCase("WHERE") || sqlList.get(i).equalsIgnoreCase("GROUP_BY")) {
                 throw new IllegalArgumentException("Error: Invalid SQL order");
             }
-            counter+=1;
+            counter += 1;
         }
 
-        if(!checkFrom){
+        if (!checkFrom) {
             throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 1)"); //missing "from"
         }
 
         boolean checkAggFun = false;
         String brackets = sql.replaceAll("[^()]", "");
-        if(!balancedBrackets(brackets)){
+        if (!balancedBrackets(brackets)) {
             throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 2)"); //brackets placed incorrectly
         }
-        if(!brackets.equals("")){
+        if (!brackets.equals("")) {
             checkAggFun = true;
             ArrayList<String> AggFun_ = new ArrayList<>();
             for (int i = 1; i < counter; i++) {
                 AggFun_.add(sqlList.get(i));
             }
-            if(AggFun_.size() % 2 == 1){
+            if (AggFun_.size() % 2 == 1) {
                 throw new IllegalArgumentException("Error: Invalid func name or empty column name");
             }
             int i = 0;
-            while (i < AggFun_.size()){
-                if(!AggFun_.get(i).equals("COUNT") && !AggFun_.get(i).equals("MAX") && !AggFun_.get(i).equals("AVG")){
+            while (i < AggFun_.size()) {
+                if (!AggFun_.get(i).equals("COUNT") && !AggFun_.get(i).equals("MAX") && !AggFun_.get(i).equals("AVG")) {
                     throw new IllegalArgumentException("Error: Invalid func name");
                 }
-                i+=1;
-                if(AggFun_.get(i).equals("") || AggFun_.get(i).equals("COUNT") || AggFun_.get(i).equals("MAX") || AggFun_.get(i).equals("AVG")){
+                i += 1;
+                if (AggFun_.get(i).equals("") || AggFun_.get(i).equals("COUNT") || AggFun_.get(i).equals("MAX") || AggFun_.get(i).equals("AVG")) {
                     throw new IllegalArgumentException("Error: Empty or invalid column name ");
                 }
-                i+=1;
+                i += 1;
             }
         }
 
-        counter+=1;
-        if(counter == sqlList.size()){
+        counter += 1;
+        if (counter == sqlList.size()) {
             throw new IllegalArgumentException("Error: Empty table name");
         }
-        if(sqlList.get(counter).equals("") || sqlList.get(counter).equals("WHERE") || sqlList.get(counter).equals("GROUP_BY")){
+        if (sqlList.get(counter).equals("") || sqlList.get(counter).equals("WHERE") || sqlList.get(counter).equals("GROUP_BY")) {
             throw new IllegalArgumentException("Error: Empty table name");
         }
 
 
-        counter+=1;
-        if(counter < sqlList.size()) {
-            if(sqlList.get(counter).equalsIgnoreCase("WHERE")){
-                if(!sql.contains("=")){
+        counter += 1;
+        if (counter < sqlList.size()) {
+            if (sqlList.get(counter).equalsIgnoreCase("WHERE")) {
+                if (!sql.contains("=")) {
                     throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 4)"); //missed "="
                 }
                 checkWhere(counter, sqlList);
-            }
-            else if(sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
-                if(!checkAggFun){
+            } else if (sqlList.get(counter).equalsIgnoreCase("GROUP_BY")) {
+                if (!checkAggFun) {
                     throw new IllegalArgumentException("Error: Empty func name");
                 }
                 checkGroupBy(counter, sqlList);
-            }
-            else{
+            } else {
                 throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 3)");
             }
         }
 
     }
 
-    private void checkWhere(int counter, ArrayList<String> sqlList){
-        counter+=3;
-        if(counter < sqlList.size()){
-            if(!sqlList.get(counter).equalsIgnoreCase("GROUP_BY")){
+    private void checkWhere(int counter, ArrayList<String> sqlList) {
+        counter += 3;
+        if (counter < sqlList.size()) {
+            if (!sqlList.get(counter).equalsIgnoreCase("GROUP_BY")) {
                 throw new IllegalArgumentException("Error: Invalid SQL syntax (Selection Error 5)");
-            }
-            else{
+            } else {
                 checkGroupBy(counter, sqlList);
             }
         }
     }
 
-    private void checkGroupBy(int counter, ArrayList<String> sqlList){
-        counter+=1;
-        if(counter == sqlList.size()){
+    private void checkGroupBy(int counter, ArrayList<String> sqlList) {
+        counter += 1;
+        if (counter == sqlList.size()) {
             throw new IllegalArgumentException("Error: Empty group name");
         }
-        while(counter < sqlList.size()){
-            if(sqlList.get(counter).equalsIgnoreCase("WHERE")){
+        while (counter < sqlList.size()) {
+            if (sqlList.get(counter).equalsIgnoreCase("WHERE")) {
                 throw new IllegalArgumentException("Error: Invalid SQL order");
             }
-            counter+=1;
+            counter += 1;
         }
     }
 
@@ -272,7 +266,7 @@ public class Select implements SQLCommand{
         return isSelectWhereColumn;
     }
 
-    public boolean isSelectGroupBy(){
+    public boolean isSelectGroupBy() {
         return isSelectGroupBy;
     }
 
@@ -285,9 +279,9 @@ public class Select implements SQLCommand{
      *         [n-1] імя N-1 групи
      */
     public String[] getGroupNames() throws IllegalArgumentException {
-        if(groupNames == null){
+        if (groupNames == null)
             throw new UnsupportedOperationException();
-        }
+
         return groupNames;
     }
 
@@ -301,9 +295,9 @@ public class Select implements SQLCommand{
      * наприклад {"COUNT(id)", ...}
      */
     public String[] getAggMethods() throws IllegalArgumentException {
-        if(aggMethods == null){
+        if (aggMethods == null)
             throw new UnsupportedOperationException("Error: Empty Agg Methods (Select)");
-        }
+
         return aggMethods;
     }
 
@@ -317,10 +311,10 @@ public class Select implements SQLCommand{
      * наприклад {"COUNT", "MAX", "AVG", ...}
      * P.S можуть бути лише COUNT, MAX, AVG
      */
-    public String[] getAggFun(){
-        if(aggFun == null){
+    public String[] getAggFun() {
+        if (aggFun == null)
             throw new UnsupportedOperationException("Error: Empty Agg Function (Select)");
-        }
+
         return aggFun;
     }
 
@@ -333,10 +327,10 @@ public class Select implements SQLCommand{
      *         [K-1] colNameK
      * наприклад {"id", "age", "weight", ...}
      */
-    public String[] getAggCol(){
-        if(aggCol == null){
+    public String[] getAggCol() {
+        if (aggCol == null)
             throw new UnsupportedOperationException();
-        }
+
         return aggCol;
     }
 
@@ -344,10 +338,10 @@ public class Select implements SQLCommand{
      * @return [0] імя стовбця по якому треба порівнювати
      *         [1] int по якому треба порівнювати
      */
-    public String[] selectWhereValue() throws IllegalArgumentException{
-        if(whereValue == null){
+    public String[] selectWhereValue() throws IllegalArgumentException {
+        if (whereValue == null)
             throw new UnsupportedOperationException();
-        }
+
         return whereValue;
     }
 
@@ -356,10 +350,10 @@ public class Select implements SQLCommand{
      *         [1] імя 2 стовбця по якому треба порівнювати
      *         1 стовбець йде першим*
      */
-    public String[] selectWhereCol() throws IllegalArgumentException{
-        if(whereCol == null){
+    public String[] selectWhereCol() throws IllegalArgumentException {
+        if (whereCol == null)
             throw new UnsupportedOperationException();
-        }
+
         return whereCol;
     }
 

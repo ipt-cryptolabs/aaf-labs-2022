@@ -9,7 +9,7 @@ public class Create implements SQLCommand {
     private final String TableName;
     private final String[] NameOfColumn;
 
-    public Create(String sql) throws IllegalArgumentException{
+    public Create(String sql) throws IllegalArgumentException {
         checkSqlQuery(sql.trim());
         String sql_ = sql.trim()
                 .replaceAll("[()]", " ")
@@ -20,10 +20,9 @@ public class Create implements SQLCommand {
         LinkedList<String> sqlList = new LinkedList<>();
         Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(sql_);
         while (m.find())
-            if(m.group().split("\\s+").length == 1){
+            if (m.group().split("\\s+").length == 1) {
                 sqlList.add(m.group(1).replace("\"", ""));
-            }
-            else{
+            } else {
                 sqlList.add(m.group(1));
             }
 
@@ -34,42 +33,42 @@ public class Create implements SQLCommand {
     }
 
     @Override
-    public String getTableName(){
+    public String getTableName() {
         return TableName;
     }
 
-    public String[] getNameOfColum(){
+    public String[] getNameOfColum() {
         return NameOfColumn;
     }
 
     @Override
     public void checkSqlQuery(String sql) throws IllegalArgumentException {
-        if(!sql.replaceAll("[^()]", "").equals("()")){
+        if (!sql.replaceAll("[^()]", "").equals("()")) {
             throw new IllegalArgumentException("Error: Invalid SQL syntax (Creation Error 1)");
         }
 
         String sql_ = ReplaceSpacesInQuotes(sql).replaceAll("\"", "");
 
         String[] split1 = sql_.substring(0, sql_.indexOf('(')).split("\\s+");
-        if(split1.length == 1){
+        if (split1.length == 1) {
             throw new IllegalArgumentException("Error: Empty table name");
         }
-        if(split1.length > 2){
+        if (split1.length > 2) {
             throw new IllegalArgumentException("Error: Invalid SQL syntax (Creation Error 2)");
         }
 
-        String[] split2 = sql_.substring(sql_.indexOf('(')+1, sql_.indexOf(')')).replaceAll("\\s+", "").split(",");
-        if(split2.length == 0){
+        String[] split2 = sql_.substring(sql_.indexOf('(') + 1, sql_.indexOf(')')).replaceAll("\\s+", "").split(",");
+        if (split2.length == 0) {
             throw new IllegalArgumentException("Error: Empty Column name (Create)");
         }
-        for (String i: split2) {
-            if(i.equals("")) {
+        for (String i : split2) {
+            if (i.equals("")) {
                 throw new IllegalArgumentException("Error: Empty Column name (Create)");
             }
         }
 
         String[] split3 = sql_.substring(sql_.indexOf(')'), sql_.indexOf(';')).split("\\s+");
-        if(split3.length > 1 || !split3[0].equals(")")){
+        if (split3.length > 1 || !split3[0].equals(")")) {
             throw new IllegalArgumentException("Error: Invalid SQL syntax (Creation Error 3)");
         }
     }

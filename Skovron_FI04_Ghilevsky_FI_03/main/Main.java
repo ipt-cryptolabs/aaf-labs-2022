@@ -8,9 +8,19 @@ public class Main {
         View app = new View();
 
         app.run();
+
+//        StringBuilder sb = new StringBuilder("abc;abc;");
+//        System.out.println(sb.indexOf(";"));
+//
+//        if(sb.indexOf(";") > -1){
+//            System.out.println(sb.delete(sb.indexOf(";"), sb.length()));
+//        }
+
     }
 
     /*
+
+        create student; (age, weight, height);
 
         create student (age, weight, height);
         /

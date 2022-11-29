@@ -13,10 +13,10 @@ public class CreateSelectTable {
     private final Select select;
 
     private final static String COUNT = "COUNT";
-    private final static String AVG   = "AVG";
-    private final static String MAX   = "MAX";
+    private final static String AVG = "AVG";
+    private final static String MAX = "MAX";
 
-    public CreateSelectTable(Select select, Table table){
+    public CreateSelectTable(Select select, Table table) {
         this.select = select;
         this.primeTable = table;
         this.outTable = new Table(table.getTableName(), table.getRowsName());
@@ -25,24 +25,24 @@ public class CreateSelectTable {
     public void select() {
         if (select.isSelectAll()) {
             primeTable.selectAllAndPrint();
-        } else if(select.isSelectGroupBy()){
+        } else if (select.isSelectGroupBy()) {
             Table tempTable = new Table(primeTable.getTableName(), primeTable.getRowsName());
 
-            if (select.isSelectWhereValue()){
-                List<Row> rows =  primeTable.getRowArrayList();
+            if (select.isSelectWhereValue()) {
+                List<Row> rows = primeTable.getRowArrayList();
 
                 String colName = select.selectWhereCol()[0];
                 int value = Integer.parseInt(select.selectWhereValue()[0]);
 
-                for (Row row: rows)
+                for (Row row : rows)
                     rowCompare(row, colName, value, tempTable);
             } else if (select.isSelectWhereColumn()) {
-                List<Row> rows =  primeTable.getRowArrayList();
+                List<Row> rows = primeTable.getRowArrayList();
 
                 String colName1 = select.selectWhereCol()[0];
                 String colName2 = select.selectWhereValue()[0];
 
-                for (Row row: rows)
+                for (Row row : rows)
                     rowCompare(row, colName1, colName2, tempTable);
             } else
                 tempTable = primeTable;
@@ -53,27 +53,27 @@ public class CreateSelectTable {
             String[] aggCol = select.getAggCol();
 
             String[] rowsName = new String[groupNames.length + aggMethods.length];
-            System.arraycopy(groupNames, 0, rowsName, 0 , groupNames.length);
+            System.arraycopy(groupNames, 0, rowsName, 0, groupNames.length);
             System.arraycopy(aggMethods, 0, rowsName, groupNames.length, aggMethods.length);
 
             doGroupBY(tempTable.getRowArrayList(), rowsName, groupNames, aggCol, aggFun).selectAllAndPrint();
         } else if (select.isSelectWhereValue()) {
-            List<Row> rows =  primeTable.getRowArrayList();
+            List<Row> rows = primeTable.getRowArrayList();
 
             String colName = select.selectWhereCol()[0];
             int value = Integer.parseInt(select.selectWhereValue()[0]);
 
-            for (Row row: rows)
+            for (Row row : rows)
                 rowCompare(row, colName, value, outTable);
 
             outTable.selectAllAndPrint();
         } else if (select.isSelectWhereColumn()) {
-            List<Row> rows =  primeTable.getRowArrayList();
+            List<Row> rows = primeTable.getRowArrayList();
 
             String colName1 = select.selectWhereCol()[0];
             String colName2 = select.selectWhereValue()[0];
 
-            for (Row row: rows)
+            for (Row row : rows)
                 rowCompare(row, colName1, colName2, outTable);
 
             outTable.selectAllAndPrint();
@@ -82,8 +82,8 @@ public class CreateSelectTable {
         }
     }
 
-    private boolean checkEquals(int[] comp, Set<int[]> set){
-        for(int[] ints : set)
+    private boolean checkEquals(int[] comp, Set<int[]> set) {
+        for (int[] ints : set)
             if (Arrays.equals(ints, comp))
                 return false;
 
@@ -109,20 +109,20 @@ public class CreateSelectTable {
             for (int i = 0; i < poss.length; i++)
                 integers[i] = row.getRow()[poss[i]];
 
-            if(checkEquals(integers, sets))
+            if (checkEquals(integers, sets))
                 sets.add(integers);
         }
 
         // робим по цим унікльним елементам групи
         int unique = sets.size();
-        for (int i = 0; i < unique; i++){
+        for (int i = 0; i < unique; i++) {
             ArrayList<Row> list = new ArrayList<>();
             groupRow.add(list);
         }
 
         // заповняєм групи
         int k = 0;
-        for (int[] ints: sets) {
+        for (int[] ints : sets) {
             for (Row row : primeRow)
                 if (Arrays.equals(ints, getCell(row.getRow(), poss)))
                     groupRow.get(k).add(row);
@@ -143,7 +143,7 @@ public class CreateSelectTable {
 
             boolean once = true;
             for (Row row : rowList) {
-                aggColumn = prepare(row.getRow(), aggColPos, aggFunPos, aggColumn, once);
+                prepare(row.getRow(), aggColPos, aggFunPos, aggColumn, once);
                 once = false;
             }
 
@@ -156,28 +156,26 @@ public class CreateSelectTable {
         return table;
     }
 
-    private int[] prepare(int[] rowArr, int[] colPos, int[] funPos, int[] accum, boolean once){
-        for (int i = 0; i < accum.length; i++){
+    private void prepare(int[] rowArr, int[] colPos, int[] funPos, int[] accum, boolean once) {
+        for (int i = 0; i < accum.length; i++) {
             if (funPos[i] == 1)
                 accum[i] += 1;
             if (funPos[i] == 2) {
-                if(once)
+                if (once)
                     accum[i] = rowArr[colPos[i]];
-
                 accum[i] = (accum[i] + rowArr[colPos[i]]) / 2;
             }
             if (funPos[i] == 3)
                 accum[i] = Math.max(accum[i], rowArr[colPos[i]]);
         }
 
-        return accum;
     }
 
     @Deprecated
-    private int[] after(int[] acc, int[] funPos, int count){
+    private int[] after(int[] acc, int[] funPos, int count) {
         for (int i = 0; i < acc.length; i++)
-            if(funPos[i] == 2)
-                acc[i] = acc[i]/count;
+            if (funPos[i] == 2)
+                acc[i] = acc[i] / count;
 
         return acc;
     }
@@ -196,9 +194,9 @@ public class CreateSelectTable {
      * 2 - AVG
      * 3 - MAX
      */
-    private int[] findFunName(String[] funNames){
+    private int[] findFunName(String[] funNames) {
         int[] res = new int[funNames.length];
-        for (int i = 0; i < funNames.length; i++){
+        for (int i = 0; i < funNames.length; i++) {
             if (funNames[i].equals(COUNT))
                 res[i] = 1;
             if (funNames[i].equals(AVG))
@@ -210,7 +208,7 @@ public class CreateSelectTable {
         return res;
     }
 
-    private int[] getCell(int[] rowArr, int[] poss){
+    private int[] getCell(int[] rowArr, int[] poss) {
         int[] res = new int[poss.length];
 
         for (int i = 0; i < poss.length; i++)
@@ -230,7 +228,7 @@ public class CreateSelectTable {
             outTable.rowInsert(row);
     }
 
-    public void rowCompare(Row row, String colName1, String colName2, Table outTable){
+    public void rowCompare(Row row, String colName1, String colName2, Table outTable) {
         int pos1 = findColName(colName1);
         int pos2 = findColName(colName2);
 

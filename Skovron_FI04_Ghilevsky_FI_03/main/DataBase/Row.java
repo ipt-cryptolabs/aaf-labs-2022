@@ -9,7 +9,7 @@ public class Row {
     private static int staticID = 0;
     private final int rowId;
 
-    public Row(int... row){
+    public Row(int... row) {
         rowId = staticID;
         staticID++;
 
@@ -20,7 +20,7 @@ public class Row {
         return row;
     }
 
-    public int getRowId(){
+    public int getRowId() {
         return rowId;
     }
 

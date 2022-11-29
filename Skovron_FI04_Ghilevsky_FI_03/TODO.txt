@@ -1,17 +1,8 @@
 Case
-     create "student info" (age, weight);
-     insert "student info" (1, 2);
-     select from "student info"; // problem 3
-
      create "student info" ("student age", weight); // problem 4
      insert "student info" (1, 2); // problem 5?
      select from "student info"; // problem 6?
 
 TODO:
-    2. select fro student
-    3. problem 3
-    4. problem 6
-    10. parse WHERE
-    10. parse GROUP_BY
-    11. parse "select student;"
+    4. problem 6, відображення в таблиці дивне, але вроді ок. "student age"
     12. переписати doGroupBY sets через TreeSet<>(new Comparator<int[]>() {})
