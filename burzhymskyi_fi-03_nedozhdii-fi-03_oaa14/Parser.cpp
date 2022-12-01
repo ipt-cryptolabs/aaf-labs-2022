@@ -8,6 +8,12 @@ Parser::~Parser()
     }
 }
 
+std::string Parser::to_lower(std::string s) {
+    for(char &c : s)
+        c = tolower(c);
+    return s;
+}
+
 bool Parser::insert(std::string str)
 {
     tokens.clear();
@@ -48,11 +54,18 @@ bool Parser::insert(std::string str)
                 if(!searchTree(tokens[1]))
                     break;
             }
-            else
+            if(to_lower(tokens[3])=="match")
             {
-               std::cout<<"will be added in the nearest future";
+                if(std::regex_match(tokens[4].substr(1, tokens[4].length()-2),patternRegex)){
+                    std::cout <<"matching\n" << "to be continued\n";
+                }
+                break;
             }
-
+            if(to_lower(tokens[3])=="between"){
+                std::cout<<"working\n";
+                break;
+            }
+            std::cout<<"something is wrong\n";
             break;
     }
     return 1;

@@ -5,6 +5,7 @@
 #include <regex>
 #include <map>
 #include "Tree.h"
+#include <locale>
 
 namespace
 {
@@ -13,6 +14,7 @@ namespace
     const static std::regex printRegex("^PRINT_TREE\\s[A-Z][A-Z0-9_]*$", std::regex_constants::icase);
     const static std::regex containsRegex("^CONTAINS\\s[A-Z][A-Z0-9_]*\\s\"(.*)\"$", std::regex_constants::icase);
     const static std::regex searchRegex("^SEARCH\\s[A-Z][A-Z0-9_]*(\\sWHERE\\s((BETWEEN\\s\"(.+)\",\\s\"(.+)\")|(MATCH\\s\"(.+)\")))?(\\sASC|\\sDESC)?$",std::regex_constants::icase);
+    const static std::regex patternRegex("[^*]*[*]?",std::regex_constants::icase);
 }
 
 class Parser
@@ -28,11 +30,11 @@ private:
     bool printTree(std::string);
     int containsTree(std::string, std::string);
     bool searchTree(std::string name);
-
 public:
     Parser(){};
     ~Parser();
     bool insert(std::string);
+    std::string to_lower(std::string s);
 };
 
 
