@@ -29,7 +29,7 @@ private:
     bool insertTree(std::string, std::string);
     bool printTree(std::string);
     int containsTree(std::string, std::string);
-    bool searchTree(std::string name);
+    bool searchTree(std::string name,int k);
 public:
     Parser(){};
     ~Parser();

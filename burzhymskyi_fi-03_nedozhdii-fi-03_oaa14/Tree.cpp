@@ -91,10 +91,53 @@ bool Tree::contains(std::string word)
     return true;
 }
 
-void Tree::search()
+void Tree::search(int k,std::string match)
 {
     std::string build = "";
-    searchTree(root, build);
+    switch (k)
+    {
+        case 0:
+            searchTree(root, build);
+            return;
+        case 1:
+            searchMatch(match,0,root,build);
+
+    }
+
+}
+
+void Tree::searchMatch(std::string match, int k, Node* cur, std::string build)
+{
+    if(k == match.size())
+    {
+        if(cur->endWord)
+            std::cout<<build<<' ';
+        return;
+    }
+    if(match[k] == '*')
+    {
+        searchTree(cur,build);
+        return;
+    }else if(match[k] == '?')
+    {
+        for(int i = 0; i < 95; ++i)
+        {
+            if (cur->childrens[i] != nullptr)
+            {
+                searchMatch(match,k+1, cur->childrens[i], build+cur->childrens[i]->letter);
+            }
+        }
+    }else
+    {
+        if(cur->childrens[match[k]-32] == nullptr)
+        {
+            return;
+        }
+
+        searchMatch(match,k+1, cur->childrens[match[k]-32], build+cur->childrens[match[k]-32]->letter);
+    }
+
+
 }
 
 void Tree::searchTree(Node* cur ,std::string& stringBuilder)

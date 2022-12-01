@@ -30,16 +30,16 @@ bool Parser::insert(std::string str)
             break;
         case 1:
             if(createTree(tokens[1]))
-                std::cout<<"create " + tokens[1] + " done" << std::endl;
+              //  std::cout<<"create " + tokens[1] + " done" << std::endl;
             break;
         case 2:
 
             if(insertTree(tokens[1], tokens[2].substr(1, tokens[2].length()-2)))
-                std::cout << "input: " << tokens[1] << " " << tokens[2] + " done" << std::endl;
+               // std::cout << "input: " << tokens[1] << " " << tokens[2] + " done" << std::endl;
             break;
         case 3:
             if(printTree(tokens[1]))
-                std::cout << "print " << tokens[1] + " done" << std::endl;
+               // std::cout << "print " << tokens[1] + " done" << std::endl;
             break;
         case 4:
         {
@@ -51,17 +51,20 @@ bool Parser::insert(std::string str)
         case 5:
             if(tokens.size() == 2)
             {
-                if(!searchTree(tokens[1]))
+                if(!searchTree(tokens[1],0))
                     break;
             }
-            if(to_lower(tokens[3])=="match")
+            if(to_lower(tokens[3]) == "match")
             {
-                if(std::regex_match(tokens[4].substr(1, tokens[4].length()-2),patternRegex)){
+                if(std::regex_match(tokens[4].substr(1, tokens[4].length()-2),patternRegex))
+                {
                     std::cout <<"matching\n" << "to be continued\n";
                 }
+                if(!searchTree(tokens[1],1))
+                    break;
                 break;
             }
-            if(to_lower(tokens[3])=="between"){
+            if(to_lower(tokens[3]) == "between"){
                 std::cout<<"working\n";
                 break;
             }
@@ -179,14 +182,15 @@ int Parser::containsTree(std::string name, std::string val)
 }
 
 
-bool Parser::searchTree(std::string name)
+bool Parser::searchTree(std::string name,int k)
 {
     if (!treeName.contains(name))
     {
         std::cout << "Tree with such name doesn't exist" << std::endl;
         return 0;
     }
-    treeName[name]->search();
+    treeName[name]->search(k,tokens[4].substr(1, tokens[4].length()-2));
     std::cout << '\n';
+
     return 1;
 }
