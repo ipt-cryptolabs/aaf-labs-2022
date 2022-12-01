@@ -160,7 +160,8 @@ void Tree::searchTree(Node* cur ,std::string& stringBuilder)
                 if(cur == root)
                 {
                     stringBuilder = "";
-                }else if(cur->childrens[i])
+                }
+                else if(cur->childrens[i])
                 {
                     stringBuilder.pop_back();
                 }
@@ -193,7 +194,6 @@ void Tree::Node::print(std::string prefix, std::string childrenPrefix)
 
 void Tree::printTree()
 {
-    //root->letter = new char(' ');
     std::cout<<"[root]\n";
     root->print("","");
 }

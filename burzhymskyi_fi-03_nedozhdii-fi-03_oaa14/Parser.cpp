@@ -8,7 +8,8 @@ Parser::~Parser()
     }
 }
 
-std::string Parser::to_lower(std::string s) {
+std::string Parser::to_lower(std::string s)
+{
     for(char &c : s)
         c = tolower(c);
     return s;
@@ -53,21 +54,21 @@ bool Parser::insert(std::string str)
             {
                 if(!searchTree(tokens[1],0))
                     break;
+                break;
             }
             if(to_lower(tokens[3]) == "match")
             {
                 if(std::regex_match(tokens[4].substr(1, tokens[4].length()-2),patternRegex))
                 {
-                    std::cout <<"matching\n" << "to be continued\n";
+                    if(!searchTree(tokens[1],1))
+                        break;
                 }
-                if(!searchTree(tokens[1],1))
-                    break;
                 break;
             }
-            if(to_lower(tokens[3]) == "between"){
-                std::cout<<"working\n";
+            if(to_lower(tokens[3]) == "between")
+            {
                 break;
-            }
+            } else
             std::cout<<"something is wrong\n";
             break;
     }
@@ -144,7 +145,8 @@ int Parser::match(std::string str)
 
 bool Parser::createTree(std::string name) {
 
-    if(treeName.contains(name)) {
+    if(treeName.contains(name))
+    {
         std::cout << "Tree with such name already exists" << std::endl;
         return 0;
     }
@@ -153,8 +155,10 @@ bool Parser::createTree(std::string name) {
     return 1;
 }
 
-bool Parser::insertTree(std::string name, std::string val) {
-    if(!treeName.contains(name)) {
+bool Parser::insertTree(std::string name, std::string val)
+{
+    if(!treeName.contains(name))
+    {
         std::cout << "Tree with such name doesn't exist" << std::endl;
         return 0;
     }
@@ -162,8 +166,10 @@ bool Parser::insertTree(std::string name, std::string val) {
     return 1;
 }
 
-bool Parser::printTree(std::string name) {
-    if (!treeName.contains(name)) {
+bool Parser::printTree(std::string name)
+{
+    if (!treeName.contains(name))
+    {
         std::cout << "Tree with such name doesn't exist" << std::endl;
         return 0;
     }
@@ -173,11 +179,11 @@ bool Parser::printTree(std::string name) {
 
 int Parser::containsTree(std::string name, std::string val)
 {
-    if (!treeName.contains(name)) {
+    if (!treeName.contains(name))
+    {
         std::cout << "Tree with such name doesn't exist" << std::endl;
         return -1;
     }
-
     return treeName[name]->contains(val);
 }
 
@@ -189,7 +195,14 @@ bool Parser::searchTree(std::string name,int k)
         std::cout << "Tree with such name doesn't exist" << std::endl;
         return 0;
     }
-    treeName[name]->search(k,tokens[4].substr(1, tokens[4].length()-2));
+    if(k==0)
+    {
+        treeName[name]->search(k, "");
+    }
+    else
+    {
+        treeName[name]->search(k, tokens[4].substr(1, tokens[4].length() - 2));
+    }
     std::cout << '\n';
 
     return 1;
