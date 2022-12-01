@@ -67,8 +67,25 @@ bool Parser::insert(std::string str)
             }
             if(to_lower(tokens[3]) == "between")
             {
+                //search tree where between "from", "to" [asc];
                 break;
-            } else
+            }
+            if(to_lower(tokens[2])=="desc" && tokens.size() == 3)
+            {
+                //search tree desc;
+                break;
+            }
+            if(to_lower(tokens[5])=="desc" && to_lower(tokens[3]) == "match")
+            {
+                //search tree where match pattern desc;
+                break;
+            }
+            if(to_lower(tokens[6]) == "desc" && to_lower(tokens[3]) == "between")
+            {
+                //search tree where between "from", "to" desc;
+                break;
+            }
+            else
             std::cout<<"something is wrong\n";
             break;
     }
