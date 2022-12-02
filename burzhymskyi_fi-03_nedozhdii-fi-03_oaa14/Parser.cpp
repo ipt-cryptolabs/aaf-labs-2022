@@ -24,6 +24,9 @@ bool Parser::insert(std::string str)
     {
         return 0;
     }
+    for(int i = tokens.size() - 1; i < 7; ++i)//7 - max size of parsed sentence
+        tokens.push_back("");
+
     switch (match(str))
     {
         case 0:
@@ -50,44 +53,30 @@ bool Parser::insert(std::string str)
             break;
         }
         case 5:
-            if(tokens.size() == 2)
+            if(tokens[3]== "" || tokens[4]=="")
             {
-                if(!searchTree(tokens[1],0))
-                    break;
+                if(to_lower(tokens[2]) == "desc")
+                    searchTree(tokens[1],"","","",1);
+                else
+                    searchTree(tokens[1],"","","",0);
                 break;
             }
             if(to_lower(tokens[3]) == "match")
             {
-                if(std::regex_match(tokens[4].substr(1, tokens[4].length()-2),patternRegex))
+                std::string parMatch = tokens[4].substr(1, tokens[4].length()-2);
+                if(std::regex_match((parMatch),patternRegex))
                 {
-                    if(!searchTree(tokens[1],1))
-                        break;
+                    if(to_lower(tokens[5]) == "desc")
+                        searchTree(tokens[1],parMatch,"","",1);
+                    else
+                        searchTree(tokens[1],parMatch,"","",0);
                 }
                 break;
             }
-            if(to_lower(tokens[3]) == "between")
             {
-                //search tree where between "from", "to" [asc];
-                break;
+                std::cout<<"between\n";
             }
-            if(to_lower(tokens[2])=="desc" && tokens.size() == 3)
-            {
-                //search tree desc;
-                break;
-            }
-            if(to_lower(tokens[5])=="desc" && to_lower(tokens[3]) == "match")
-            {
-                //search tree where match pattern desc;
-                break;
-            }
-            if(to_lower(tokens[6]) == "desc" && to_lower(tokens[3]) == "between")
-            {
-                //search tree where between "from", "to" desc;
-                break;
-            }
-            else
-            std::cout<<"something is wrong\n";
-            break;
+
     }
     return 1;
 }
@@ -205,22 +194,13 @@ int Parser::containsTree(std::string name, std::string val)
 }
 
 
-bool Parser::searchTree(std::string name,int k)
+void Parser::searchTree(std::string name,std::string match,std::string from,std::string to,int k)
 {
     if (!treeName.contains(name))
     {
         std::cout << "Tree with such name doesn't exist" << std::endl;
-        return 0;
+        return;
     }
-    if(k==0)
-    {
-        treeName[name]->search(k, "");
-    }
-    else
-    {
-        treeName[name]->search(k, tokens[4].substr(1, tokens[4].length() - 2));
-    }
-    std::cout << '\n';
+    treeName[name]->search(match,to,from,k);
 
-    return 1;
 }

@@ -91,32 +91,41 @@ bool Tree::contains(std::string word)
     return true;
 }
 
-void Tree::search(int k,std::string match)
+void Tree::search( std::string match, std::string from, std::string to,int ad)
 {
     std::string build = "";
-    switch (k)
-    {
-        case 0:
-            searchTree(root, build);
-            return;
-        case 1:
-            searchMatch(match,0,root,build);
+    std::vector<std::string> result;
+    if(match == "" && from == "" && to == "")
+        searchTree(root, build,result);
+    else if(match != "")
+            searchMatch(match,0,root,build,result);
+    else
+        std::cout<<"between\n";
 
-    }
-
+    if(ad) // ad = 1 -> DESK
+        for(int i = result.size() - 1; i >= 0; --i)
+            std::cout<<result[i]<<' ';
+    else
+        for(int i = 0; i < result.size(); ++i)
+            std::cout<<result[i]<<' ';
+    std::cout<<'\n';
 }
 
-void Tree::searchMatch(std::string match, int k, Node* cur, std::string build)
+void Tree::searchMatch(std::string match, int k, Node* cur, std::string build, std::vector<std::string> &result)
 {
     if(k == match.size())
     {
         if(cur->endWord)
-            std::cout<<build<<' ';
+        {
+            result.push_back(build);
+            //std::cout<<build<<' ';
+        }
+
         return;
     }
     if(match[k] == '*')
     {
-        searchTree(cur,build);
+        searchTree(cur,build,result);
         return;
     }else if(match[k] == '?')
     {
@@ -124,7 +133,7 @@ void Tree::searchMatch(std::string match, int k, Node* cur, std::string build)
         {
             if (cur->childrens[i] != nullptr)
             {
-                searchMatch(match,k+1, cur->childrens[i], build+cur->childrens[i]->letter);
+                searchMatch(match,k+1, cur->childrens[i], build+cur->childrens[i]->letter, result);
             }
         }
     }else
@@ -134,19 +143,19 @@ void Tree::searchMatch(std::string match, int k, Node* cur, std::string build)
             return;
         }
 
-        searchMatch(match,k+1, cur->childrens[match[k]-32], build+cur->childrens[match[k]-32]->letter);
+        searchMatch(match,k+1, cur->childrens[match[k]-32], build+cur->childrens[match[k]-32]->letter, result);
     }
 
 
 }
 
-void Tree::searchTree(Node* cur ,std::string& stringBuilder)
-{
 
+void Tree::searchTree(Node* cur ,std::string& stringBuilder, std::vector<std::string> &result)
+{
     std::string tmp = stringBuilder;
 
     if(cur->endWord)
-        std::cout<<stringBuilder<<' ';
+        result.push_back(stringBuilder);
     if(cur->countChildrens > 0)
     {
         for(int i = 0; i < 95; ++i)
@@ -155,7 +164,7 @@ void Tree::searchTree(Node* cur ,std::string& stringBuilder)
             {
                 stringBuilder += cur->childrens[i]->letter;
 
-                searchTree(cur->childrens[i],stringBuilder);
+                searchTree(cur->childrens[i], stringBuilder, result);
 
                 if(cur == root)
                 {

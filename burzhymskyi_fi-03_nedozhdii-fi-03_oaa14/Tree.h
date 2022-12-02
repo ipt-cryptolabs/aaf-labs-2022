@@ -4,7 +4,11 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <algorithm>
 #define sizeAlphabet = 256;
+
+
 
 class Tree
 {
@@ -30,15 +34,16 @@ public:
     void insert(std::string);
     bool contains(std::string);
 
-    void search(int ,std::string);
+    void search(std::string, std::string, std::string, int);
 
     void printTree();
 
     Node *root;
     private:
-    void searchMatch(std::string, int, Node* cur, std::string);
-    void searchTree(Node* cur, std::string&);
-   };
+    void searchMatch(std::string, int, Node* cur, std::string,std::vector<std::string> &);
+    void searchTree(Node* cur, std::string&,std::vector<std::string> &);
+
+};
 
 
 #endif //BURZHYMSKYI_FI_03_NEDOZHDII_FI_03_OAA14_TREE_H

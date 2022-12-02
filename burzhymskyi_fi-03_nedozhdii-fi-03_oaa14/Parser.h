@@ -29,12 +29,12 @@ private:
     bool insertTree(std::string, std::string);
     bool printTree(std::string);
     int containsTree(std::string, std::string);
-    bool searchTree(std::string name,int k);
+    void searchTree(std::string name,std::string match,std::string from,std::string to,int k);
 public:
     Parser(){};
     ~Parser();
     bool insert(std::string);
-    std::string to_lower(std::string s);
+    static std::string to_lower(std::string s);
 };
 
 
