@@ -82,7 +82,7 @@ const parser = input => {
                 break;
             case 5:
                 let dashIndex = tokens.indexOf('-');
-                commands.searchWhereDash(tokens[1], tokens.slice(3, dashIndex), tokens.slice(dashIndex+1, ));
+                commands.searchWhereDash(tokens[1], tokens.slice(3, dashIndex)[0], tokens.slice(dashIndex+1, )[0]);
                 break;
             case 6:
                 let numInHooks;
@@ -95,10 +95,10 @@ const parser = input => {
 
                 let numInHooksIndex = tokens.indexOf(numInHooks);
 
-                commands.searchWhereHooks(tokens[1], tokens.slice(3,numInHooksIndex), numInHooks, tokens.slice(numInHooksIndex+1, ));
+                commands.searchWhereHooks(tokens[1], tokens.slice(3,numInHooksIndex)[0], +numInHooks, tokens.slice(numInHooksIndex+1, )[0]);
                 break;
         }
-        console.log(tokens);
+        //console.log(tokens);
     }catch(error){
         console.log(error);
     }
