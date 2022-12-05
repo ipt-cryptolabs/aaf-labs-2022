@@ -56,9 +56,36 @@ class DB:
         elif len(args) == 8:
             line += f"\nleft_join table {args[3]} on columns: {args[5]}, {args[-1]}"
             print(line)
+
         elif len(args) == 6:
-            line += f"\ncondition: {args[3]} {args[4]} {args[5]}"
-            print(line)
+            if args[1] not in self.tables.keys():
+                print(f"SELECT Error: table {args[1]} does not exist.")
+            elif args[3] not in self.tables[args[1]].columns:
+                print(f"SELECT Error: the column {args[3]} does not exist in table {args[1]}")
+            else:
+                line += f"\ncondition: {args[3]} {args[4]} {args[5]}"
+                our_table = self.tables[args[1]]
+                index1 = our_table.columns.index(args[3])
+                tab_where = Table([0, "temp", *our_table.columns])
+                if args[5][0] == '"':
+                    string = args[5][1:-1]
+                    for i in our_table.rows:
+                        if i[index1] < string:
+                            tab_where.rows.append(i)
+                else:
+                    if args[5] not in our_table.columns:
+                        print(f"SELECT Error: the column {args[5]} does not exist in table {args[1]}")
+                        return
+                    else:
+                        index2 = our_table.columns.index(args[5])
+                        for i in our_table.rows:
+                            if i[index1] < i[index2]:
+                                tab_where.rows.append(i)
+
+                print(line)
+                print(tab_where)
+                return
+
         else:
             line += f"""\nleft_join table {args[3]} on columns {args[5]}, {args[7]}
     condition: {args[9]} {args[10]} {args[11]}"""
