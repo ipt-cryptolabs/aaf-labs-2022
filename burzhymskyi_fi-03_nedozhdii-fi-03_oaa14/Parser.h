@@ -10,10 +10,20 @@
 namespace
 {
     const static std::regex createRegex("^CREATE\\s[A-Z][A-Z0-9_]*$", std::regex_constants::icase);
-    const static std::regex insertRegex("^INSERT\\s[A-Z][A-Z0-9_]*\\s\"(.*)\"$", std::regex_constants::icase);
+    const static std::regex insertRegex("^INSERT\\s[A-Z][A-Z0-9_]*\\s\"([^\\t\\r\\n\\t\\f\\v\\u00a0\\u1680"
+                                        "\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*)\"$",
+                                        std::regex_constants::icase);
     const static std::regex printRegex("^PRINT_TREE\\s[A-Z][A-Z0-9_]*$", std::regex_constants::icase);
-    const static std::regex containsRegex("^CONTAINS\\s[A-Z][A-Z0-9_]*\\s\"(.*)\"$", std::regex_constants::icase);
-    const static std::regex searchRegex("^SEARCH\\s[A-Z][A-Z0-9_]*(\\sWHERE\\s((BETWEEN\\s\"(.+)\",\\s\"(.+)\")|(MATCH\\s\"(.+)\")))?(\\sASC|\\sDESC)?$",std::regex_constants::icase);
+    const static std::regex containsRegex("^CONTAINS\\s[A-Z][A-Z0-9_]*\\s\"([^\\t\\r\\n\\t\\f\\v\\u00a0"
+                                          "\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*)"
+                                          "\"$", std::regex_constants::icase);
+    const static std::regex searchRegex("^SEARCH\\s[A-Z][A-Z0-9_]*(\\sWHERE\\s((BETWEEN\\s\"([^\\t\\r\\n\\t\\f"
+                                        "\\v\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000"
+                                        "\\ufeff]+)\",\\s\"([^\\t\\r\\n\\t\\f\\v\\u00a0\\u1680\\u2000-\\u200a"
+                                        "\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+)\")|(MATCH"
+                                        "\\s\"([^\\t\\r\\n\\t\\f\\v\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029"
+                                        "\\u202f\\u205f\\u3000\\ufeff]+)\")))?(\\sASC|\\sDESC)?$",
+                                        std::regex_constants::icase);
     const static std::regex patternRegex("[^*]*[*]?",std::regex_constants::icase);
 }
 
