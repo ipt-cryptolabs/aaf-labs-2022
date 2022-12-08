@@ -73,9 +73,11 @@ bool Parser::insert(std::string str)
                 }
                 break;
             }
-            {
-                std::cout<<"between\n";
-            }
+            //std::cout<<tokens[4].substr(1, tokens[4].length()-3)<<" "+tokens[5].substr(1, tokens[5].length()-2)+"\n";
+            if(to_lower(tokens[5]) == "desc")
+                searchTree(tokens[1],"",tokens[4].substr(1, tokens[4].length()-3),tokens[5].substr(1, tokens[5].length()-2),1);
+            else
+                searchTree(tokens[1],"",tokens[4].substr(1, tokens[4].length()-3),tokens[5].substr(1, tokens[5].length()-2),0);
 
     }
     return 1;
@@ -201,6 +203,6 @@ void Parser::searchTree(std::string name,std::string match,std::string from,std:
         std::cout << "Tree with such name doesn't exist" << std::endl;
         return;
     }
-    treeName[name]->search(match,to,from,k);
+    treeName[name]->search(match,from,to,k);
 
 }

@@ -42,6 +42,7 @@ public:
     private:
     void searchMatch(std::string, int, Node* cur, std::string,std::vector<std::string> &);
     void searchTree(Node* cur, std::string&,std::vector<std::string> &);
+    void searchBetween(Node* cur, std::string&,std::vector<std::string> &,const std::string&, const std::string&);
 
 };
 
