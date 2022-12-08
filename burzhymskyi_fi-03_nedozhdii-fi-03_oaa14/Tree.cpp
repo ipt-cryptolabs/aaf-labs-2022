@@ -161,7 +161,7 @@ void Tree::searchBetween(Node* cur, std::string& stringBuilder,std::vector<std::
             {
                 stringBuilder += cur->childrens[i]->letter;
                 if( from <= stringBuilder  && stringBuilder <= to)
-                    searchTree(cur->childrens[i], stringBuilder, result);
+                    searchBetween(cur->childrens[i], stringBuilder, result,from,to);
                 else
                     return;
                 if(cur == root)
