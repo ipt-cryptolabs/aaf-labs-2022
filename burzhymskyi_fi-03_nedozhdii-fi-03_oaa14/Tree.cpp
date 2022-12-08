@@ -105,10 +105,10 @@ void Tree::search( std::string match, std::string from, std::string to,int ad)
 
     if(ad) // ad = 1 -> DESK
         for(int i = result.size() - 1; i >= 0; --i)
-            std::cout<<result[i]<<' ';
+            std::cout<<result[i]<<", ";
     else
         for(int i = 0; i < result.size(); ++i)
-            std::cout<<result[i]<<' ';
+            std::cout<<result[i]<<", ";
     std::cout<<'\n';
 }
 
@@ -119,7 +119,6 @@ void Tree::searchMatch(std::string match, int k, Node* cur, std::string build, s
         if(cur->endWord)
         {
             result.push_back(build);
-            //std::cout<<build<<' ';
         }
 
         return;
@@ -161,8 +160,6 @@ void Tree::searchBetween(Node* cur, std::string& stringBuilder,std::vector<std::
             if(cur->childrens[i] != nullptr)
             {
                 stringBuilder += cur->childrens[i]->letter;
-
-
                 if( from <= stringBuilder  && stringBuilder <= to)
                     searchTree(cur->childrens[i], stringBuilder, result);
                 else
