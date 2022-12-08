@@ -152,7 +152,7 @@ void Tree::searchMatch(std::string match, int k, Node* cur, std::string build, s
 
 void Tree::searchBetween(Node* cur, std::string& stringBuilder,std::vector<std::string> &result,const std::string& from, const std::string& to)
 {
-    if(cur->endWord  && from <= stringBuilder  && stringBuilder <= to)
+    if(cur->endWord  && from <= stringBuilder)
         result.push_back(stringBuilder);
 
     if(cur->countChildrens > 0)
@@ -162,9 +162,10 @@ void Tree::searchBetween(Node* cur, std::string& stringBuilder,std::vector<std::
             if(cur->childrens[i] != nullptr)
             {
                 stringBuilder += cur->childrens[i]->letter;
-
-                searchBetween(cur->childrens[i], stringBuilder, result,from,to);
-
+                if(stringBuilder <= to)
+                    searchBetween(cur->childrens[i], stringBuilder, result,from,to);
+                else
+                    return;
                 if(cur == root)
                 {
                     stringBuilder = "";
