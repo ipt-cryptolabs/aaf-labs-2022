@@ -7,6 +7,7 @@
 #include "Tree.h"
 #include <locale>
 
+
 namespace
 {
     const static std::regex createRegex("^CREATE\\s[A-Z][A-Z0-9_]*$", std::regex_constants::icase);
