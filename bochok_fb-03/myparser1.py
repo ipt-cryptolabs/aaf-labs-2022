@@ -80,7 +80,7 @@ def parse(line):
                             elif (k == 0 or k == len(args_l) - 1) and len(re.findall("\"", args_l[k])) > 1:
                                 return "Error: invalid syntax in argument section."
                             else:
-                                args_l[k] = args_l[k][1:-1]
+                                continue
                     else:
                         return "Error: invalid syntax in argument section."
 
