@@ -6,10 +6,10 @@ class Table:
 
     def __init__(self, args):
         self.title = args[1]
-        self.columns = args[2:]
+        self.columns = args[2].keys()
         self.rows = list()
         self.rows_c = 0
-        self.indexed = list()
+        self.indexed = [x for x in args[2].keys() if args[2][x] == 1]
 
     def __str__(self):
         return tabulate(self.rows, headers=self.columns, tablefmt="psql")
@@ -30,14 +30,14 @@ class DB:
         self.tables = dict()
 
     def create(self, args):
+        print(args[2])
         if args[1] in self.tables.keys():
             print(f"CREATE Error: The table {args[1]} already exists.")
-        elif len(args[2:]) != len(set(args[2:])):
-            print(f"CREATE Error: The table columns are not unique.")
         else:
             new_tab = Table(args)
             self.tables[args[1]] = new_tab
-            print(f"The table {args[1]} with columns {tuple(args[2:])} has been created!")
+            print(f"The table {args[1]} with columns {tuple(args[2].keys())} has been created!")
+            print(new_tab.indexed)
         return
 
     def insert_row(self, args):
