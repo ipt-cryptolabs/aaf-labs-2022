@@ -21,4 +21,4 @@
 
 - [x] Part1
 - [x] Part2
-- [ ] Part3
+- [x] Part3
