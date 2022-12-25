@@ -21,7 +21,7 @@ public:
     std::vector<Point*> Search();
     std::vector<Point*> SearchInside(Point* point1, Point* point2);
     std::vector<Point*> SearchNN(Point* point);
-    std::vector<Point*> SearchLeftOf(int number);
+    std::vector<Point*> SearchLeftOf(int x);
 
 private:
     class Node{
@@ -71,6 +71,7 @@ private:
     void SubPrint(Point* point, const std::string& shift, bool last);
     bool SubContains(Point* point, Node* node);
     void SubSearch(Node* node, std::vector<Point*>& collected_points);
+    void SubSearchLeftOf(Node* node, int x, std::vector<Point*>& collected_points);
     Node* SubInsert(Point* point, Node* node);
     Node* ChooseSubtree(RTree::INode* node, Point* point);
 

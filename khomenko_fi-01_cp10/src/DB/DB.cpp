@@ -46,6 +46,15 @@ void DB::Search(const std::string& set_name) {
     }
 }
 
+void DB::SearchLeftOf(const std::string& set_name, int number) {
+    CheckSetPresence(set_name);
+    std::vector<Point *> res = sets_[set_name]->SearchLeftOf(number);
+
+    for(auto el: res){
+        std::cout << el->ToString() << std::endl;
+    }
+}
+
 void DB::SearchInside(const std::string& set_name, Point* point1, Point* point2) {
     CheckSetPresence(set_name);
     sets_[set_name]->SearchInside(point1, point2);
@@ -56,10 +65,7 @@ void DB::SearchNN(const std::string& set_name, Point* point) {
     sets_[set_name]->SearchNN(point);
 }
 
-void DB::SearchLeftOf(const std::string& set_name, int number) {
-    CheckSetPresence(set_name);
-    sets_[set_name]->SearchLeftOf(number);
-}
+
 
 void DB::CheckSetPresence(const std::string& set_name) {
     if(sets_.find(set_name) == sets_.end()){

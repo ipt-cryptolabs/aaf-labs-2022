@@ -149,10 +149,6 @@ std::vector<Point *> RTree::SearchNN(Point *point) {
     return std::vector<Point *>();
 }
 
-std::vector<Point *> RTree::SearchLeftOf(int number) {
-    return std::vector<Point *>();
-}
-
 
 bool RTree::Insert(Point *point) {
     // returns true if point was added to set
@@ -523,5 +519,38 @@ void RTree::QDistribute(RTree::INode *node, RTree::INode *split_node, std::vecto
             node->nodes_.push_back(node_);
         }
         node->UpdateMBR();
+    }
+}
+
+std::vector<Point *> RTree::SearchLeftOf(int x) {
+    std::vector<Point *> collected_points;
+
+    if(root_){
+        SubSearchLeftOf(root_, x, collected_points);
+    }
+
+    return collected_points;
+}
+
+void RTree::SubSearchLeftOf(RTree::Node *node, int x, std::vector<Point *> &collected_points) {
+    Leaf* leaf_node = dynamic_cast<Leaf*>(node);
+
+    if(leaf_node){
+        auto leaf_node_iter = leaf_node->points_.begin();
+        for (; leaf_node_iter != leaf_node->points_.end(); leaf_node_iter++) {
+            if((*leaf_node_iter)->x < x){
+                collected_points.push_back(*leaf_node_iter);
+            }
+        }
+    }
+    else{
+        INode* inner_node = dynamic_cast<INode*>(node);
+        auto inner_node_iter = inner_node->nodes_.begin();
+
+        for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
+            if(inner_node->rect_.get_lb_point().x < x){
+                SubSearchLeftOf(*inner_node_iter, x, collected_points);
+            }
+        }
     }
 }
