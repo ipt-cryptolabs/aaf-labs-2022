@@ -570,7 +570,6 @@ void RTree::SubSearchInside(RTree::Node *node, Rectangle *rectangle, std::vector
     if(leaf_node){
         auto leaf_node_iter = leaf_node->points_.begin();
         for (; leaf_node_iter != leaf_node->points_.end(); leaf_node_iter++) {
-            auto log = *leaf_node_iter;
             if(rectangle->Contains(*leaf_node_iter)){
                 collected_points.push_back(*leaf_node_iter);
             }
