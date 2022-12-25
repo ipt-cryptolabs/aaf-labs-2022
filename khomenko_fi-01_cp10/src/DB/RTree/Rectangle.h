@@ -37,7 +37,22 @@ public:
     }
 
     bool Contains(Point* point){
-        return (lb_point_.x <= point->x <= rt_point_.x) && (lb_point_.y <= point->y <= rt_point_.y);
+        return (lb_point_.x <= point->x) && (point->x <= rt_point_.x) && (lb_point_.y <= point->y) && (point->y<= rt_point_.y);
+    }
+
+    bool Intersects(Rectangle* rectangle){
+        int min_x1 = lb_point_.x;
+        int max_x1 = rt_point_.x;
+        int min_y1 = lb_point_.y;
+        int max_y1 = rt_point_.y;
+
+        int min_x2 = rectangle->lb_point_.x;
+        int max_x2 = rectangle->rt_point_.x;
+        int min_y2 = rectangle->lb_point_.y;
+        int max_y2 = rectangle->rt_point_.y;
+
+        return (min_x2 <= max_x1) && (max_x2 >= min_x1) && (min_y2 <= max_y1) && (max_y2 >= min_y1);
+
     }
 
     Rectangle UpdatedRectangle(Point* point){

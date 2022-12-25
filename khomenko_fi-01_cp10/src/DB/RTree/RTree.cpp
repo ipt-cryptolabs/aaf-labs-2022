@@ -141,9 +141,6 @@ void RTree::SubSearch(RTree::Node *node, std::vector<Point *>& collected_points)
     }
 }
 
-std::vector<Point *> RTree::SearchInside(Point *point1, Point *point2) {
-    return std::vector<Point *>();
-}
 
 std::vector<Point *> RTree::SearchNN(Point *point) {
     return std::vector<Point *>();
@@ -550,6 +547,42 @@ void RTree::SubSearchLeftOf(RTree::Node *node, int x, std::vector<Point *> &coll
         for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
             if(inner_node->rect_.get_lb_point().x < x){
                 SubSearchLeftOf(*inner_node_iter, x, collected_points);
+            }
+        }
+    }
+}
+
+std::vector<Point *> RTree::SearchInside(Point *point1, Point *point2) {
+    std::vector<Point *> collected_points;
+
+    if(root_){
+        Rectangle* rectangle = new Rectangle(*point1, *point2);
+        SubSearchInside(root_, rectangle, collected_points);
+        delete rectangle;
+    }
+
+    return collected_points;
+}
+
+void RTree::SubSearchInside(RTree::Node *node, Rectangle *rectangle, std::vector<Point *> &collected_points) {
+    Leaf* leaf_node = dynamic_cast<Leaf*>(node);
+
+    if(leaf_node){
+        auto leaf_node_iter = leaf_node->points_.begin();
+        for (; leaf_node_iter != leaf_node->points_.end(); leaf_node_iter++) {
+            auto log = *leaf_node_iter;
+            if(rectangle->Contains(*leaf_node_iter)){
+                collected_points.push_back(*leaf_node_iter);
+            }
+        }
+    }
+    else{
+        INode* inner_node = dynamic_cast<INode*>(node);
+        auto inner_node_iter = inner_node->nodes_.begin();
+
+        for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
+            if((*inner_node_iter)->rect_.Intersects(rectangle)){
+                SubSearchInside(*inner_node_iter, rectangle, collected_points);
             }
         }
     }

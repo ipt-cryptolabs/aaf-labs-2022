@@ -72,6 +72,7 @@ private:
     bool SubContains(Point* point, Node* node);
     void SubSearch(Node* node, std::vector<Point*>& collected_points);
     void SubSearchLeftOf(Node* node, int x, std::vector<Point*>& collected_points);
+    void SubSearchInside(Node* node, Rectangle* rectangle, std::vector<Point*>& collected_points);
     Node* SubInsert(Point* point, Node* node);
     Node* ChooseSubtree(RTree::INode* node, Point* point);
 
