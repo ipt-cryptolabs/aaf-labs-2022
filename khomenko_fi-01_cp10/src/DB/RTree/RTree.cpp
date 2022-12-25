@@ -142,11 +142,6 @@ void RTree::SubSearch(RTree::Node *node, std::vector<Point *>& collected_points)
 }
 
 
-std::vector<Point *> RTree::SearchNN(Point *point) {
-    return std::vector<Point *>();
-}
-
-
 bool RTree::Insert(Point *point) {
     // returns true if point was added to set
 
@@ -582,6 +577,68 @@ void RTree::SubSearchInside(RTree::Node *node, Rectangle *rectangle, std::vector
         for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
             if((*inner_node_iter)->rect_.Intersects(rectangle)){
                 SubSearchInside(*inner_node_iter, rectangle, collected_points);
+            }
+        }
+    }
+}
+
+std::vector<Point *> RTree::SearchNN(Point *point) {
+    std::vector<Point *> collected_points;
+
+    int min_distance = -1;
+    if(root_){
+        SubSearchNN(root_, point, collected_points, min_distance);
+    }
+
+    return collected_points;
+}
+
+void RTree::SubSearchNN(RTree::Node *node, Point *point, std::vector<Point *> &collected_points, int &min_distance) {
+    Leaf* leaf_node = dynamic_cast<Leaf*>(node);
+
+    int current_distance;
+
+    if(leaf_node){
+        auto leaf_node_iter = leaf_node->points_.begin();
+        for (; leaf_node_iter != leaf_node->points_.end(); leaf_node_iter++) {
+            if(min_distance == -1){
+                // min_distance was not initialised
+                min_distance = Point::SqrDistance(point, *leaf_node_iter);
+                collected_points.push_back(*leaf_node_iter);
+            }
+            else{
+                current_distance = Point::SqrDistance(point, *leaf_node_iter);
+                if(current_distance < min_distance){
+                    min_distance = current_distance;
+                    collected_points.clear();
+                }
+
+                if(current_distance == min_distance){
+                    collected_points.push_back(*leaf_node_iter);
+                }
+            }
+        }
+    }
+    else{
+        INode* inner_node = dynamic_cast<INode*>(node);
+
+        // Precomputation of min_distance between point and all nodes mbrs
+        // to set the order in which children would be traversed
+
+        std::vector<std::pair <Node*, int> > point_to_distance;
+        auto inner_node_iter = inner_node->nodes_.begin();
+        for (; inner_node_iter != inner_node->nodes_.end(); inner_node_iter++) {
+            point_to_distance.emplace_back((*inner_node_iter), (*inner_node_iter)->rect_.MinDistanceBetween(point));
+        }
+
+        sort(point_to_distance.begin(), point_to_distance.end(), sort_func);
+
+        Node* tmp_node;
+        auto point_to_distance_iter = point_to_distance.begin();
+        for (; point_to_distance_iter != point_to_distance.end(); point_to_distance_iter++) {
+            tmp_node = (*point_to_distance_iter).first;
+            if(min_distance >= tmp_node->rect_.MinDistanceBetween(point) || min_distance == -1){
+                SubSearchNN(tmp_node, point, collected_points, min_distance);
             }
         }
     }

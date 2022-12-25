@@ -67,12 +67,19 @@ private:
 
     Node* root_;
 
+
+    static bool sort_func(const std::pair<Node*, int> &a, const std::pair<Node*, int> &b)
+    {
+        return (a.second > b.second);
+    }
+
     void SubPrint(Node* node, const std::string& shift, bool last);
     void SubPrint(Point* point, const std::string& shift, bool last);
     bool SubContains(Point* point, Node* node);
     void SubSearch(Node* node, std::vector<Point*>& collected_points);
     void SubSearchLeftOf(Node* node, int x, std::vector<Point*>& collected_points);
     void SubSearchInside(Node* node, Rectangle* rectangle, std::vector<Point*>& collected_points);
+    void SubSearchNN(Node* node, Point* point, std::vector<Point*>& collected_points, int &min_distance);
     Node* SubInsert(Point* point, Node* node);
     Node* ChooseSubtree(RTree::INode* node, Point* point);
 

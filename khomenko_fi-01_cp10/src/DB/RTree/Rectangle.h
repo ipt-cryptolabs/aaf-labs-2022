@@ -89,6 +89,29 @@ public:
         return rect2;
     }
 
+    int MinDistanceBetween(Point* point){
+        int x = point->x;
+        int y = point->y;
+
+        if(point->x < lb_point_.x){
+            x = lb_point_.x;
+        } else {
+            if(point->x > rt_point_.x){
+                x = rt_point_.x;
+            }
+        }
+
+        if(point->y < lb_point_.y){
+            y = lb_point_.y;
+        } else {
+            if(point->y > rt_point_.y){
+                y = rt_point_.y;
+            }
+        }
+
+        return (x - point->x) * (x - point->x) + (y - point->y) * (y - point->y);
+    }
+
     int DistanceBetween(Point* point){
         Point center((lb_point_.x + rt_point_.x) / 2, (lb_point_.y + rt_point_.y) / 2);
         return Point::SqrDistance(&center, point);

@@ -66,7 +66,11 @@ void DB::SearchInside(const std::string& set_name, Point* point1, Point* point2)
 
 void DB::SearchNN(const std::string& set_name, Point* point) {
     CheckSetPresence(set_name);
-    sets_[set_name]->SearchNN(point);
+    std::vector<Point *> res = sets_[set_name]->SearchNN(point);
+
+    for(auto el: res){
+        std::cout << el->ToString() << std::endl;
+    }
 }
 
 
