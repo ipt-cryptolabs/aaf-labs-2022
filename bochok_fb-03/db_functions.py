@@ -1,5 +1,5 @@
 from tabulate import tabulate
-from bin_s_tree import Node, BinarySearchTree
+# from bin_s_tree import Node, BinarySearchTree
 
 
 class Table:
