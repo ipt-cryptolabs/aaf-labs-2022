@@ -13,28 +13,54 @@ def parse(line):
         parenthesizedExpression = re.findall(r'\(.*\)', command)
         parameters = parenthesizedExpression[0][1:-1]
         parameters = parameters + ','
-        findParameters = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*,', parameters)
-        concatParameters = ''
-        if findParameters == []:
-            return "Incorrect command syntax"
-        for i in findParameters:
-            concatParameters += i
-        if concatParameters == parameters:
-            result_command.append("CREATE")
-            table_name = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*\(', split_command[1])
-            if table_name != []:
-                split_command[1] = table_name
-                split_command[1] = split_command[1][0][:-1]
-                parenthesizedExpression[0] = re.sub(r'\)', ');', parenthesizedExpression[0])
-                split_command.append(parenthesizedExpression[0])
-            result_command.append(split_command[1])
-            split_command[2] = split_command[2].replace(split_command[2][0], '')
-            split_command[2] = split_command[2].replace(split_command[2][-1], '')
-            split_command[2] = split_command[2].replace(split_command[2][-1], '')
-            result_command.append(split_command[2].split(','))
-            return result_command
+        if re.match(r'.+\s+(?i)indexed\s*.+', parameters):
+            findParameters = re.findall(r'([a-zA-Z][a-zA-Z0-9_]* (?i)indexed,|[a-zA-Z][a-zA-Z0-9_]*,)', parameters)
+            concatParameters = ''
+            if findParameters == []:
+                return "Incorrect command syntax"
+            for i in findParameters:
+                concatParameters += i
+                i = i.split(' ')
+                if re.match(r'(?i)indexed', i[0]):
+                    return f"Сolumn can not be named {i[0]}"
+            if concatParameters == parameters:
+                result_command.append("CREATE")
+                table_name = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*\(', split_command[1])
+                if table_name != []:
+                    split_command[1] = table_name
+                    split_command[1] = split_command[1][0][:-1]
+                    parenthesizedExpression[0] = re.sub(r'\)', ');', parenthesizedExpression[0])
+                    split_command.append(parenthesizedExpression[0])
+                result_command.append(split_command[1])
+                parameters_split = parameters.split(',')
+                del parameters_split[-1]
+                result_command.append(parameters_split)
+                return result_command
+            else:
+                return "Incorrect command syntax"
         else:
-            return "Incorrect command syntax"
+            findParameters = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*,', parameters)
+            concatParameters = ''
+            if findParameters == []:
+                return "Incorrect command syntax"
+            for i in findParameters:
+                concatParameters += i
+            if concatParameters == parameters:
+                result_command.append("CREATE")
+                table_name = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*\(', split_command[1])
+                if table_name != []:
+                    split_command[1] = table_name
+                    split_command[1] = split_command[1][0][:-1]
+                    parenthesizedExpression[0] = re.sub(r'\)', ');', parenthesizedExpression[0])
+                    split_command.append(parenthesizedExpression[0])
+                result_command.append(split_command[1])
+                split_command[2] = split_command[2].replace(split_command[2][0], '')
+                split_command[2] = split_command[2].replace(split_command[2][-1], '')
+                split_command[2] = split_command[2].replace(split_command[2][-1], '')
+                result_command.append(split_command[2].split(','))
+                return result_command
+            else:
+                return "Incorrect command syntax"
     elif re.match(r'(?i)(insert|insert\s+into)\s+[a-zA-Z][a-zA-Z0-9_]*\s*\(.+\)\s*\;', line):
         line = re.sub(r'\s*\)\s*;$', ',);', line)
         parenthesized_expression = re.findall(r'\(.*\)', line)
