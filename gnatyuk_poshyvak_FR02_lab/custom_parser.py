@@ -70,10 +70,11 @@ def decompose_query(str_query: str):
     elif str_query.lower().startswith('select'):
         columns_start = str_query.lower().find("select") + 6
         columns_end = str_query.lower().find('from')
-        columns_str = str_query[columns_start:columns_end].lstrip().rstrip()
+        columns_str = str_query[columns_start:columns_end].split(',')
+
         columns = []
         for column in columns_str:
-            columns.append(Column(column))
+            columns.append(Column(clear_text(column, ' ')))
 
         table_title_start = str_query.lower().find('from') + 4
         table_title_end = len(str_query)

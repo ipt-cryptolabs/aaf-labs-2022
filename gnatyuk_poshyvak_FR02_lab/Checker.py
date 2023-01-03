@@ -58,7 +58,7 @@ def is_correct_title(title: str):
 def is_correct_select(table_columns: list, select_columns: list):
     for column in select_columns:
         if column not in table_columns:
-            print(f'[!] Error. Column {column} does not exist in requested table.')
+            print(f'[!] Error. Column {column.title} does not exist in requested table.')
             return False
     return True
 
@@ -78,6 +78,7 @@ def is_query_correct(query: str):
         pattern = re.compile('\([^\(\)]*\)')
         data = pattern.findall(query)
         columns = clear_text(data[0], '()').split(',')
+        #TODO
         values = clear_text(data[1], '()"\'').split(',')
         if len(columns) != len(values):
             print("[!] Error. Number of arguments does not match columns number")
@@ -101,9 +102,9 @@ def is_query_correct(query: str):
         columns_end = query.lower().find('from')
         columns = query[columns_start:columns_end]
         columns = columns.lstrip().rstrip()
-        if ' ' in columns:
-            print('[!] Error. Column name may not have \' \' symbol.')
-            return False
+        # if ' ' in columns:
+        #     print('[!] Error. Column name may not have \' \' symbol.')
+        #     return False
         table_title_start = query.lower().find('from') + 4
         table_title = query.lower()[table_title_start:].lstrip().rstrip()
         if ' ' in table_title:

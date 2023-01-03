@@ -20,7 +20,8 @@ class Column:
     def __eq__(self, other):
         if self.title == other.title:
             return True
-        return NotImplemented
+        else:
+            return False
 
 
 class Table:
@@ -47,7 +48,7 @@ class Table:
         return indexed
 
     def insert_row(self, columns: list, row: list):
-        if Checker.is_correct_row(row, self.rows, self.columns):
+        if Checker.is_correct_row(row, self.rows, columns):
             columns_id = []
             for column in columns:
                 if column in self.columns:
@@ -60,9 +61,10 @@ class Table:
                     row_to_insert.append(row[tmp_counter])
                     tmp_counter += 1
                 else:
-                    row_to_insert.append(None)
+                    row_to_insert.append('[None]')
 
-            self.rows = row_to_insert
+            self.rows.append(row_to_insert)
+
         else:
             return 0
 
@@ -75,8 +77,8 @@ class Table:
                 columns_id.append(int(self.columns.index(column)))
 
         result = []
-        for index in columns_id:
-            result.append(self.rows[index])
+        for row in self.rows:
+            result.append([row[x] for x in columns_id])
 
         return result
 
@@ -163,6 +165,15 @@ def run_DB(db_title: str = 'main_db'):
     if not databases:
         item = DB(db_title)
         databases.append(item)
+
+
+def print_select(columns: list, values_matrix: list):
+    for column in columns:
+        print('[' + column.title + ']' + '  ' * (10 - int(len(column.title)/2)), end='')
+    print()
+    for values_row in values_matrix:
+        [print(' ' + val + '  ' * (10 - int(len(val)/2)), end='') for val in values_row]
+        print()
 
 # def upload_DBs(path: str = db_path):
 #     for db in databases:
