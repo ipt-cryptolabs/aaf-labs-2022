@@ -39,8 +39,10 @@ def is_correct_row(row: list, table_rows: list, table_columns: list):
         return False
     if not table_columns:
         print("[!] Error. There are no columns in table to insert row.")
-    for index in range(0, len(table_columns) - 1):
-        if table_columns[index].indexed and row[index] in table_rows[:][index]:
+    for index in range(len(table_columns)):
+        if table_columns[index].indexed \
+                and table_rows \
+                and row[index] in table_rows[:][index]:
             print(f"[!] {row[index]} value already exists in table.")
             return False
     return True
@@ -51,6 +53,14 @@ def is_correct_title(title: str):
         return False
     else:
         return True
+
+
+def is_correct_select(table_columns: list, select_columns: list):
+    for column in select_columns:
+        if column not in table_columns:
+            print(f'[!] Error. Column {column} does not exist in requested table.')
+            return False
+    return True
 
 
 def is_syntax_correct(query):

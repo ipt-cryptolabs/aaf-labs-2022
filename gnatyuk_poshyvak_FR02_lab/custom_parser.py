@@ -1,5 +1,4 @@
-﻿import Checker
-from Checker import *
+﻿from Checker import *
 from Queries import *
 from db_engine import *
 
@@ -16,7 +15,6 @@ def query_formatting(query: str):
     return formatted_query
 
 
-# if not qsl returns the same
 def decompose_query(str_query: str):
     if str_query.lower().startswith('insert'):
         # searches all matches like "(val1, val2, ...)"
@@ -25,10 +23,11 @@ def decompose_query(str_query: str):
 
         data = pattern.findall(str_query)
         columns_str = clear_text(data[0], '()').split(',')
-        values = clear_text(data[1], '()"\'').split(',')
 
+        columns = [Column(title) for title in columns_str]
+        values = clear_text(data[1], '()"\'').split(',')
         table_title = clear_text(pattern_table.findall(str_query)[0], ' ')
-        return QInsert(table_title, columns_str, values)
+        return QInsert(table_title, columns, values)
 
     elif str_query.lower().startswith('create'):
         pattern_columns = re.compile('\([\w, \[\]]+\)')
@@ -73,15 +72,14 @@ def decompose_query(str_query: str):
         columns_end = str_query.lower().find('from')
         columns_str = str_query[columns_start:columns_end].lstrip().rstrip()
         columns = []
-        #TODO
         for column in columns_str:
-            columns.append(Column())
+            columns.append(Column(column))
 
         table_title_start = str_query.lower().find('from') + 4
-        table_title_end = len(str_query) - 1
+        table_title_end = len(str_query)
         table = clear_text(str_query[table_title_start: table_title_end], ' (),')
 
-        return QSelect(table, columns_str)
+        return QSelect(table, columns)
 
     elif str_query.lower() == 'save' or str_query.lower() == 'print':
         return str_query.lower()

@@ -6,15 +6,15 @@ class Query:
 
 
 class QSelect(Query):
-    def __init__(self, table: str, columns: list):
+    def __init__(self, table_title: str, columns: list):
         self.columns = columns
-        self.table = table
+        self.table_title = table_title
 
 
 class QInsert(Query):
-    def __init__(self, table: str, columns: list, values: list):
+    def __init__(self, table_title: str, columns: list, values: list):
         self.columns = columns
-        self.table = table
+        self.table_title = table_title
         self.values = values
 
 

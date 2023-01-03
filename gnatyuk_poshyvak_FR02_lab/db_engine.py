@@ -17,6 +17,11 @@ class Column:
         self.title = title
         self.indexed = isIndexed
 
+    def __eq__(self, other):
+        if self.title == other.title:
+            return True
+        return NotImplemented
+
 
 class Table:
     def __init__(self, title: str, columns: list):  # list of Column
@@ -41,15 +46,39 @@ class Table:
                 indexed.append(column)
         return indexed
 
-# questionable!
-    def __set_index(self, column):
-        if column in self.columns:
-            item_index = self.columns.index(column)
-            self.columns[item_index].indexed = True
+    def insert_row(self, columns: list, row: list):
+        if Checker.is_correct_row(row, self.rows, self.columns):
+            columns_id = []
+            for column in columns:
+                if column in self.columns:
+                    columns_id.append(int(self.columns.index(column)))
 
-    def insert_row(self, row: list):
-        if Checker.is_correct_row(self.columns, self.rows, row):
-            self.rows.append(row)
+            row_to_insert = []
+            tmp_counter = 0
+            for col_index in range(len(self.columns)):
+                if col_index in columns_id:
+                    row_to_insert.append(row[tmp_counter])
+                    tmp_counter += 1
+                else:
+                    row_to_insert.append(None)
+
+            self.rows = row_to_insert
+        else:
+            return 0
+
+    def get_values(self, columns: list):
+        if not Checker.is_correct_select(self.columns, columns):
+            return None
+        columns_id = []
+        for column in columns:
+            if column in self.columns:
+                columns_id.append(int(self.columns.index(column)))
+
+        result = []
+        for index in columns_id:
+            result.append(self.rows[index])
+
+        return result
 
 
 class DB:
@@ -72,7 +101,7 @@ class DB:
         return 0
 
     def get_table(self, table_title):
-        table = list(filter(lambda x: x.title == table_title in self.tables))
+        table = list(filter(lambda x: x.title == table_title, self.tables))
         if table:
             return table[0]
         else:
@@ -91,6 +120,7 @@ class DB:
                     print(f'\t  - ({column.title}) [indexed]')
                 else:
                     print(f'\t  - ({column.title})')
+            print(f'\tRows count: {len(table.rows)}')
 
 
 # def save_DB(db: DB, path: str = db_path):
