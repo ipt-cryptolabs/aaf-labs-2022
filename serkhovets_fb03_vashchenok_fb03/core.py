@@ -1,7 +1,6 @@
 """
 Core file
 """
-import pandas as pd
 import pickle
 from prettytable import PrettyTable
 
@@ -33,10 +32,6 @@ class Table:
             self.items.append(items[:len(self.titles)])
         else:
             self.items.append(items)
-
-    # def get_item(self, title):
-    #     position = self.titles.index(title)
-    #     return self.items[position]
 
     def get_titles(self):
         return self.titles
@@ -95,21 +90,28 @@ class SQL:
         return False
 
     def function_print_table(self, title, vars: list, symbols: list):
+
+        def uniq(lst):
+            last = object()
+            for item in lst:
+                if item == last:
+                    continue
+                yield item
+                last = item
+
         try:
             if len(vars) >= 2:
                 and_check = None
-                d = {}
+                # Складання до списку
+                l = []
                 for table in self.tables:
                     if str(table) == title:
-                        titles = table.get_titles()
-                        items = table.get_items()
-                        for i in range(len(titles)):
-                            temp_list = []
-                            for item in items:
-                                temp_list.append(item[i])
-                            d[titles[i]] = temp_list
+                        l += [table.get_titles()]
+                        l += table.get_items()
                         break
-                pdframe = [pd.DataFrame(data=d), pd.DataFrame(data=d)]
+                pdframe = []
+                for i in range(len(symbols)):
+                    pdframe += [l]
                 if "OR" in vars:
                     vars.remove("OR")
                     and_check = False
@@ -117,58 +119,61 @@ class SQL:
                     vars.remove("AND")
                     and_check = True
                 s = 0
+                # print(pdframe[s])
                 for num_var in range(0, len(vars)-1, 2):
-                    temp = pdframe[s][vars[num_var]].to_list()
+                    temp = pdframe[s]
                     temp_list = []
-                    for i in pdframe[s][vars[num_var]].to_list():
+                    try:
+                        title_pos = pdframe[s][0].index(vars[num_var])
+                    except ValueError:
+                        pdframe.pop(s)
+                        break
+                    for i in pdframe[s][1:]:
                         if symbols[s] == "<=":
-                            if i <= vars[num_var + 1]:
+                            if i[title_pos] <= vars[num_var + 1]:
                                 temp_list.append(i)
                         elif symbols[s] == ">=":
-                            if i >= vars[num_var + 1]:
+                            if i[title_pos] >= vars[num_var + 1]:
                                 temp_list.append(i)
                         elif symbols[s] == "=" or symbols[s] == "==":
-                            if i == vars[num_var + 1]:
+                            if i[title_pos] == vars[num_var + 1]:
                                 temp_list.append(i)
                         elif symbols[s] == "<":
-                            if i < vars[num_var + 1]:
+                            if i[title_pos] < vars[num_var + 1]:
                                 temp_list.append(i)
                         elif symbols[s] == ">":
-                            if i > vars[num_var + 1]:
+                            if i[title_pos] > vars[num_var + 1]:
                                 temp_list.append(i)
                         else:
                             continue
-                    for i in temp_list:
-                        temp[temp.index(i)] = "%"
-                    for num in range(len(temp)):
-                        if temp[num] != "%":
-                            pdframe[s] = pdframe[s].drop(num)
-                    pdframe[s].reset_index(drop=True, inplace=True)
+                    pdframe[s] = temp_list
                     s += 1
+                pdframe = [item for item in pdframe]
                 if and_check:
-                    pdframe = pdframe[0].merge(pdframe[1], how='inner')
+                    data = []
+                    for global_item in pdframe[0]:
+                        check = True
+                        for temp_items in pdframe[1:]:
+                            if global_item not in temp_items:
+                                check = False
+                        if check:
+                            data.append(global_item)
                 else:
-                    pdframe = pdframe[0].merge(pdframe[1], how='outer')
-                data = []
-                titles = []
-                for i in pdframe.keys():
-                    titles.append(i)
-                    data += pdframe[i].to_list()
-                result = []
-                for num in range(int(len(data) / len(titles))):
-                    result.append(list(data[x] for x in range(num, len(data), int(len(data) / len(titles)))))
-                if len(result) == 0:
-                    table = PrettyTable(["Sorry"])
+                    data = list(uniq(sorted([item for items in pdframe for item in items], reverse=False)))
+                # print(data)
+                if len(data) == 0:
+                    table = PrettyTable([title])
                     table.add_row([" --- No items --- "])
                     print(table)
                     return False
-                table = PrettyTable(titles)
-                for item in result:
-                    table.add_row(item)
+                table = PrettyTable(l[0])
+                # if and_check:
+                #     table.add_rows([item for items in data for item in items])
+                # else:
+                table.add_rows(data)
                 print(table)
-                return True
             return False
-        except Exception:
+        except ZeroDivisionError:
             print(f"Sorry... Check your input! :(")
 
     def get_tables(self):
@@ -185,4 +190,4 @@ if __name__ == '__main__':
     with open("MySQL.pickle", 'rb') as f:
         MySQL = pickle.load(f)
     MySQL.print_table("cats")
-    MySQL.function_print_table("cats", ['name', 'Murzik', 'OR', 'name', 'Pushok'], ['=', '='])
+    MySQL.function_print_table("cats", ['name', 'Murzik', 'AND', 'name', 'Pushok'], ['>', '='])
