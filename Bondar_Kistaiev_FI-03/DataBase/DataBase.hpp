@@ -23,13 +23,17 @@ class DataBase
 
         std::vector<std::pair<std::string, bool>> column_info;
         std::vector<std::vector<std::string>> rows;
+
+        std::map<std::string,                                           // Multimap has log complexity for search (+ lower_bound) and insertion operations
+                 std::multimap<std::string, size_t>> indexed_cols;      // Implemeted with Dviikove Derevo (Paleno (log))   <- 190 IQ
     };
 
+    
     std::string buff_name;
     std::map<std::string, Table*> tables;
 
 
-    static void draw_krywka(std::ostream& ass, int block_count);
+    static void draw_krywka(std::ostream& ass, int block_count); // yes
 public:
     query_result select_from(const std::string& tbl_name, std::string greater_cond, std::string less_cond);
 

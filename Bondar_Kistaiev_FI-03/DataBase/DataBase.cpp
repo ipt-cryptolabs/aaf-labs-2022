@@ -29,7 +29,7 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
     if(greater_cond == ""  && less_cond == "")
         return {tbl_name, Result_Code::Table};
 
-    if(greater_cond.at(0) == '"' && less_cond.at(0) == '"')
+    if(greater_cond.at(0) == '"' && less_cond.at(0) == '"')        // Comparing two literals
     {
         if(greater_cond.substr(1, greater_cond.size() - 2) > less_cond.substr(1, less_cond.size() - 2))
         {
@@ -45,43 +45,76 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
             return {buff_name, Result_Code::Table};
         }
     }
-    else if(greater_cond.at(0) == '"' && less_cond.at(0) != '"')
+    else if(greater_cond.at(0) == '"' && less_cond.at(0) != '"')   // [col] < Literal
     {
         int l_index = table->col_index(less_cond);
         if(l_index == -1)
             return {"Column " + less_cond + " does not exist in table " + tbl_name + ".", Result_Code::Error};
 
         Table* temp = new Table(table->column_info);
-        for(const auto& r : table->rows)
-        {
-            if(greater_cond.substr(1, greater_cond.size() - 2) > r.at(l_index))
-                temp->rows.push_back(r);
-        }
+        greater_cond = greater_cond.substr(1, greater_cond.size() - 2);
 
+        if(table->column_info.at(l_index).second)   // Check whether col is indexed
+        {
+            const auto& treee = table->indexed_cols.at(less_cond);
+            auto mobil = treee.begin();
+            const auto range_end = treee.lower_bound(greater_cond);
+
+            while(mobil != range_end)
+            {
+                temp->rows.push_back(table->rows.at((*mobil).second));
+                ++mobil;
+            }
+        }
+        else
+        {
+            for(const auto& r : table->rows)
+            {
+                if(greater_cond > r.at(l_index))
+                    temp->rows.push_back(r);
+            }
+        }
+            
         if(tables.at(buff_name))
             delete tables.at(buff_name);
-            
         tables.at(buff_name) = temp;
     }
-    else if(greater_cond.at(0) != '"' && less_cond.at(0) == '"')
+    else if(greater_cond.at(0) != '"' && less_cond.at(0) == '"')   // Literal < [col]
     {
         int g_index = table->col_index(greater_cond);
         if(g_index == -1)
             return {"Column " + greater_cond + " does not exist in table " + tbl_name + ".", Result_Code::Error};
 
         Table* temp = new Table(table->column_info);
-        for(const auto& r : table->rows)
+        less_cond = less_cond.substr(1, less_cond.size() - 2);
+
+        if(table->column_info.at(g_index).second)   // Check whether col is indexed
         {
-            if(r.at(g_index) > less_cond.substr(1, less_cond.size() - 2))
-                temp->rows.push_back(r);
+            const auto& treee = table->indexed_cols.at(greater_cond);
+            auto mobil = treee.upper_bound(less_cond);
+            auto mobil_1 = treee.lower_bound(less_cond);
+            const auto range_end = treee.end();
+
+            while(mobil != range_end)
+            {
+                temp->rows.push_back(table->rows.at((*mobil).second));
+                ++mobil;
+            }
+        }
+        else
+        {
+            for(const auto& r : table->rows)
+            {
+                if(r.at(g_index) > less_cond)
+                    temp->rows.push_back(r);
+            }
         }
 
         if(tables.at(buff_name))
             delete tables.at(buff_name);
-            
         tables.at(buff_name) = temp;
     }
-    else
+    else                                                           // [col] < [col]
     {
         int g_index = table->col_index(greater_cond);
         int l_index = table->col_index(less_cond);
@@ -90,9 +123,9 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
 
         if(l_index == -1)
             return {"Column " + less_cond + " does not exist in table " + tbl_name + ".", Result_Code::Error};
-            
-
+        
         Table* temp = new Table(table->column_info);
+
         for(const auto& r : table->rows)
         {
             if(r.at(g_index) > r.at(l_index))
@@ -101,7 +134,6 @@ query_result DataBase::select_from(const std::string& tbl_name, std::string grea
 
         if(tables.at(buff_name))
             delete tables.at(buff_name);
-            
         tables.at(buff_name) = temp;
     }
 
@@ -127,7 +159,7 @@ query_result DataBase::create_join(const std::string& t1,  const std::string& t2
             return c_i.first == c_j.first;
         });
 
-        std::pair<std::string, bool> to_cerf = c_i;
+        std::pair<std::string, bool> to_cerf = {c_i.first, false};
         if(same_pos != new_col_info.end())
         {
             (*same_pos).first = (*same_pos).first + "_" + t1;
@@ -194,13 +226,25 @@ query_result DataBase::create_join(const std::string& t1,  const std::string& t2
 
 query_result DataBase::insert(const std::string& tbl_name, const std::vector<std::string>& row)
 {
+    // Errors
     if(!tables.contains(tbl_name))
         return {"Table " + tbl_name + " does not exists.", Result_Code::Error};
     
     if(tables.at(tbl_name)->column_info.size() != row.size())
         return {"Inserted row's size does not match " + tbl_name + "'s row-size.", Result_Code::Error};
+    //
 
-    tables.at(tbl_name)->rows.push_back(row);
+    // Logic (musician)
+    auto* t = tables.at(tbl_name);
+
+    t->rows.push_back(row);
+    for (size_t i = 0; i < row.size(); ++i)
+    {
+        const auto& [col, indexed] =  t->column_info.at(i);
+        
+        if(indexed)
+            t->indexed_cols.at(col).insert({row.at(i), t->rows.size() - 1});
+    }
     
     return {"1 row inserted into table: " + tbl_name, Result_Code::TextMessage};      // Switch to TextMessage
 }
@@ -219,7 +263,7 @@ query_result DataBase::create(const std::string& tbl_name, const std::vector<std
         
     tables[tbl_name] = new Table(columns);
 
-    return {"Created table:  " + tbl_name, Result_Code::TextMessage};      // Switch to TextMessage
+    return {"Created table:  " + tbl_name, Result_Code::TextMessage};
 }
                 
 void DataBase::draw_krywka(std::ostream& ass, int block_count)
@@ -270,10 +314,13 @@ query_result DataBase::get_table_string(const std::string& tbl_name) const
 
 DataBase::Table::Table(const std::vector<std::pair<std::string, bool>>& columns)
 {
-    // TODO : ADD indexing
-
     column_info = columns;
-    // Some indexing logic
+    
+    for (const auto& c : columns)
+    {
+        if(c.second)
+            indexed_cols[c.first]; // c++ moment
+    }
 }
 
 int DataBase::Table::col_index(const std::string& index) const

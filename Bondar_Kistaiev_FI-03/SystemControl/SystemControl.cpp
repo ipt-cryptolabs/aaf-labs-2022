@@ -34,6 +34,12 @@ int SystemControl::start()
         if (word == "exit;" || word == "quit;")
             return 1;
 
+        if (word == "clear;")
+        {
+            system("CLS");
+            continue;
+        }
+
         DBCommand::Node* executable = Parser::parse_command(input_handler);
         auto [res, ret_code] = executable->exec(this->controlled_db);
 
