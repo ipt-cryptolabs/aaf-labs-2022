@@ -1,4 +1,4 @@
-use crate::ParseError::{InvalidUsage, NoCommand, NotExist};
+use crate::ParseError::{InvalidUsage, NoCommand, NotExist, UnacceptableData};
 use std::collections::HashMap;
 use std::io;
 
@@ -7,6 +7,7 @@ enum ParseError {
     NoCommand,
     NotExist,
     InvalidUsage,
+    UnacceptableData,
 }
 
 struct DamnDB {
@@ -68,6 +69,7 @@ impl DamnDB {
     }
 }
 
+#[derive(Clone)]
 struct Table {
     name: String,
     columns: Vec<String>,
@@ -89,15 +91,27 @@ fn main() {
     loop {
         let mut cmd_str: String = String::new();
         println!("Enter command");
+        //todo change to read until ;
         io::stdin().read_line(&mut cmd_str).unwrap_or_else(|error| {
             println!("oops... we have an error: {:?}", error);
             0
         });
-
         parse_and_execute_command(cmd_str.as_str(), db.get_mut())
             .unwrap_or_else(|parse_error| println!("oops... we have an error: {:?}", parse_error));
     }
 }
+
+fn check_table_name(possible_name: &str) -> bool {
+    let mut it = possible_name.chars();
+    match it.next() {
+        None => false,
+        Some(first) => match first.is_ascii_alphabetic() {
+            true => it.all(|other| other.is_ascii_alphanumeric()),
+            false => false,
+        },
+    }
+}
+
 // просторова та часова складність
 fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), ParseError> {
     let s = cmd_str.trim();
@@ -106,13 +120,17 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
     }
     // create table_name (first_row, another_row);
     if let Some(create_data) = s.to_lowercase().strip_prefix("create ") {
-        let table_name = s
+        let table_name = s[7..]
             .chars()
             .into_iter()
             .take_while(|char| char != &'(')
             .collect::<String>();
         let table_right_str = table_name.trim();
-        let columns_data = &s[(table_right_str.len() + 2)..];
+        if !check_table_name(&s[12..]) {
+            println!("provided table name is unacceptable");
+            return Err(UnacceptableData);
+        }
+        let columns_data = &s[(table_right_str.len() + 7 + 2)..];
         let columns = columns_data.split(", ").collect::<Vec<&str>>();
         let mut finished = false;
         let mut table_columns = Vec::new();
@@ -123,7 +141,7 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             if column_possibly_name.contains("INDEXED") {
                 todo!()
             }
-            if let Some(_start) = column_possibly_name.to_lowercase().strip_suffix(");") {
+            if column_possibly_name.to_lowercase().ends_with(");") {
                 finished = true;
                 table_columns.push(String::from(
                     &column_possibly_name[..column_possibly_name.len() - 2],
@@ -141,12 +159,12 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                 println!("table with name {table_right_str} has been created")
             }
             Err(error_message) => {
-                println!("{}", error_message)
+                println!("{}", error_message);
+                return Err(InvalidUsage);
             }
         }
         // insert table_name ("for first row", "for second row", "for third row");
     } else if let Some(insert_data) = s.to_lowercase().strip_prefix("insert ") {
-        //uncheked
         let mut data = &s[7..];
         if let Some(_into) = insert_data.strip_prefix("into ") {
             data = &s[12..];
@@ -156,6 +174,10 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             .into_iter()
             .take_while(|char| char != &'(')
             .collect::<String>();
+        if !check_table_name(&s[12..]) {
+            println!("provided table name is unacceptable");
+            return Err(UnacceptableData);
+        }
         let table_right_str = table_name.trim();
         let columns_data = &data[(table_right_str.len() + 2)..];
         let columns = columns_data.split(", ").collect::<Vec<&str>>();
@@ -184,7 +206,8 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                 println!("data into {table_right_str} inserted");
             }
             Err(error_message) => {
-                println!("{}", error_message)
+                println!("{}", error_message);
+                return Err(InvalidUsage);
             }
         }
         /*SELECT FROM cats;
@@ -196,14 +219,15 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
           FULL_JOIN cats ON owner_id = cat_owner_id WHERE name = “Murzik”;
           */
     } else if let Some(select_data) = s.to_lowercase().strip_prefix("select from ") {
+        let mut data;
         if !select_data.contains(' ') && select_data.len() > 1 {
-            // todo check if table name like this correct
             match db.get_table(&s[12..]) {
                 Ok(table) => {
-                    // todo printing this table
+                    data = table;
                 }
                 Err(error_message) => {
                     println!("{}", error_message);
+                    return Err(InvalidUsage);
                 }
             }
         }
@@ -213,16 +237,36 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             .take_while(|char| char != &' ')
             .collect::<String>();
         let table_right_str = table_name.trim();
+        match db.get_table(table_right_str) {
+            Ok(table) => {
+                data = table;
+            }
+            Err(error_message) => {
+                println!("{}", error_message);
+                return Err(InvalidUsage);
+            }
+        }
         let mut remainder = &s[12 + table_name.len() + 1..];
-        if let Some(_join_and_other) = remainder.to_lowercase().strip_prefix("full_join ") {
+        let mut table2 = None;
+        if remainder.to_lowercase().starts_with("full_join ") {
             let table_join = remainder[10..]
                 .chars()
                 .into_iter()
                 .take_while(|char| char != &' ')
                 .collect::<String>();
+            let join_table;
+            match db.get_table(table_join.as_str()) {
+                Ok(table) => {
+                    join_table = table;
+                }
+                Err(error_message) => {
+                    println!("{}", error_message);
+                    return Err(InvalidUsage);
+                }
+            }
             remainder = &remainder[table_join.len() + 10 + 1..];
             let on;
-            if let Some(_on_and_other) = remainder.to_lowercase().strip_prefix("on ") {
+            if remainder.to_lowercase().starts_with("on ") {
                 on = remainder[3..]
                     .chars()
                     .into_iter()
@@ -230,7 +274,6 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                     .collect::<String>();
                 remainder = &remainder[on.len() + 3 + 1..];
             } else {
-                println!("1");
                 return Err(InvalidUsage);
             }
             let another_on;
@@ -243,15 +286,15 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
 
                 remainder = &remainder[another_on.len() + 2..];
             } else {
-                println!("2");
                 return Err(InvalidUsage);
             }
-            //todo  we have all for full join(?)
+            table2 = Some((join_table, on, another_on));
+            //todo  we have all for full join!
         }
         //SELECT FROM owners
-        //           FULL_JOIN cats ON owner_id = cat_owner_id *WHERE name = “Murzik”;
+        //           FULL_JOIN cats ON owner_id = cat_owner_id WHERE name *= “Murzik”;
         // *where some *= ("1" | id);
-
+         let mut wherre = None;
         if remainder.to_lowercase().starts_with("where ") {
             let what_where = remainder[6..]
                 .chars()
@@ -259,7 +302,31 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                 .take_while(|char| char != &' ')
                 .collect::<String>();
             remainder = &remainder[what_where.len() + 6 + 1..];
+            // if what_where.ends_with('"') && what_where.starts_with('"')
+            if !remainder.starts_with("= ") {
+                return Err(InvalidUsage);
+            }
+            remainder = &remainder[2..remainder.len()-1];
+            let mut what_eq;
+            if remainder.starts_with('(') && remainder.ends_with(')') {
+                what_eq = remainder[1..remainder.len()-1].split('|').collect::<Vec<&str>>();
+                what_eq.iter_mut().for_each(|each| *each = each.trim())
+            } else {
+                what_eq = vec![remainder];
+            }
+            wherre = Some((what_where, what_eq));
         }
+            //todo maybe we dont need it, and we can only in full_join change data (that table) to another and filter with where then
+        match table2 {
+            None => { // just if where
+
+                }
+            Some((join_t, on, another_on)) => {
+                //get data, make new "virtual" table, check if where
+            }
+        }
+
+        //print all
     } else {
         return Err(NotExist);
     }
