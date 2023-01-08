@@ -1,15 +1,20 @@
 from pyparsing import *
 
-def parse(a: str) -> tuple[str, str, list]:
+
+
+def parse(a: str) -> list:
     table_name = (Word(alphas + '_'))('Name_Of_Table')
-    column = Word(alphas + '_')
-    column_names = (column + ZeroOrMore(Suppress(', ') + column))('modules')
-    command_name = one_of(["CREATE", "INSERT INTO", "SELECT FROM"])('command')
-    condition = (Word(alphas + '_') + Suppress('<') + Word(alphas + '_'))('cond')
-    where_statement = (Suppress('WHERE') + condition + Suppress(';'))('wherest')
-    create_and_insert_statement = (Suppress('(') + column_names + Suppress(');'))('crst')
-    last = Or([where_statement, create_and_insert_statement])('laast')
+    column_name = Word(alphas + '_')
+    columns = (column_name + ZeroOrMore(Suppress(', ') + column_name))('columns')
+    word = (Suppress('\"') + Word(alphas + '_' + ' ' + nums) + Suppress('\"'))
+    data = (word + ZeroOrMore(Suppress(', ') + word))
+    condition = (column_name + Suppress('<') + word)('cond')
     stop_command = ('exit' + Suppress(';'))('command')
-    parse_module = Or([command_name + table_name + last, stop_command])
+    create_command = ("CREATE" + table_name + Suppress('(') + columns + Suppress(');'))
+    insert_command = ("INSERT INTO" + table_name + Suppress('(') + data + Suppress(');'))
+    select_all = ("SELECT * FROM" + table_name + Suppress(';'))
+    select_with_where = ("SELECT FROM" + table_name + Suppress('WHERE') + condition + Suppress(';'))
+    select_command = Or([select_all, select_with_where])
+    parse_module = Or([create_command, insert_command, select_command, stop_command])
     res = parse_module.parseString(a)
-    return res.command.__str__(), res.Name_Of_Table.__str__(), res.laast
+    return res
