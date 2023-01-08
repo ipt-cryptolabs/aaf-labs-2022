@@ -26,3 +26,37 @@ if __name__ == "__main__":
                 print(command)
             print('Enter:')
             line = ' '
+
+
+"""
+create t(x, y);
+insert t("aaa", "zz1");
+insert t("aaa", "zz2");
+insert t("mmm", "mmm");
+insert t("xxx", "bbb");
+insert t("yyy", "bbb");
+select from t;
+select from t where x > "g";
+"""
+
+
+"""
+create t1(a, b);
+insert t1("aaa", "b1");
+insert t1("aaa", "b2");
+insert t1("bbb", "b3");
+insert t1("ccc", "b4");
+insert t1("www", "b5");
+insert t1("xxx", "b6");
+create t2(x, y);
+insert t2("aaa", "y1");
+insert t2("bbb", "y2");
+insert t2("bbb", "y3");
+insert t2("ccc", "y4");
+insert t2("yyy", "y5");
+insert t2("zzz", "y6");
+SELECT FROM t1 JOIN t2 ON a = x;
+SELECT FROM t1 JOIN t2 ON a = x where b > "0";
+SELECT FROM t1 JOIN t2 ON a = x where y > b;
+SELECT FROM t1 JOIN t2 where b > y;
+"""
