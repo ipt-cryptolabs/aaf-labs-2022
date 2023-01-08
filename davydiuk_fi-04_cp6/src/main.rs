@@ -161,12 +161,11 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
         let columns = columns_data.split(", ").collect::<Vec<&str>>();
         let mut finished = false;
         let mut table_columns_data = Vec::new();
-        println!("{columns:?}");
         for column_possibly_data in columns {
             println!("{column_possibly_data}");
             if finished
                 || !column_possibly_data.starts_with('"')
-                    || !column_possibly_data.ends_with('"') ||  !column_possibly_data.ends_with("\");")
+                || (!column_possibly_data.ends_with('"') && !column_possibly_data.ends_with(';'))
             {
                 return Err(InvalidUsage);
             }
@@ -179,13 +178,6 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             }
             sstr = &sstr[1..sstr.len() - 1];
             table_columns_data.push(sstr.to_string());
-        }
-        unsafe {
-            println!(
-                "INSERT {table_right_str} (\"{}\", \"{}\");",
-                table_columns_data.get_unchecked(0),
-                table_columns_data.get_unchecked(1)
-            );
         }
         match db.insert_into_table(table_right_str, table_columns_data) {
             Ok(_) => {
@@ -254,12 +246,20 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                 println!("2");
                 return Err(InvalidUsage);
             }
-            //todo now we have all for full join(?)
+            //todo  we have all for full join(?)
         }
         //SELECT FROM owners
         //           FULL_JOIN cats ON owner_id = cat_owner_id *WHERE name = “Murzik”;
-        // where some = ("1" | id);
-        if remainder.to_lowercase().starts_with("where ") {}
+        // *where some *= ("1" | id);
+
+        if remainder.to_lowercase().starts_with("where ") {
+            let what_where = remainder[6..]
+                .chars()
+                .into_iter()
+                .take_while(|char| char != &' ')
+                .collect::<String>();
+            remainder = &remainder[what_where.len() + 6 + 1..];
+        }
     } else {
         return Err(NotExist);
     }
