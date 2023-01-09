@@ -239,38 +239,42 @@ std::shared_ptr<Command> RecognizeComm(std::vector<std::string> tokens)
         {
             return std::make_shared<Search>(tokens[1]);
         }
-        else if(tokens.size() == 14 && tokens[2] == "INSIDE")
+        else if(tokens[2] != "WHERE")
         {
-            if ( !(tokens[3] == "(" && tokens[5] == "," && tokens[7] == ")"
-                && tokens[8] == "," && tokens[9] == "(" && tokens[11] == "," && tokens[13] == ")"))
+            throw std::invalid_argument("invalid syntax");
+        }
+        else if(tokens.size() == 15 && tokens[3] == "INSIDE")
+        {
+            if ( !(tokens[4] == "(" && tokens[6] == "," && tokens[8] == ")"
+                && tokens[9] == "," && tokens[10] == "(" && tokens[12] == "," && tokens[14] == ")"))
                 throw std::invalid_argument("invalid syntax");
             try
             {
-                return std::make_shared<RangeSearch>(tokens[1] ,stoi(tokens[4]), stoi(tokens[6]), stoi(tokens[10]), stoi(tokens[12]));
+                return std::make_shared<RangeSearch>(tokens[1] ,stoi(tokens[5]), stoi(tokens[7]), stoi(tokens[11]), stoi(tokens[13]));
             }
             catch (std::exception& exc)
             {
                 throw std::invalid_argument("invalid numbers");
             }
         }
-        else if(tokens.size() == 8 && tokens[2] == "NN")
+        else if(tokens.size() == 9 && tokens[3] == "NN")
         {
-            if ( !(tokens[3] == "(" && tokens[5] == "," && tokens[7] == ")"))
+            if ( !(tokens[4] == "(" && tokens[6] == "," && tokens[8] == ")"))
                 throw std::invalid_argument("invalid syntax");
             try
             {
-                return std::make_shared<NNSearch>(tokens[1] ,stoi(tokens[4]), stoi(tokens[6]));
+                return std::make_shared<NNSearch>(tokens[1] ,stoi(tokens[5]), stoi(tokens[7]));
             }
             catch (std::exception& exc)
             {
                 throw std::invalid_argument("invalid numbers");
             }
         }
-        else if(tokens.size() == 4 && tokens[2] == "ABOVE_TO")
+        else if(tokens.size() == 5 && tokens[3] == "ABOVE_TO")
         {
             try
             {
-                return std::make_shared<AboveSearch>(tokens[1] ,stoi(tokens[3]));
+                return std::make_shared<AboveSearch>(tokens[1] ,stoi(tokens[4]));
             }
             catch (std::exception& exc)
             {

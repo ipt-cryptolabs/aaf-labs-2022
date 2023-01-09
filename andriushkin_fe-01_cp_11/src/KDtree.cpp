@@ -139,6 +139,7 @@ std::vector<KDtree::Node*> KDtree::RangeSearch(int64_t x1, int64_t y1, int64_t x
         curr = stk.top().node;
         left_box = stk.top().left_box;
         right_box = stk.top().right_box;
+        bool inter = Intersection(left, right, left_box, right_box);
         stk.pop();
         if( curr == nullptr)
             continue;
@@ -160,7 +161,14 @@ std::vector<KDtree::Node*> KDtree::RangeSearch(int64_t x1, int64_t y1, int64_t x
 bool Intersection(std::array<int64_t,2> l1, std::array<int64_t,2> l2,
     std::array<int64_t,2> r1, std::array<int64_t,2> r2)
 {
-    return (l1[0] >= r1[0] & l1[1] >= r1[1]) | (l2[0] <= r2[0] & l2[1] <= r2[1]);
+    bool lx = l1[0] >= r1[0];
+    bool ly = l1[1] >= r1[1];
+    bool rx = l2[0] <= r2[0];
+    bool ry = l2[1] <= r2[1];
+    bool l = lx && ly;
+    bool r = rx && ly;
+    bool ans = r || l;
+    return (l1[0] >= r1[0] || l1[1] >= r1[1]) || (l2[0] <= r2[0] || l2[1] <= r2[1]);
 }
 
 bool InRectange(std::array<int64_t,2> left, std::array<int64_t,2> right, std::array<int64_t,2> point)
@@ -242,7 +250,12 @@ std::vector<KDtree::Node*> KDtree::AboveSearch(int64_t y)
             ret.push_back(curr);
         
         if( curr->rotation)
-            search_stk.push( curr->coords[1] < y ? curr->right : curr->right);
+        {
+            search_stk.push(curr->right);
+            if(curr->coords[1] >= y)
+                search_stk.push(curr->left);
+        }
+            
         else
         {
             search_stk.push(curr->left);

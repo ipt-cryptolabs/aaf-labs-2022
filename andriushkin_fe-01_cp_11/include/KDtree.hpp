@@ -7,6 +7,7 @@
 #include <memory>
 #include <stack>
 #include <math.h>
+#include <array>
 
 class KDtree
 {
