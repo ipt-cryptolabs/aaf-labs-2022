@@ -1,3 +1,4 @@
+// Package for parsing input
 package parser
 
 import (
@@ -6,15 +7,15 @@ import (
 )
 
 func CompileRegexps() *[5]*regexp.Regexp {
-	create_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>create)\s+(?P<collection_name>[a-zA-Z][a-zA-Z0-9_]*)\s*;`)
+	create_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>create)\s+(?P<collectionName>[a-zA-Z][a-zA-Z0-9_]*)\s*;`)
 
-	insert_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>insert)\s+(?P<collection_name>[a-zA-Z][a-zA-Z0-9_]*)\s*{(?P<values>(\s*-?\d*\s*,\s*)*-?\d*\s*)}\s*;`)
+	insert_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>insert)\s+(?P<collectionName>[a-zA-Z][a-zA-Z0-9_]*)\s*{(?P<values>(\s*-?\d*\s*,\s*)*-?\d*\s*)}\s*;`)
 
-	print_index_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>print_index)\s+(?P<collection_name>[a-zA-Z][a-zA-Z0-9_]*)\s*;`)
+	print_index_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>print_index)\s+(?P<collectionName>[a-zA-Z][a-zA-Z0-9_]*)\s*;`)
 
-	contains_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>contains)\s+(?P<collection_name>[a-zA-Z][a-zA-Z0-9_]*)\s*{(?P<values>(\s*-?\d*\s*,\s*)*-?\d*\s*)}\s*;`)
+	contains_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>contains)\s+(?P<collectionName>[a-zA-Z][a-zA-Z0-9_]*)\s*{(?P<values>(\s*-?\d*\s*,\s*)*-?\d*\s*)}\s*;`)
 
-	search_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>search)\s+(?P<collection_name>[a-zA-Z][a-zA-Z0-9_]*)\s*(where\s*(?P<query>(contains|contained_by|intersects))\s*{(?P<values>(\s*-?\d*\s*,\s*)*-?\d*\s*)})?\s*;`)
+	search_regexp, _ := regexp.Compile(`(?i)\s*(?P<command>search)\s+(?P<collectionName>[a-zA-Z][a-zA-Z0-9_]*)\s*(where\s*(?P<query>(contains|contained_by|intersects))\s*{(?P<values>(\s*-?\d*\s*,\s*)*-?\d*\s*)})?\s*;`)
 
 	regexps := [5]*regexp.Regexp{create_regexp, insert_regexp, print_index_regexp, contains_regexp, search_regexp}
 
@@ -60,14 +61,11 @@ func Parse(input string, regexps *[5]*regexp.Regexp) map[string]string {
 	//changing to readable view
 	if val, ok := output["values"]; ok {
 		val = strings.ReplaceAll(val, "\n", " ")
-		val = strings.ReplaceAll(val, ",", "")
-		temp := val
+		val = strings.ReplaceAll(val, ",", " ")
 		val = strings.TrimSpace(val)
 
-		for temp != val {
-			temp = val
-			val = strings.ReplaceAll(val, "  ", " ")
-		}
+		space := regexp.MustCompile(`\s+`)
+		val = space.ReplaceAllString(val, " ")
 
 		output["values"] = val
 	}
