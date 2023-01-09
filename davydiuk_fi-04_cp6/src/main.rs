@@ -1,5 +1,5 @@
 use crate::ParseError::{InvalidUsage, NoCommand, NotExist, UnacceptableData};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io;
 
 #[derive(Debug)]
@@ -259,7 +259,7 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                 .collect::<String>();
             let join_table = match db.get_mut().get_table(table_join.as_str()) {
                 Ok(table) => {
-                    table;
+                    table
                 }
                 Err(error_message) => {
                     println!("{}", error_message);
@@ -320,15 +320,14 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             let mut variants = Vec::new();
             let mut columns = what_eq
                 .iter()
-                .enumerate()
-                .filter(|(i, &x)| {
+                .filter(| &&x| {
                     let a = x.starts_with('"') && x.ends_with('"');
                     if a {
                         variants.push(x)
                     }
                     !a
                 })
-                .map(|x| *x.1)
+                .map(|x| *x)
                 .collect::<Vec<&str>>();
             columns.push(what_where.as_str());
             let ids: Option<Vec<usize>> = columns
@@ -347,7 +346,13 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                 println!("columns with provided in where ids not in whis world");
                 return Err(UnacceptableData);
             }
-            get_eq(&mut res.data, &ids.unwrap()[..], variants, opapo.unwrap());
+            match get_eq(&mut res.data, &ids.unwrap()[..], variants, opapo.unwrap()) {
+                Ok(_) => (),
+                Err(error) => {
+                    println!("oh no. cringe: {}", error);
+                    return Err(UnacceptableData);
+                }
+            }
         }
 
         //todo print table
@@ -363,8 +368,8 @@ pub fn get_eq(
     columns: &[usize],
     variants: Vec<&str>,
     column_check: usize,
-) -> Result<(), &str> {
-    // let rows_ids = Vec::new();
+) -> Result<(), &'static str> {
+    let mut rows_ids = HashSet::new();
     let mut vecs = Vec::new();
     for (a, vecc) in vec.iter_mut().enumerate() {
         if columns.contains(&a) {
@@ -381,8 +386,36 @@ pub fn get_eq(
             return Err("very bad error");
         }
     }
-    for i in leeen.unwrap() {
-
+    for i in 0..leeen.unwrap() {
+        let mut elem ;
+        elem = None;
+        let mut ii = 0;
+        for vec in vecs.iter_mut() {
+            let n = vec.next();
+            if ii == column_check && !variants.contains(&&***n.as_ref().unwrap()) {
+                rows_ids.insert(i);
+            }
+            match elem.as_ref() {
+                None => {
+                    elem = Some(n.unwrap().clone());
+                    ii += 1;
+                    continue;
+                }
+                Some(el) => {
+                    if el.ne(&n.as_ref().unwrap().as_str() ){
+                        rows_ids.insert(i);
+                    }
+                    ii += 1;
+                }
+            }
+        }
     }
-    todo!()
+    let lollll = rows_ids.into_iter().collect::<Vec<usize>>();
+    for vector in vec {
+        for i in lollll.iter().rev() {
+            vector.remove(*i);
+        }
+    }
+    Ok(())
 }
+
