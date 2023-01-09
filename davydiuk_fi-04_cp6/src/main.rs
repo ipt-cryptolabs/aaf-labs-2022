@@ -224,6 +224,8 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             match db.get_table(&s[12..]) {
                 Ok(table) => {
                     data = table;
+                    // todo print this
+                    return Ok(());
                 }
                 Err(error_message) => {
                     println!("{}", error_message);
@@ -237,7 +239,8 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             .take_while(|char| char != &' ')
             .collect::<String>();
         let table_right_str = table_name.trim();
-        match db.get_table(table_right_str) {
+        let dbb = db.get_mut();
+        match dbb.get_table(table_right_str) {
             Ok(table) => {
                 data = table;
             }
@@ -247,23 +250,22 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             }
         }
         let mut remainder = &s[12 + table_name.len() + 1..];
-        let mut table2 = None;
+        let mut res = data.clone();
         if remainder.to_lowercase().starts_with("full_join ") {
             let table_join = remainder[10..]
                 .chars()
                 .into_iter()
                 .take_while(|char| char != &' ')
                 .collect::<String>();
-            let join_table;
-            match db.get_table(table_join.as_str()) {
+            let join_table = match db.get_mut().get_table(table_join.as_str()) {
                 Ok(table) => {
-                    join_table = table;
+                    table;
                 }
                 Err(error_message) => {
                     println!("{}", error_message);
                     return Err(InvalidUsage);
                 }
-            }
+            };
             remainder = &remainder[table_join.len() + 10 + 1..];
             let on;
             if remainder.to_lowercase().starts_with("on ") {
@@ -288,13 +290,12 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
             } else {
                 return Err(InvalidUsage);
             }
-            table2 = Some((join_table, on, another_on));
-            //todo  we have all for full join!
+            // table2 = Some((join_table, on, another_on));
+            //todo  we have all for full join! merge to table (TO RES)
         }
         //SELECT FROM owners
         //           FULL_JOIN cats ON owner_id = cat_owner_id WHERE name *= “Murzik”;
         // *where some *= ("1" | id);
-         let mut wherre = None;
         if remainder.to_lowercase().starts_with("where ") {
             let what_where = remainder[6..]
                 .chars()
@@ -302,34 +303,86 @@ fn parse_and_execute_command(cmd_str: &str, db: &mut DamnDB) -> Result<(), Parse
                 .take_while(|char| char != &' ')
                 .collect::<String>();
             remainder = &remainder[what_where.len() + 6 + 1..];
-            // if what_where.ends_with('"') && what_where.starts_with('"')
             if !remainder.starts_with("= ") {
                 return Err(InvalidUsage);
             }
-            remainder = &remainder[2..remainder.len()-1];
+            remainder = &remainder[2..remainder.len() - 1];
             let mut what_eq;
             if remainder.starts_with('(') && remainder.ends_with(')') {
-                what_eq = remainder[1..remainder.len()-1].split('|').collect::<Vec<&str>>();
+                what_eq = remainder[1..remainder.len() - 1]
+                    .split('|')
+                    .collect::<Vec<&str>>();
                 what_eq.iter_mut().for_each(|each| *each = each.trim())
             } else {
                 what_eq = vec![remainder];
             }
-            wherre = Some((what_where, what_eq));
-        }
-            //todo maybe we dont need it, and we can only in full_join change data (that table) to another and filter with where then
-        match table2 {
-            None => { // just if where
-
-                }
-            Some((join_t, on, another_on)) => {
-                //get data, make new "virtual" table, check if where
+            // if what_where.ends_with('"') && what_where.starts_with('"')
+            let mut variants = Vec::new();
+            let mut columns = what_eq
+                .iter()
+                .enumerate()
+                .filter(|(i, &x)| {
+                    let a = x.starts_with('"') && x.ends_with('"');
+                    if a {
+                        variants.push(x)
+                    }
+                    !a
+                })
+                .map(|x| *x.1)
+                .collect::<Vec<&str>>();
+            columns.push(what_where.as_str());
+            let ids: Option<Vec<usize>> = columns
+                .iter()
+                .map(|&col_name| {
+                    res.columns
+                        .iter()
+                        .position(|string_col_name| string_col_name.eq(col_name))
+                })
+                .collect();
+            let opapo = res
+                .columns
+                .iter()
+                .position(|string_col_name| string_col_name.eq(&what_where));
+            if ids.is_none() {
+                println!("columns with provided in where ids not in whis world");
+                return Err(UnacceptableData);
             }
+            get_eq(&mut res.data, &ids.unwrap()[..], variants, opapo.unwrap());
         }
 
-        //print all
+        //todo print table
     } else {
         return Err(NotExist);
     }
 
     Ok(())
+}
+
+pub fn get_eq(
+    vec: &mut Vec<Vec<String>>,
+    columns: &[usize],
+    variants: Vec<&str>,
+    column_check: usize,
+) -> Result<(), &str> {
+    // let rows_ids = Vec::new();
+    let mut vecs = Vec::new();
+    for (a, vecc) in vec.iter_mut().enumerate() {
+        if columns.contains(&a) {
+            vecs.push(vecc.iter_mut())
+        }
+    }
+    let mut leeen: Option<usize> = None;
+    for vec in vecs.iter() {
+        if leeen.is_none() {
+            leeen = Some(vec.len());
+            continue;
+        }
+        if leeen.unwrap() != vec.len() {
+            return Err("very bad error");
+        }
+    }
+    for i in leeen.unwrap() {
+
+    }
+    todo!()
 }
