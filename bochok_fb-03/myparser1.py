@@ -104,23 +104,23 @@ def parse(line):
                     if not re.match("[a-zA-Z]", command[1][0]):
                         return "Error: table names have to start with letter."
                     args = line[j+1:-1].split(", ")
-                    args_d = dict()
+                    # args_d = dict()
                     for k in range(0, len(args)):
 
                         if args[k] == "":
                             return "Error: invalid syntax in argument section."
                         elif not re.match("[a-zA-Z]", args[k][0]):
                             return "Error: column names have to start with letter."
-                        elif args[k] in args_d.keys():
-                            return "Error: columns of the table are not unique."
-                        elif re.match("[a-zA-Z][a-zA-Z0-9_]* [Ii][Nn][Dd][Ee][Xx][Ee][Dd]", args[k]):
-                            col = re.sub(" [Ii][Nn][Dd][Ee][Xx][Ee][Dd]", "", args[k])
-                            args_d[col] = 1
+                        # elif args[k] in args_d.keys():
+                        #     return "Error: columns of the table are not unique."
+                        # elif re.match("[a-zA-Z][a-zA-Z0-9_]* [Ii][Nn][Dd][Ee][Xx][Ee][Dd]", args[k]):
+                        #     col = re.sub(" [Ii][Nn][Dd][Ee][Xx][Ee][Dd]", "", args[k])
+                        #     args_d[col] = 1
                         elif re.match("[a-zA-Z][a-zA-Z0-9_]*", args[k]) and len(re.findall(" ", args[k])) == 0:
-                            args_d[args[k]] = 0
+                            continue
                         else:
                             return "Error: Invalid column name format."
-                    return command + [args_d]
+                    return command + args
 
                 else:
                     return "Error: ) is missed."
@@ -152,7 +152,7 @@ def parse(line):
                 else:
                     command = "Error: syntax error in WHERE section."
 
-                return command
+                return "Syntax error!"
             else:
                 command = line.split(" ")
                 command = [command[0] + command[1]] + command[2:]
