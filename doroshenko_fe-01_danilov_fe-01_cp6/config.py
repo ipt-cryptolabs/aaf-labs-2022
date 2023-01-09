@@ -1,0 +1,20 @@
+TT_STR = 'STR'
+TT_LPAREN = 'LPAREN'
+TT_RPAREN = 'RPAREN'
+TT_COMMA = 'COMMA'
+TT_SEMICOLON = 'SEMICOLON'
+TT_QUOTE = 'QUOTE'
+TT_EQUALS = 'EQUALS'
+
+
+KEYWORDS = [
+    'CREATE',
+    'INDEXED',
+    'INSERT',
+    'INTO',
+    'SELECT',
+    'FROM',
+    'FULL_JOIN',
+    'ON',
+    'WHERE',
+]
