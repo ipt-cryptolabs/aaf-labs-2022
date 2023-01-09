@@ -1,0 +1,1 @@
+/usr/bin/g++ -g -rdynamic CMakeFiles/volynets_fi-03.dir/main.cpp.o -o volynets_fi-03 
