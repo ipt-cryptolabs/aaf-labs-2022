@@ -57,3 +57,17 @@ func AreEqual(s1, s2 []int) bool {
 	}
 	return len(diff) == 0
 }
+
+func Contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func Remove(s []string, i int) []string {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
