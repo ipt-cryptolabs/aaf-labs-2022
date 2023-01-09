@@ -66,7 +66,7 @@ def parsing(command: str):
             # CREATE TABLE
             if i == 0:
                 created = re.findall(pattern_nums[0], command)
-                MySQL + Table(created[1], created[1:])
+                MySQL + Table(created[1], created[2:])
                 print("You have made changes to the database.")
                 return 0
             # CREATE TABLE (INDEXED)
