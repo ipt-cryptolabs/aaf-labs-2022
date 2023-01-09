@@ -10,6 +10,12 @@ def search_table(t: list, name: str) -> int: # returns id of table or -1 if tabl
     return res
             
 if __name__ == "__main__":
+    print("Command examples:")
+    print(" > CREATE some_table (first_column, second_column);")
+    print(" > INSERT INTO some_table (\"1\", \"some data\");")
+    print(" > SELECT * FROM some_table;")
+    print(" > SELECT FROM some_table WHERE second_column < \"some datb\";")
+    print("Starting program...")
     tables = []
     while True:
         query = str(input("> "))
@@ -46,7 +52,10 @@ if __name__ == "__main__":
                 if table_id == -1:
                     print("Table doesn\'t exists")
                 else:
-                    select(tables[table_id], data[2], data[3]).print_table()
+                    data = []
+                    for i in range(2, len(result)):
+                        data.append(result[i])
+                    select(tables[table_id], data[0], data[1]).print_table()
             if command == "SELECT * FROM":
                 table_id = search_table(tables, table_name)
                 if table_id == -1:
