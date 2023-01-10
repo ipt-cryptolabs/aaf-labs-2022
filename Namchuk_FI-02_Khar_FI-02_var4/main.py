@@ -29,12 +29,12 @@ if __name__ == "__main__":
 
 
 """
-create t(x, y);
-insert t("aaa", "zz1");
-insert t("aaa", "zz2");
-insert t("mmm", "mmm");
-insert t("xxx", "bbb");
-insert t("yyy", "bbb");
+create t(x INDEXED, y, z INDEXED);
+insert t("aaa", "zz1", "zz1");
+insert t("aaa", "zz2", "zz1");
+insert t("mmm", "mmm", "zz1");
+insert t("xxx", "bbb", "zz1");
+insert t("yyy", "bbb", "zz1");
 select from t;
 select from t where x > "g";
 """

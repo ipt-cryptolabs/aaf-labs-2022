@@ -1,5 +1,6 @@
 from Table import Table
 from prettytable import PrettyTable
+import re
 
 class DataBase:
     def __init__(self):
@@ -10,7 +11,18 @@ class DataBase:
         else:
             table = Table(command)
             self.tables[command[1]] = table
+            counter = 0
+            for i in command[2]:
+                if re.findall(r'(?i)indexed', i):
+                    table.check_indexed.append(True)
+                    i = re.sub(r' (?i)indexed', '', i)
+                    command[2][counter] = i
+                else:
+                    table.check_indexed.append(False)
+                counter+=1
+            table.Trees()
             print(f"Table: {command[1]} with columns: {tuple(command[2])} was successfully created!")
+
     def select(self, command):
         if len(command)<= 2 and command[1] not in self.tables.keys():
             print(f"Table with name {command[1]} doesn`t exists")
@@ -38,21 +50,40 @@ class DataBase:
             index_column_1 = table.columns.index(command[3])
             if command[4][0] == '"':
                 command[4] = command[4][1:-1]
-                i = 0
-                while i < len(table.values):
-                    if table.values[i][index_column_1] > command[4]:
-                        values.append(table.values[i])
-                    i += 1
-                if values == []:
-                    table = [table.columns, *table.values]
-                    tab = PrettyTable(table[0])
-                    tab.add_rows(table[1:])
-                    print(tab)
+                if table.check_indexed[index_column_1] == False:
+                    i = 0
+                    while i < len(table.values):
+                        if table.values[i][index_column_1] > command[4]:
+                            values.append(table.values[i])
+                        i += 1
+                    if values == []:
+                        table = [table.columns, *table.values]
+                        tab = PrettyTable(table[0])
+                        tab.add_rows(table[1:])
+                        print(tab)
+                    else:
+                        table = [table.columns, *values]
+                        tab = PrettyTable(table[0])
+                        tab.add_rows(table[1:])
+                        print(tab)
                 else:
-                    table = [table.columns, *values]
-                    tab = PrettyTable(table[0])
-                    tab.add_rows(table[1:])
-                    print(tab)
+                    j = 0
+                    for i in table.trees:
+                        if i[1] == index_column_1:
+                            values = table.trees[j][0].search_more(command[4])
+                            break
+                        j+=1
+
+                    if values == []:
+                        table = [table.columns, *table.values]
+                        tab = PrettyTable(table[0])
+                        tab.add_rows(table[1:])
+                        print(tab)
+                    else:
+                        table = [table.columns, *values]
+                        tab = PrettyTable(table[0])
+                        tab.add_rows(table[1:])
+                        print(tab)
             else:
                 if command[4] not in table.columns:
                     print(f"There is no such column with name {command[4]}")
