@@ -44,7 +44,7 @@ create = re.compile( "^[Cc][Rr][Ee][Aa][Tt][Ee]\s+[a-zA-Z][a-zA-Z0-9_]*\s+\(\s*[
 create_i = re.compile( "^[Cc][Rr][Ee][Aa][Tt][Ee]\s+[a-zA-Z][a-zA-Z0-9_]*\s+\(")
 insert = re.compile( "^[Ii][Nn][Ss][Ee][Rr][Tt](\s+[Ii][Nn][Tt][Oo])?\s+[a-zA-Z][a-zA-Z0-9_]*\s+\(\s*\".+\"(\s*, \s*\".+\")*\s*\)\s*;\s*$")
 select = re.compile("^[Ss][Ee][Ll][Ee][Cc][Tt]\s+[Ff][Rr][Oo][Mm]\s+[a-zA-Z][a-zA-Z0-9_]*\s*;\s*$")
-select_i = re.compile("^[Ss][Ee][Ll][Ee][Cc][Tt]\s+[Ff][Rr][Oo][Mm]\s+[a-zA-Z][a-zA-Z0-9_]* [Ww][Hh][Ee][Rr][Ee] ")
+select_i = re.compile("^[Ss][Ee][Ll][Ee][Cc][Tt]\s+[Ff][Rr][Oo][Mm]\s+[a-zA-Z][a-zA-Z0-9_]* [Ww][Hh][Ee][Rr][Ee]")
 save = re.compile("^[Ss][Aa][Vv][Ee];")
 
 pattern_exit = re.compile("^[Ee][Xx][Ii][Tt]\s*;\s*$")
@@ -58,6 +58,33 @@ problem_list = ["^[Cc][Rr][Ee][Aa][Tt][Ee]",
 pattern_nums = ["[a-zA-Z][a-zA-Z0-9_]*", "(\".+?\")|([a-zA-Z][a-zA-Z0-9_]*)", "[a-zA-Z][a-zA-Z0-9_]*"]
 
 pattern = [create, create_i, insert, select, select_i, tables, save, pattern_exit]
+
+
+def pattern_sort(post):
+    p = post[post.find("WHERE") + 6:].replace(";", "")
+    patt_sort = re.compile("([(][(][^(]*[oO][rR][^)]*[)][)])|([(][(][^(]*[aA][nN][dD][^)]*[)][)])")
+    temp = re.findall(patt_sort, p)
+
+    temp_post = p
+
+    if not temp:
+        return p
+
+    if temp[0][0] == "":
+        p = temp[0][1]
+    else:
+        p = temp[0][0]
+
+    temp_post = temp_post.replace(p, "")
+
+    if "or" in temp_post.lower():
+        p += " OR "
+    elif "and" in temp_post.lower():
+        p += " AND "
+
+    temp_post = temp_post[temp_post.find("("):temp_post.find(")")]
+    p += temp_post
+    return p
 
 
 def parsing(command: str):
@@ -110,14 +137,12 @@ def parsing(command: str):
                 return 0
             # SELECT table WHERE
             elif i == 4:
-                selected = re.findall(pattern_nums[2], command)
-                command_i = command[command.find(selected[4]):]
-                command_i = command_i.replace(";", "").replace("(", "").replace(")", "").replace('"', "")
-                # print(command_i)
-                print("Info from 'SELECT':")
+                command_sort = pattern_sort(command)
+                selected = re.findall(pattern_nums[2], command_sort)
                 # print(selected)
-                # print(re.findall(re.compile(">=|<=|==|=|>|<"), command))
-                MySQL.function_print_table(selected[2], selected[4:], re.findall(re.compile(">=|<=|=|>|<"), command))
+                print("Info from 'SELECT':")
+                MySQL.function_print_table(re.findall(pattern_nums[2], command)[2], selected,
+                                           re.findall(re.compile(">=|<=|=|>|<"), command_sort))
                 return 0
             elif i == 5:
                 MySQL.print_tables()
@@ -144,3 +169,9 @@ def parsing(command: str):
         print("Incorrect 'SHOW' syntax.")
     else:
         print("This command is unfinded:(")
+
+
+if __name__ == '__main__':
+    command = "create t (a, b);"
+    created = re.findall(pattern_nums[0], command)
+    MySQL + Table(created[1], created[2:])
