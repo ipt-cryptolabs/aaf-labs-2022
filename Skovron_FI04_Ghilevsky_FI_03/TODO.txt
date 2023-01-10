@@ -1,0 +1,8 @@
+Case
+     create "student info" ("student age", weight); // problem 4
+     insert "student info" (1, 2); // problem 5?
+     select from "student info"; // problem 6?
+
+TODO:
+    4. problem 6, відображення в таблиці дивне, але вроді ок. "student age"
+    12. переписати doGroupBY sets через TreeSet<>(new Comparator<int[]>() {})
